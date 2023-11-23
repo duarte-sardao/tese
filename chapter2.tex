@@ -12,15 +12,31 @@ The study of merge techniques and conflicts has a long history, likely even pred
 
 Several related work exists, seeking to identify methods that can more systemically identify adulterated behaviour arising from semantic conflicts.
 
-\subsubsection{Unit Tests}
-
-leuson, nuno
-
 \subsubsection{Automated Behaviour Change Detection}
 
-Also by Leuson, we find an attempt at identifying cases of semantic conflict by applying automated behaviour change detection. ~\citep{kn:leuson} <-- summarize
+By Da Silva et al, we find an attempt at identifying cases of semantic conflict by applying automated behaviour change detection. ~\citep{kn:leuson} <-- summarize
 
 
+
+\subsubsection{Unit Tests}
+
+In identifying the presence of semantic conflicts in a merge conflict, developed solutions have focused on the automatic generation of unit tests. Also by Da Silva et al ~\citep{kn:leuson2} have worked with this approach: by proposing SAM (SemAntic Merge), a tool that generates tests upon merges in Java. In summary: "SAM first applies a textual merge tool to integrate the changes. In
+case no textual conflicts are reported, SAM builds the four program versions
+associated with a merge scenario— a quadruple (Base, Left, Right, Merge)
+formed by a merge commit (Merge), its parents (Left and Right), and a Base
+commit— optionally applying source code transformations that might increase
+program testability and feed the test generation tools with objects serialized
+during the execution of existing project tests." After applying four test generations tools: Evosuite, Differential Evosuite, Randoop and Randoop Clean, their own adapted version of Randoop, SAM "runs the generated tests against the four program builds, collects test failure information, interprets
+that with our interference criteria heuristics, and finally reports detected
+conflicts." ~\citep{kn:leuson2}.
+
+Nuno Castanho has proposed the tool UNSETTLE (aUtomatic uNit teSt gEneraTion for semanTic confLict dEtection) ~\citep{kn:nuno}. This tool is composed of two modules:
+
+Changes-Matcher identifies the possible presence of semantic conflicts, by first computing the changes between different versions (base and variants) and then comparing it to a set of patterns describing common sources of conflicts as a base. From this it generates a DSL file, highlighting which methods and classes should be put under test to identify the conflict.
+
+The second module is the test generator, a modified version of EvoSuite that takes the previously created artifact as an input to guide test generation.
+
+Of particular interest to us is Changes-Matcher, as this is also the starting point for our work, with the usage of a LLM over EvoSuite for test generation instead.
 
 \section{Test Generation with LLM's}
 
