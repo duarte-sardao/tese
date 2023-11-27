@@ -14,14 +14,15 @@ Several related work exists, seeking to identify methods that can more systemica
 
 \subsubsection{Automated Behaviour Change Detection}
 
-By Da Silva et al, we find an attempt at identifying cases of semantic conflict by applying automated behaviour change detection. ~\citep{kn:leuson} <-- summarize
+By Da Silva et al, we find an attempt at identifying cases of semantic conflict by applying automated behaviour change detection. ~\citep{kn:leuson} In summary, with a base commit B, a left L, right R and merge M, they observe that a generated unit test that passes in L but fails in B partially reveals the effect of the changes made in that branch. If the test then fails in M, it is likely the changes made in R interfere. To generate unit tests they used EvoSuite and Randoop.
+
+In their analysis "the test generation tools can detect interference in only four out of 15 changes on same declarations(in three merge scenarios) that in fact suffer from interference between the integrated changes.". While this is a very modest rate, it displayed no false positives and thus could likely be integrated in a testing process to prune possible merge conflicts early, or further studied and refined.
 
 
 
 \subsubsection{Unit Tests}
 
-In identifying the presence of semantic conflicts in a merge conflict, developed solutions have focused on the automatic generation of unit tests. Also by Da Silva et al ~\citep{kn:leuson2} have worked with this approach: by proposing SAM (SemAntic Merge), a tool that generates tests upon merges in Java. In summary: "SAM first applies a textual merge tool to integrate the changes. In
-case no textual conflicts are reported, SAM builds the four program versions
+In identifying the presence of semantic conflicts in a merge conflict, developed solutions have focused on the automatic generation of unit tests. Building upon their previous work, Da Silva et al ~\citep{kn:leuson2} worked with this approach: by proposing SAM (SemAntic Merge), a tool that generates tests upon merges in Java. In summary: "SAM first applies a textual merge tool to integrate the changes. In case no textual conflicts are reported, SAM builds the four program versions
 associated with a merge scenario— a quadruple (Base, Left, Right, Merge)
 formed by a merge commit (Merge), its parents (Left and Right), and a Base
 commit— optionally applying source code transformations that might increase
@@ -29,6 +30,16 @@ program testability and feed the test generation tools with objects serialized
 during the execution of existing project tests." After applying four test generations tools: Evosuite, Differential Evosuite, Randoop and Randoop Clean, their own adapted version of Randoop, SAM "runs the generated tests against the four program builds, collects test failure information, interprets
 that with our interference criteria heuristics, and finally reports detected
 conflicts." ~\citep{kn:leuson2}.
+
+With detections in 9 out of 28, it shows improvements over previous work: the authors specifically highlight the best performance when combining tests from only EvoSuite and Differential EvoSuite. In both cases, they highlight the ability of transformations (for example, making private fields public) to increase testability, showing moderate improvements in some tested scenarios: "We observe that the adoption of Testability Transformations help the tools
+to detect behavior changes. In the same direction as for semantic conflict
+detection, 20 additional changes are detected with testability executables,
+when compared to the original executables (only 69 changes detected). From
+the 19 false-negative cases observed in the experiment, we could detect
+behavior changes in 11 of them. However, the reported behavior changes are
+not caused by the changes involved in the semantic conflicts. So we can’t say
+that the tools were close in these cases."  ~\citep{kn:leuson2}.
+
 
 Nuno Castanho has proposed the tool UNSETTLE (aUtomatic uNit teSt gEneraTion for semanTic confLict dEtection) ~\citep{kn:nuno}. This tool is composed of two modules:
 
