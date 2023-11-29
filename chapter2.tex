@@ -6,7 +6,9 @@
 
 \section{Merge Conflicts and Semantic Conflicts}
 
-The study of merge techniques and conflicts has a long history, likely even predating the specific terminology itself. <- this is awful
+The study of merge techniques and conflicts has a long history, likely even predating the specific terminology itself. Thus there is a large corpus of work to explore.
+
+\subsection{Merge Conflicts}
 
 \subsection{Detecting Semantic Conflicts}
 
@@ -14,7 +16,8 @@ Several related work exists, seeking to identify methods that can more systemica
 
 \subsubsection{Automated Behaviour Change Detection}
 
-By Da Silva et al, we find an attempt at identifying cases of semantic conflict by applying automated behaviour change detection. ~\citep{kn:leuson} In summary, with a base commit B, a left L, right R and merge M, they observe that a generated unit test that passes in L but fails in B partially reveals the effect of the changes made in that branch. If the test then fails in M, it is likely the changes made in R interfere. To generate unit tests they used EvoSuite and Randoop.
+By Da Silva et al, we find an attempt at identifying cases of semantic conflict by applying automated behaviour change detection. ~\citep{kn:leuson} In summary, with a base commit B, a left L, right R and merge M, they observe that a generated unit test that passes in L but fails in B partially reveals the effect of the changes made in that branch. If the test then fails in M, it is likely the changes made in R interfere. To generate unit tests they used EvoSuite and Randoop. ~\citep{kn:randoop}
+~\citep{kn:evosuite}
 
 In their analysis "the test generation tools can detect interference in only four out of 15 changes on same declarations(in three merge scenarios) that in fact suffer from interference between the integrated changes.". While this is a very modest rate, it displayed no false positives and thus could likely be integrated in a testing process to prune possible merge conflicts early, or further studied and refined.
 
@@ -27,7 +30,7 @@ associated with a merge scenario— a quadruple (Base, Left, Right, Merge)
 formed by a merge commit (Merge), its parents (Left and Right), and a Base
 commit— optionally applying source code transformations that might increase
 program testability and feed the test generation tools with objects serialized
-during the execution of existing project tests." After applying four test generations tools: Evosuite, Differential Evosuite, Randoop and Randoop Clean, their own adapted version of Randoop, SAM "runs the generated tests against the four program builds, collects test failure information, interprets
+during the execution of existing project tests." After applying four test generations tools: Evosuite ~\citep{kn:evosuite}, Differential Evosuite, Randoop ~\citep{kn:randoop} and Randoop Clean, their own adapted version of Randoop, SAM "runs the generated tests against the four program builds, collects test failure information, interprets
 that with our interference criteria heuristics, and finally reports detected
 conflicts." ~\citep{kn:leuson2}.
 
@@ -49,7 +52,16 @@ The second module is the test generator, a modified version of EvoSuite that tak
 
 Of particular interest to us is Changes-Matcher, as this is also the starting point for our work, with the usage of a LLM over EvoSuite for test generation instead.
 
-\section{Test Generation with LLM's}
+\section{Test Generation}
+
+\subsection{Traditional Automatic Test Generation}
+
+~\citep{kn:randoop}
+~\citep{kn:evosuite}
+~\citep{kn:evosuiter}
+~\citep{kn:pynguin}
+
+\subsection{Test Generation with LLM's}
 
 The recent explosion in complexity and popularity of LLM's has suscitated developer interest in their abilities with regards to accelerate and automate software engineering. Angela Fan et al identified that by 2023 3\% of pre-prints were related to Large Language Models and 11\% of those related to their use in software engineering.\cite{kn:angela} Particularly relevant is their ability to generate tests, with an expectation that they could achieve better coverage, correctness and readability than previous techniques of automated test generation.\cite{kn:junjiewang}
 In comparison to traditional suites for automated test generation, such as EvoSuite, Palus, Randoop, and JTExpert, ChatGPT has shown, given right tuning of temperature settings, to show equivalent robustness.\cite{kn:gptunitbra}
@@ -58,9 +70,9 @@ The maximization of ChatGPT's abilities with regards to test generation has been
 
 \section{Conclusions}
 
-Aliquam erat volutpat. Nunc pede ipsum, porttitor eu, bibendum non,
-bibendum nec, nisl. Maecenas eget mauris. Nullam pulvinar. Curabitur
-rutrum commodo est. Nam sapien pede, interdum eu, accumsan ultrices,
-venenatis sit amet, tellus. Praesent ac ante bibendum enim varius
-suscipit. Donec enim. Proin nisi. Quisque libero turpis, varius ut,
-elementum vel, pulvinar sed, nunc. 
+
+The related work aids our own work in several ways: the work explored as regards unit test generation can provide show us a baseline functioning of the idea we're trying to implement. Particularly, we can use their statistics regarding percentage of conflicts found to assess whether our own solution is an improvement with regards to previous work.
+
+Crucially important too is the work of Nuno Castanho and, as previously mentioned, the developed Changes-Matcher. ~\citep{kn:nuno}.
+
+The study of works on LLM test generation should also prove useful in the future, allowing us to get a better understanding of their functioning and capabilites, as well as providing ideas and prompt generation techniques which we may have to apply in the future.
