@@ -56,10 +56,18 @@ Of particular interest to us is Changes-Matcher, as this is also the starting po
 
 \subsection{Traditional Automatic Test Generation}
 
-~\citep{kn:randoop}
-~\citep{kn:evosuite}
-~\citep{kn:evosuiter}
-~\citep{kn:pynguin}
+Traditional methods of automated test generation can be divided into random and search-based techniques. The former, being random, is simpler and faster, while the latter employs heuristics and search algorithms to fulfill some criteria, like maximizing code coverage.
+
+Randoop is one such example of random test generation. Some of the disadvantages of this technique can be mitigated with the employment of feedback-direction. ~\citep{kn:randoop} Effectively, the search space of possible random tests is pruned, by guiding the test generator towards valid cases, avoiding expansion on invalid test cases. ~\citep{kn:randoop}
+
+Evosuite implements search-based automatic test generation for Java code, aiming for tests that achieve high coverage, while being as small as possible and providing assertions. To achieve this they implement both evolutionary search to evolve the suite with respect to a coverage criterion and mutation testing to generate assertions. ~\citep{kn:evosuite}
+
+EvosuiteR extends Evosuite, aiming to provide automated generation of regression tests. Thus it takes account two versions of the software and aside from coverage, it considers state distance ("how different is the state of
+all objects in the test suite across the two versions") and control flow distance ("how
+far are the two versions from diverging"). ~\citep{kn:evosuiter}
+
+
+Similar suites have been developed, for example, for Python. ~\citep{kn:pynguin}
 
 \subsection{Test Generation with LLM's}
 
