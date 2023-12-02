@@ -4,17 +4,13 @@
 
  The following chapters introduces the two main topics dealt with in this dissertation (merge conflicts and the usage of large language models for software verification and test generation). They explore related work and how we can build on it to develop our approach.
 
-\section{Merge Conflicts and Semantic Conflicts}
+\section{Semantic Conflict Detection}
 
-The study of merge techniques and conflicts has a long history, likely even predating the specific terminology itself. Thus there is a large corpus of work to explore.
+The study of merge techniques and conflicts has a long history, likely even predating the specific terminology itself. Thus there is a large corpus of work to explore
 
-\subsection{Merge Conflicts}
+Several related works exist which seeks to develop methods that can more systemically identify adulterated behaviour arising from semantic conflicts.
 
-\subsection{Detecting Semantic Conflicts}
-
-Several related work exists, seeking to identify methods that can more systemically identify adulterated behaviour arising from semantic conflicts.
-
-\subsubsection{Automated Behaviour Change Detection}
+\subsection{Automated Behaviour Change Detection}
 
 By Da Silva et al, we find an attempt at identifying cases of semantic conflict by applying automated behaviour change detection. ~\citep{kn:leuson} In summary, with a base commit B, a left L, right R and merge M, they observe that a generated unit test that passes in L but fails in B partially reveals the effect of the changes made in that branch. If the test then fails in M, it is likely the changes made in R interfere. To generate unit tests they used EvoSuite and Randoop. ~\citep{kn:randoop}
 ~\citep{kn:evosuite}
@@ -23,7 +19,7 @@ In their analysis "the test generation tools can detect interference in only fou
 
 
 
-\subsubsection{Unit Tests}
+\subsection{Unit Tests}
 
 In identifying the presence of semantic conflicts in a merge conflict, developed solutions have focused on the automatic generation of unit tests. Building upon their previous work, Da Silva et al ~\citep{kn:leuson2} worked with this approach: by proposing SAM (SemAntic Merge), a tool that generates tests upon merges in Java. In summary: "SAM first applies a textual merge tool to integrate the changes. In case no textual conflicts are reported, SAM builds the four program versions
 associated with a merge scenario— a quadruple (Base, Left, Right, Merge)
