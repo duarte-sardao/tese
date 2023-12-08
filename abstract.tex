@@ -1,76 +1,19 @@
 \chapter*{Resumo}
 %\addcontentsline{toc}{chapter}{Resumo}
 
-Este documento ilustra o formato a usar em dissertações na \Feup.
-São dados exemplos de margens, cabeçalhos, títulos, paginação, estilos
-de índices, etc. 
-São ainda dados exemplos de formatação de citações, figuras e tabelas,
-equações, referências cruzadas, lista de referências e índices.
-Este documento não pretende exemplificar conteúdos a usar. 
-É usado o \emph{Loren Ipsum} para preencher a dissertação.
+Em desenvolvimento de software colaborativo, trabalho paralelo, desenvolvido em diferentes ramos, tem de ser frequentemente integrado. Devido às diferenças do trabalho efetuado nos diferentes ramos, conflitos surgem frequentemente. Alguns conflictos são simples de detetar e rectificar, como conflitos de integração textuais, que surgem quando diferentes desenvolvedores editeam a mesma linha em ramos diferentes: a maior parte de sistemas de controlo de versão consegue automaticamente detetar que a mesma linha foi alterada e impele o integrador a decidir numa solução: que alteração manter e que discartar.
 
-Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Etiam vitae
-quam sed mauris auctor porttitor. Mauris porta sem vitae arcu sagittis
-facilisis. Proin sodales risus sit amet arcu. Quisque eu pede eu elit
-pulvinar porttitor. Maecenas dignissim tincidunt dui. Pellentesque
-habitant morbi tristique senectus et netus et malesuada fames ac
-turpis egestas. Donec non augue sit amet nulla gravida
-rutrum. Vestibulum ante ipsum primis in faucibus orci luctus et
-ultrices posuere cubilia Curae; Nunc at nunc. Etiam egestas. 
+Entre conflitos de integração, os semânticos emergem com um tipo particularmente difícil de resolver, porque não são detetados por sistemas de controlo de versão e, não tendo erros sintáticos, compilam com sucesso. Um exemplo de um conflito semântico pode ser visto numa classe Point, que contêm um método para calcular a distância para outro Point: num cenário em que um desenvolvedor num ramo A muda o cálculo de distância (de euclideana para manhattan, por exemplo), enquanto que outro chama o método dentro de uma função de movimento num ramo B, percebemos que depois de a integração nenhum erro é levantado, mas o comportamento está desviado dos ramos originais: especificamente, o movimento comportar-se-á de maneira diferente do que esperado no ramo B.
 
-Donec malesuada pede eget nunc. Fusce porttitor felis eget mi mattis
-vestibulum. Pellentesque faucibus. Cras adipiscing dolor quis
-mi. Quisque sagittis, justo sed dapibus pharetra, lectus velit
-tincidunt eros, ac fermentum nulla velit vel sapien. Vestibulum sem
-mauris, hendrerit non, feugiat ac, varius ornare, lectus. Praesent
-urna tellus, euismod in, hendrerit sit amet, pretium vitae,
-nisi. Proin nisl sem, ultrices eget, faucibus a, feugiat non,
-purus. Etiam mi tortor, convallis quis, pharetra ut, consectetuer eu,
-orci. Vivamus aliquet. Aenean mollis fringilla erat. Vivamus mollis,
-purus at pellentesque faucibus, sapien lorem eleifend quam, mollis
-luctus mi purus in dui. Maecenas volutpat mauris eu lectus. Morbi vel
-risus et dolor bibendum malesuada. Donec feugiat tristique erat. Nam
-porta auctor mi. Nulla purus. Nam aliquam. 
+Procuramos explorar como o emergente ramo de Modelos de Linguagem Grande podem fornecer um enorme avanço na nossa abilidade de testar o comportamento alterado, introduzido ou perdido devido a conflitos semânticos.
+Especificamente, com base em trabalho anteriore que identifica prováveis conflitos e gera outputs, numa linguagem de domínio específica, analisamos a abilidade de ChatGPT para gerar testes unitários apropriados that evidenciam a presença de conflitos semânticos, com prompting adequado.
+
 
 \chapter*{Abstract}
 %\addcontentsline{toc}{chapter}{Abstract}
 
-Here goes the abstract written in English.
+In collaborative software development, parallel work done by several different branches often has to be merged. Due to the differences of work done in the difference branches, often conflicts arise. Some conflicts are easy to detect and rectify, such as textual merge conflicts, where different developers have altered the same line in different branches: most version control systems can detect that the same line has been changed and urge the merger to decide on a solution, for example, by keeping one change and discarding the other.
 
-Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed vehicula
-lorem commodo dui. Fusce mollis feugiat elit. Cum sociis natoque
-penatibus et magnis dis parturient montes, nascetur ridiculus
-mus. Donec eu quam. Aenean consectetuer odio quis nisi. Fusce molestie
-metus sed neque. Praesent nulla. Donec quis urna. Pellentesque
-hendrerit vulputate nunc. Donec id eros et leo ullamcorper
-placerat. Curabitur aliquam tellus et diam. 
+Among merge conflicts, semantic merges arise as particularly difficult to resolve, as they avoid detection by version control systems and lacking syntactic errors, compile successfully. An example of a semantic conflict can be seen in a class such as Point, containing a method to calculate the distance to another Point: in a scenario where one developer in branch A changes the distance calculation (from euclidean to manhattan, for example), while another calls the distance method for a movement function in branch B, we find that upon a merge while no errors are raised, the code exhibits altered behaviour from the original branches: specifically, the movement will be different from what was developed in branch B.
 
-Ut tortor. Morbi eget elit. Maecenas nec risus. Sed ultricies. Sed
-scelerisque libero faucibus sem. Nullam molestie leo quis
-tellus. Donec ipsum. Nulla lobortis purus pharetra turpis. Nulla
-laoreet, arcu nec hendrerit vulputate, tortor elit eleifend turpis, et
-aliquam leo metus in dolor. Praesent sed nulla. Mauris ac augue. Cras
-ac orci. Etiam sed urna eget nulla sodales venenatis. Donec faucibus
-ante eget dui. Nam magna. Suspendisse sollicitudin est et mi. 
-
-Fusce sed ipsum vel velit imperdiet dictum. Sed nisi purus, dapibus
-ut, iaculis ac, placerat id, purus. Integer aliquet elementum
-libero. Phasellus facilisis leo eget elit. Nullam nisi magna, ornare
-at, aliquet et, porta id, odio. Sed volutpat tellus consectetuer
-ligula. Phasellus turpis augue, malesuada et, placerat fringilla,
-ornare nec, eros. Class aptent taciti sociosqu ad litora torquent per
-conubia nostra, per inceptos himenaeos. Vivamus ornare quam nec sem
-mattis vulputate. Nullam porta, diam nec porta mollis, orci leo
-condimentum sapien, quis venenatis mi dolor a metus. Nullam
-mollis. Aenean metus massa, pellentesque sit amet, sagittis eget,
-tincidunt in, arcu. Vestibulum porta laoreet tortor. Nullam mollis
-elit nec justo. In nulla ligula, pellentesque sit amet, consequat sed,
-faucibus id, velit. Fusce purus. Quisque sagittis urna at quam. Ut eu
-lacus. Maecenas tortor nibh, ultricies nec, vestibulum varius, egestas
-id, sapien. 
-
-Donec hendrerit. Vivamus suscipit egestas nibh. In ornare leo ut
-massa. Donec nisi nisl, dignissim quis, faucibus a, bibendum ac,
-diam. Nam adipiscing hendrerit mi. Morbi ac nulla. Nullam id est ac
-nisi consectetuer commodo. Pellentesque aliquam massa sit amet
-tellus. Vivamus sodales aliquam leo. 
+We seek to explore how the emerging field of Large Language Models can provide a breakthrough in our ability to test for the altered, introduced and lost behaviours arising from semantic conflicts. Specifically, building upon previous work that identifies probable conflicts and generates outputs, on a domain-specific language, we analyse the ability of ChatGPT to generate appropriate unit tests that highlight the presence of semantic conflicts, given appropriate prompting.
