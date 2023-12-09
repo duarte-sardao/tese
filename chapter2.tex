@@ -61,10 +61,27 @@ Similar suites have been developed, for example, for Python ~\citep{kn:pynguin}.
 \subsection{Test Generation with LLM's}
 
 The recent explosion in complexity and popularity of LLM's has suscitated developer interest in their abilities with regards to accelerate and automate software engineering. Angela Fan et al identified that by 2023 3\% of pre-prints were related to Large Language Models and 11\% of those related to their use in software engineering.\cite{kn:angela} Particularly relevant is their ability to generate tests, with an expectation that they could achieve better coverage, correctness and readability than previous techniques of automated test generation.\cite{kn:junjiewang}
-In comparison to traditional suites for automated test generation, such as EvoSuite, Palus, Randoop, and JTExpert, ChatGPT has shown, given right tuning of temperature settings, to show equivalent robustness\cite{kn:gptunitbra}.
+In comparison to traditional suites for automated test generation, such as EvoSuite, Palus, Randoop, and JTExpert, ChatGPT has shown, given right tuning of temperature settings, to evidentiate equivalent robustness\cite{kn:gptunitbra}.
+From surveys done on the topic, we find Codex and GPT variants to be the most commonly used LLM's for this issue. \cite{kn:junjiewang}
 
 
-The maximization of ChatGPT's abilities with regards to test generation has been explored: techniques such as prompting the LLM for a explanation of what the code is intending to do \cite{kn:nuances} and feeding error messages from codes that fail to compile or execute has intended back to the LLM for correction \cite{kn:chattester} have shown an amazing capacity for test generation, given the right prompting.
+The maximization of ChatGPT's abilities with regards to test generation has been explored: techniques such as prompting the LLM for a explanation of what the code is intending to do \cite{kn:nuances} and feeding error messages from codes that fail to compile or execute as intended back to the LLM for correction \cite{kn:chattester} have shown an amazing capacity for test generation, given the right prompting.
+
+Regarding prompting, understanding how to best engineer prompts to achieve the desired output from the LLM is a particularly relevant issue. For example, in the generation of test inputs, research found “generate diverse test input” to be preferable over “generate test inputs that result in different outputs between PUT and reference versions”, as ChatGPT could not accurately identify the nuances required to correctly carry out the latter's instructions. \citep{kn:nuances}
+With unit testing generation in particular, Zhiqiang Yuan et al, in developing the ChatTester tool, highlight the importance of combining a natural language descriptor with the appropriate code context. \citep{kn:chattester}
+\begin{figure}[!h]
+    \includegraphics[width=0.86\textwidth]{figures/basicprompt.jpg}
+    \caption{Basic Prompt in ChatTester}
+    \label{fig:arch}
+\end{figure}
+\begin{figure}[!h]
+    \includegraphics[width=0.86\textwidth]{figures/inferenceprompt.jpg}
+    \caption{Inference Prompt in ChatTester}
+    \label{fig:arch}
+\end{figure}
+
+The team behind ChatUniTest presents a two step prompting system, where instructions of what is to be done and how are first provided: "Please help me generate a JUnit test for a specific Java method using JUnit5 and Mockito3. I will provide the source code for the method, relevant method signatures and fields, required dependencies, Java class containing the method, expected behavior, and involved classes in the project. Create a test that imports necessary dependencies, compiles without errors, and achieves maximum branch and line coverage. No explanations needed.". This is followed by a prompt with the information proper for the creation of the test: "The focal method is ... in the class ... , and the class information is .... The brief information of involved class ... is ..." \citep{kn:chatunitest}
+
 
 The training of LLM's in open source repositories gives cause to the fear that automatic test generation might be reliant on the model being trained in the code under test, or simply replicating existing testing suites. To assuage this, it was identified that even when generating tests for packages hosted in GitLab (which were not used to train the LLM under study, gpt3.5-turbo), they still maintained high coverage. In addition, it was found that 60.0\% of the tests had <= 40\% similarity to existing tests and 92.8\% had <= 50\%. Thus we can conclude the LLM is not simply copying tests from the training set without alteration.\citep{kn:max}.
 
