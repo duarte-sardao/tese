@@ -41,6 +41,10 @@ The second module is the test generator, a modified version of EvoSuite that tak
 
 Of particular interest to us is Changes-Matcher, as this is also the starting point for our work, with the usage of a LLM over EvoSuite for test generation instead.
 
+\subsection{Regression Testing}
+
+Ti Jao et al have proposed test oracles for program merges. Most significantly, not only do they support two and three way merges but also octopus merges. The developed tool, TOM, generates tests to identify unexpected and lost behaviour. \citep{kn:ji2022}
+
 \section{Test Generation}
 
 \subsection{Traditional Automatic Test Generation}
@@ -64,8 +68,12 @@ The recent explosion in complexity and popularity of LLM's has suscitated develo
 In comparison to traditional suites for automated test generation, such as EvoSuite, Palus, Randoop, and JTExpert, ChatGPT has shown, given right tuning of temperature settings, to evidentiate equivalent robustness\cite{kn:gptunitbra}.
 From surveys done on the topic, we find Codex and GPT variants to be the most commonly used LLM's for this issue. \cite{kn:junjiewang}
 
+While many studies suggest LLM's are competitive with traditional methods of software generation, we can also find evidence to the contrary. Specifically, testing across several LLM's, including Codex, StarCoder and GPT-3.5-Turbo, shows they fail in all regards compared to Evosuite, primarily due to the generation of non-compilable code, often due to "hallucination" of non-existent types and methods. \citep{kn:siddiq2023empirical}. Yutian Tang and others find Evosuite outperforms ChatGPT in code coverage. \citep{kn:tang2023chatgpt}. Given the novelty of the technology, it is unsurprising there is such variance in reported results and research, but it is worth investigating.
 
-The maximization of ChatGPT's abilities with regards to test generation has been explored: techniques such as prompting the LLM for a explanation of what the code is intending to do \cite{kn:nuances} and feeding error messages from codes that fail to compile or execute as intended back to the LLM for correction \cite{kn:chattester} have shown an amazing capacity for test generation, given the right prompting.
+Despite variable conclusions regarding correctness and coverage, it seems generally agreed that ChatGPT is good at generating readable code. Yutian Tang et al highlight that despite minor style errors, primarily in identation, the generated code is clear and easy to understand. \citep{kn:tang2023chatgpt}. A survey of software developers has found ChatGPT to have comparable and even better readability than manually written tests. \citep{kn:chattester}
+
+
+Given the LLM can produce unreliable results, the maximization of ChatGPT's abilities with regards to test generation has been explored: techniques such as prompting the LLM for a explanation of what the code is intending to do \cite{kn:nuances} and feeding error messages from codes that fail to compile or execute as intended back to the LLM for correction \cite{kn:chattester} have shown an amazing capacity for test generation, given the right prompting.
 
 Regarding prompting, understanding how to best engineer prompts to achieve the desired output from the LLM is a particularly relevant issue. For example, in the generation of test inputs, research found “generate diverse test input” to be preferable over “generate test inputs that result in different outputs between PUT and reference versions”, as ChatGPT could not accurately identify the nuances required to correctly carry out the latter's instructions. \citep{kn:nuances}
 With unit testing generation in particular, Zhiqiang Yuan et al, in developing the ChatTester tool, highlight the importance of combining a natural language descriptor with the appropriate code context. \citep{kn:chattester}
