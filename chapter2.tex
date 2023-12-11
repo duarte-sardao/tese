@@ -88,6 +88,12 @@ With unit testing generation in particular, Zhiqiang Yuan et al, in developing t
     \label{fig:arch}
 \end{figure}
 
+While they argue that it is little known how effective these strategies are, J.D. Zamfirescu-Pereira and others highlight several prompting strategies: give examples of desired interaction, write prompts that look somewhat like code and repeat yourself \citep{kn:johnny}. They note difficulties participants have in prompt generation, such as avoiding giving examples due to fear the LLM will simply replicate it, difficulty in searching online for help and adapting existing solutions and overgeneralizing from a single example \citep{kn:johnny}.
+
+In prompting we can distinguish a few types of prompts: zero-shot, where instructions are simply given, few-shot, where examples of inputs and outputs are given and few-shot with preamble, combining the previous two examples to give both a preamble instructing the LLM on what to achieve, follow by examples of inputs and outputs \citep{kn:promptprofiannaca}
+
+Given the natural language aspect of LLM prompting is one the features that most distinguishes it from classical programming, it is worth exploring methods of systematizing it, making it work more like code. It is with this objective that LMQL (Language Model Query Language) was developed, introducing a scripting based query language \citep{kn:lmql}. Evidence shows it reduces computing costs by up to 80\% \citep{kn:lmql}.
+
 The team behind ChatUniTest presents a two step prompting system, where instructions of what is to be done and how are first provided: "Please help me generate a JUnit test for a specific Java method using JUnit5 and Mockito3. I will provide the source code for the method, relevant method signatures and fields, required dependencies, Java class containing the method, expected behavior, and involved classes in the project. Create a test that imports necessary dependencies, compiles without errors, and achieves maximum branch and line coverage. No explanations needed.". This is followed by a prompt with the information proper for the creation of the test: "The focal method is ... in the class ... , and the class information is .... The brief information of involved class ... is ..." \citep{kn:chatunitest}
 
 
