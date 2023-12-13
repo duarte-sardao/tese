@@ -40,6 +40,46 @@ Changes-Matcher identifies the possible presence of semantic conflicts, by first
 The second module is the test generator, a modified version of EvoSuite that takes the previously created artifact as an input to guide test generation.
 
 Of particular interest to us is Changes-Matcher, as this is also the starting point for our work, with the usage of a LLM over EvoSuite for test generation instead.
+\begin{table}[!h]
+\setlength\extrarowheight{2pt}
+\begin{tabularx}{\textwidth}{|l|l|X|}
+ \hline
+ Group & ID & Description \\ [0.5ex] 
+ \hline\hline
+ Change Method  & CM & Update two different dependencies of a method or update one method and concurrently update one of its
+dependencies \\ 
+ \hline
+ Change Method
+and Field & CMF & Change the type of one field to a type that does not
+override a method while a dependency for the method
+is added to a method that reads the field
+ \\
+ \hline
+ Dependency
+Based & DB & Update a method while a dependency to it is added
+concurrently \\
+ \hline
+ Field Hiding & FH & Hide the field of a superclass in a subclass and concurrently add a method in the subclass that writes the
+super field
+ \\
+ \hline
+ Overload by Access Change & OAC & Change the visibility of an overloaded method and
+concurrently add a dependency to it \\ 
+ \hline
+ Overload by Addition & OA & Overload a method and concurrently add a dependency to it \\  
+ \hline
+ Parallel Changes & P & Concurrent changes to the same entity, i.e., method
+(PM), constructor, (PC) or field (PF) \\ 
+ \hline
+ Remove Overriding & RO & Remove the override of a method and concurrently
+add a dependency to it \\  
+  \hline
+ Unexpected Overriding & UO & Override a method in a subclass while a dependency to it is added concurrently (AO) or override an
+Object-inherited method and concurrently add a dependency to it (UO) \\ [1ex] 
+ \hline
+\end{tabularx}
+\caption{\label{pattern-table}Semantic Conflict Patterns identified by Changes-Matcher \citep{kn:nuno}.}
+\end{table}
 
 \subsection{Regression Testing}
 
@@ -79,12 +119,12 @@ Regarding prompting, understanding how to best engineer prompts to achieve the d
 With unit testing generation in particular, Zhiqiang Yuan et al, in developing the ChatTester tool, highlight the importance of combining a natural language descriptor with the appropriate code context. \citep{kn:chattester}
 \begin{figure}[!h]
     \includegraphics[width=0.86\textwidth]{figures/basicprompt.jpg}
-    \caption{Basic Prompt in ChatTester}
+    \caption{Basic Prompt in ChatTester \citep{kn:chattester}.}
     \label{fig:arch}
 \end{figure}
 \begin{figure}[!h]
     \includegraphics[width=0.86\textwidth]{figures/inferenceprompt.jpg}
-    \caption{Inference Prompt in ChatTester}
+    \caption{Inference Prompt in ChatTester \citep{kn:chattester}.}
     \label{fig:arch}
 \end{figure}
 
