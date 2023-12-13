@@ -29,14 +29,14 @@ Most VCS's, such as Git, implement textual merge tools (ergo, they can only iden
 Semantic conflicts remain as both undetected by VCS's and hard to detect after merges. Thus, identifying methods to automatically identify and highlight semantic conflicts in merge commits has been a persistent problem and a source of study in this field~\citep{kn:nuno} ~\citep{kn:leuson} ~\citep{kn:leuson2}.
 
 
-A motivating example of a merge conflict can be seen in a class ``Cart'', for a shopping app. Initially having just a method total\_cost that calculates the total cost given a percentage of discount, it is modified in branch A: a additional parameter for tax and the method is overloaded with another implementation that just calculates tax and not discount. Then, in branch B, a checkout method is added, which calls the original total\_cost method. After merging, no error appears, but the checkout function will be running the total\_cost tax method, expecting the calculation of a discount.
+A motivating example of a merge conflict can be seen in a class ``Cart'', for a shopping app. Initially having just a method total\_cost that calculates the total cost given a percentage of discount, it is modified in branch A: a additional parameter for tax and the method is overloaded with another implementation that just calculates tax and not discount. Then, in branch B, a checkout method is added, which calls the original total\_cost method. After merging, no error appears, but the checkout function will be running the total\_cost tax method, expecting the calculation of a discount. The example is shown in figure \ref{fig:conflict}.
 
 From here the conflict arises, as after merging the behaviour is altered: the checkout function which would calculate the cost with a discount, now instead uses the value given for discount to calculate tax. To identify this conflict, we would need to generate a test that would find evidence of this alteration: in this case finding that the checkout function is charging more money than expected.
 
 \begin{figure}[t]
     \includegraphics[width=0.86\textwidth]{conflict}
-    \caption{Model of the presented conflict}
-    \label{fig:arch}
+    \caption{Model of the motivating example conflict, with Base, Branch A, Branch B and Merge versions of the code.}
+    \label{fig:conflict}
 \end{figure}
 
 \section{Goal} \label{sec:goal}
