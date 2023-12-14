@@ -23,14 +23,8 @@ In their analysis they found that the developed tool only detected interference 
 
  Building upon their previous work, Da Silva et al ~\citep{kn:leuson2} proposed SAM (SemAntic Merge), a tool that generates tests upon merges in Java. It can be found at \url{https://github.com/leusonmario/SAM}. In summary, SAM initially does a simple textual merge to integrate the difference branches while identifying possible textual conflicts. After merging four program versions are built, to fully describe the merge scenario under test: Base, Left, Right, Merge. Source code transformations to improve testability are also part of the process, but optional. Finally, the test generation tools are fed objects serialized during the execution of existing test suites. After applying four test generations tools: EvoSuite ~\citep{kn:evosuite}, Differential EvoSuite, Randoop ~\citep{kn:randoop} and Randoop Clean, their own adapted version of Randoop, SAM executes the generated tests against the four versions of the program, identifies which tests failed, interpreting it with pre-defined interference criteria heuristics and from there reports conflicts, if detected ~\citep{kn:leuson2}.
 
-With detections in 9 out of 28, it shows improvements over previous work: the authors specifically highlight the best performance when combining tests from only EvoSuite and Differential EvoSuite. In both cases, they highlight the ability of transformations (for example, making private fields public) to increase testability, showing moderate improvements in some tested scenarios: ``We observe that the adoption of Testability Transformations help the tools
-to detect behavior changes. In the same direction as for semantic conflict
-detection, 20 additional changes are detected with testability executables,
-when compared to the original executables (only 69 changes detected). From
-the 19 false-negative cases observed in the experiment, we could detect
-behavior changes in 11 of them. However, the reported behavior changes are
-not caused by the changes involved in the semantic conflicts. So we can’t say
-that the tools were close in these cases.''  ~\citep{kn:leuson2}.
+Detecting 9 out of 28 conflicts, it shows improvements over previous work: the authors specifically highlight the best performance when combining tests from only EvoSuite and Differential EvoSuite. Regarding behaviour changes specifically, 89 are found. 
+In both cases, they highlight the ability of transformations (for example, making private fields public) to increase testability, showing moderate improvements in some tested scenarios, with 20 additional changes being detected and 3 additional conflicts detected (Differential Evosuite detects 3, each other generator detect one conflict each).  Regarding the 19 false-negatives, 11 of them showed behaviour changes, which were not caused by the changes due to the semantic conflicts.  ~\citep{kn:leuson2}.
 
 
 Nuno Castanho has proposed the tool UNSETTLE (aUtomatic uNit teSt gEneraTion for semanTic confLict dEtection) ~\citep{kn:nuno}. This tool, which can be found at \url{https://github.com/conflito/unsettle}, is composed of two modules:
@@ -83,7 +77,12 @@ Object-inherited method and concurrently add a dependency to it (UO) \\ [1ex]
 \end{table}
 
 
-Ti Jao et al have proposed test oracles for program merges. Most significantly, not only do they support two and three way merges but also octopus merges. The developed tool, TOM, generates tests to identify unexpected and lost behaviour \citep{kn:ji2022}.
+Ti Jao et al have proposed test oracles for program merges. Most significantly, not only do they support two and three way merges but also octopus merges. The developed tool, TOM, generates tests to identify unexpected and lost behaviour. For this, they implement diff-line as a criteria, guiding the tests to cover lines that have been modified between the different program versions, generating different assertions for different versions. Stability checking is done: the test is rerun five times before being handed to the developers. The tool identifies 45 three-way and 87 octopus merges, from a universe of 389 of each~\citep{kn:ji2022}.
+
+
+% 12 out of 28 SAM
+% 132 out of 778 TOM
+% changes matcher always finds it, tests are 6 out of 17
 
 \section{Test Generation}
 
@@ -98,6 +97,8 @@ EvoSuite implements search-based automatic test generation for Java code, aiming
 EvoSuiteR extends EvoSuite, aiming to provide automated generation of regression tests. Thus it takes account two versions of the software and aside from coverage, it considers state distance (``how different is the state of
 all objects in the test suite across the two versions'') and control flow distance (``how
 far are the two versions from diverging'')~\citep{kn:evosuiter}.
+
+The symbolic execution technique, while introduced in the 70s has been more explored as computing power increased. It executes programs with symbolic rather than concrete values: assignments are represented as functions and conditionals as constraints. From this, we can identify specific paths and branches. This can be done statically, we symbolic execution techniques first used to derive all paths or dynamically, with symbolic execution being updated throughout execution, allowing us to find alternatives to the current branch~\citep{kn:symbolicexec}.
 
 
 Similar suites have been developed, for example, for Python ~\citep{kn:pynguin}.
