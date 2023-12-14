@@ -10,7 +10,20 @@ Several related works exist which seeks to develop methods that can more systemi
 
 \subsection{Detection without Testing}
 
+Several solutions exists which attempt to identify the presence of semantic conflicts without generating unit tests. An example of this rests on verifying overriding assignment: if a merge was successful where the same variable was assigned in both A and B, it's likely this is unintentional and there is a conflict. Thus, the solution checks if such a situation happens and reports if so to the developers~\citep{kn:assigne}.
 
+
+Static analysis solutions have been considered, implementing the previous overriding assignment checks, inter procedural data flow and program dependence graph, which try to find data and control flows between the changes done by both developers, as well as confluence, which checks if there is data and control flows from both branches that flow into some common path. This static analysis shows much better F1 score and recall than dynamic analysis techniques, but much worse precision~\citep{kn:staticanal}.
+
+
+The tool DeltaImpactFinder compares the impact of a change in the origin and destination branches, calculating the difference, the ``Delta-Impact''. To measure impact, dependencies are mapped out: the assumption is that when an entity is changed it's dependencies are impacted. A semantic conflict is identified if there are missing or extra dependencies and this can be identified with the calculation of the delta-impact~\citep{kn:deltaimpact}.
+
+The notion of semantic conflict-freedom is seen as a sufficient condition for correctness. The SafeMerge~\citep{kn:safemerge} tool seeks to verify the presence of semantic conflict-freedom in the merge process, avoiding the creation of semantic conflicts. Semantic conflict-freedom can be defined, for branches O (Origin), A, B and M (Merge), for all i inputs:
+\begin{itemize}
+  \item If out(O,i) $\neq$ out(A,i), then out(M,i) = out(A,i)
+  \item If out(O,i) $\neq$ out(B,i), then out(M,i) = out(B,i)
+  \item Otherwise out(O,i) = out(A,i) = out(B,i) = out(M,i)
+\end{itemize}
 
 \subsection{Generation of Unit Tests}
 
