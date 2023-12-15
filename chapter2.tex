@@ -90,7 +90,27 @@ Object-inherited method and concurrently add a dependency to it (UO) \\ [1ex]
 \end{table}
 
 
-Ti Jao et al have proposed test oracles for program merges. Most significantly, not only do they support two and three way merges but also octopus merges. The developed tool, TOM, generates tests to identify unexpected and lost behaviour. For this, they implement diff-line as a criteria, guiding the tests to cover lines that have been modified between the different program versions, generating different assertions for different versions. Stability checking is done: the test is rerun five times before being handed to the developers. The tool identifies 45 three-way and 87 octopus merges, from a universe of 389 of each~\citep{kn:ji2022}.
+Ti Jao et al have proposed test oracles for program merges. Most significantly, not only do they support two and three way merges but also octopus merges. The developed tool, TOM (testing on merges), generates tests to identify unexpected and lost behaviour. For this, they implement diff-line as a criteria, guiding the tests to cover lines that have been modified between the different program versions, generating different assertions for different versions. Stability checking is done: the test is rerun five times before being handed to the developers. The tool identifies 45 three-way and 87 octopus merges, from a universe of 389 of each~\citep{kn:ji2022}.
+
+Table \ref{table:tool-comparison} shows a comparison between some key features of the presented solutions.
+
+
+\begin{table}[!h]
+\setlength\extrarowheight{2pt}
+\begin{tabularx}{\textwidth}{|p{0.15\textwidth} | 
+p{0.20\textwidth} | p{0.10\textwidth} | p{0.10\textwidth}  | p{0.305\textwidth}|}
+ \hline
+ Tool & Recall & Octopus Merge Support & Publicly Available & Test Generator \\ [0.5ex] 
+ \hline\hline
+  SAM & 43\% \newline (12 out of 28) & No & Yes & EvoSuite, Differential EvoSuite, Randoop, Randoop Clean \\ 
+ \hline
+  UNSETTLE & 35\% \newline (6 out of 17) & No & Yes & EvoSuite \\
+ \hline
+   TOM & 17\% \newline (132 out of 778) & Yes & No & EvoSuite \\ [1ex] 
+ \hline
+\end{tabularx}
+\caption{\label{table:tool-comparison}Comparison of SAM, UNSETTLE and TOM tools \citep{kn:leuson2}\citep{kn:nuno}\citep{kn:ji2022}}
+\end{table}
 
 
 % 12 out of 28 SAM
