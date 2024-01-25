@@ -55,19 +55,29 @@ The last prompt given, highlighting the *semantic* aspect of the merge conflict,
     \label{fig:semconf}
 \end{figure}
 
+Prompting in real-world examples, or more complex fabricated examples, has produced far worse results. Common issues are confusion between textual and semantic merges, which can be mitigated by clear explanation of what a semantic merge is; hallucinations of features not present in the code or hallucinations of changes where changes were not made; lack of focus on the methods where conflict is evident, despite reiterations; loss of focus when prompt has to be split into several messages. When the tools do understand the semantic conflict, the best description they can give is to point out the changes made between branches followed by the suggestion that there may be a conflict there. No succesfull texts have been generated.
+Experiments with other LLMs, such as Bing AI or Bard, yeld similar problems, suggesting an altered approach may have to be taken.
+
 
 
 \section{Future Work}
 
 \subsection{Development Plan and Tool Functioning}
 
-Development of the solution will go through several stages. Firstly, the process which has already been in progress, is the initial evaluation of LLM's and prompt techniques. After acquiring the list of subjects to test and deciding on the LLM, we can systematize this to develop the prototype solution. From here we start developing a tool that can automatically generate a prompt, get a test from the LLM and then run it. This prototype tool can then be further augmented, by applying corrections for tests that may fail to compile. Figure \ref{fig:tool} details the expected functioning of the tool once completed.
+Development of the solution will go through several stages. Firstly, the process which has already been in progress, is the initial evaluation of LLM's and prompt techniques. After acquiring the list of subjects to test and deciding on the LLM, we can systematize this to develop the prototype solution. From here we start developing a tool that can automatically generate a prompt, get a test from the LLM and then run it. This prototype tool can then be further augmented, by applying corrections for tests that may fail to compile. Figure \ref{fig:tool} details the expected functioning of the tool once completed. A final period of evaluation and observations will compare our results to previous work and reflect on possible further improvements.
 
 \begin{figure}
     \centering
     \includegraphics[width=1\linewidth]{figures/tool.png}
     \caption{Functioning pipeline of proposed tool}
     \label{fig:tool}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{figures/gantt.jpg}
+    \caption{Gantt diagram of working plan}
+    \label{fig:gantt}
 \end{figure}
 
 \subsection{Subjects}
