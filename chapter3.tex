@@ -55,8 +55,19 @@ The last prompt given, highlighting the *semantic* aspect of the merge conflict,
     \label{fig:semconf}
 \end{figure}
 
-Prompting in real-world examples, or more complex fabricated examples, has produced far worse results. Common issues are confusion between textual and semantic merges, which can be mitigated by clear explanation of what a semantic merge is; hallucinations of features not present in the code or hallucinations of changes where changes were not made; lack of focus on the methods where conflict is evident, despite reiterations; loss of focus when prompt has to be split into several messages. When the tools do understand the semantic conflict, the best description they can give is to point out the changes made between branches followed by the suggestion that there may be a conflict there. No succesfull texts have been generated.
-Experiments with other LLMs, such as Bing AI or Bard, yeld similar problems, suggesting an altered approach may have to be taken.
+In simple fabricated scenarios, where simple conflicts were added to existing software solutions, ChatGPT showed ability to identify and describe the semantic conflict. Despite this, test generation remained complicated and few of the successful identification of semantic conflicts yielded working tests. The final prompt follows.
+
+\begin{quote}
+Generate a Junit unit test to identify this semantic conflict, knowing what you do now. The test must compile without errors and require no further alterations. It should require no further dependencies and import all classes correctly.
+\end{quote}
+
+While adapted to avoid common pitfalls, the tests generate still suffered from basic issues such as missing imports, which can be mitigated by prompting the LLM for correction automatically. More complex issues of implementation, such as calling the base function instead of dependent, wrong usage of construction and function returns, parameter types or unnecessary mocks. Further, when prompting for correction, the LLM often explains that the developer should correct this, thus further work needs to be done to ensure the tool does all the work itself.
+
+Prompting in real-world examples, or more complex fabricated examples, has produced far worse results. Common issues are confusion between textual and semantic merges, which can be mitigated by clear explanation of what a semantic merge is; hallucinations of features not present in the code or hallucinations of changes where changes were not made; lack of focus on the methods where conflict is evident, despite reiterations; loss of focus when prompt has to be split into several messages. When the tools do understand the semantic conflict, the best description they can give is to point out the changes made between branches followed by the suggestion that there may be a conflict there.
+Part of the difference between real-world examples and fabricated scenarios may come down to the information given. The fabricated scenarios, based on work of Nuno Castanho \cite{kn:nuno}, were accompanied with a description of the specific semantic conflict present. Thus it is possible collecting and offering that information with real-world scenarios may improve the ability of LLMs in this regard.
+
+No successful tests have been generated for real world scenarios.
+Experiments with other LLMs, such as Bing AI or Bard, yield similar problems, suggesting an altered approach may have to be taken.
 
 
 
