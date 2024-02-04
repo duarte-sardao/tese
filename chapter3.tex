@@ -23,23 +23,37 @@ For this, the LLM simply took one version and created tests taking it as correct
 Other tests involved first asking for an explanation if there was a merge conflict there, before asking for a test
 
 \begin{itemize}
-  \item We have done a merge on a piece of code code.
+  \item We have done a merge on a piece of code.
 Before the merge, the code was: [code]
+
 In the branch A it was changed to: [code]
+
 In the branch B it was changed to: [code]
+
 After the merge it was: [code]
+
 Do you believe there could be a merge conflict here? Where? Explain why.
-  \item We have done a merge on a piece of code code.
+  \item We have done a merge on a piece of code.
+  
 Before the merge, the code was: [code]
+
 In the branch A it was changed to: [code]
+
 In the branch B it was changed to: [code]
+
 After the merge it was: [code]
+
 Do you believe there could be a merge conflict here? Where? Explain why. Pay attention to both additions and modifications.
   \item We have done a merge on a piece of code code.
+  
 Before the merge, the code was: [code]
+
 In the branch A it was changed to: [code]
+
 In the branch B it was changed to: [code]
+
 After the merge it was: [code]
+
 Do you believe there could be a *semantic* merge conflict here? Where? Explain why. Pay attention to both additions and modifications.
 
 \end{itemize}
@@ -63,11 +77,33 @@ Generate a Junit unit test to identify this semantic conflict, knowing what you 
 
 While adapted to avoid common pitfalls, the tests generate still suffered from basic issues such as missing imports, which can be mitigated by prompting the LLM for correction automatically. More complex issues of implementation, such as calling the base function instead of dependent, wrong usage of construction and function returns, parameter types or unnecessary mocks. Further, when prompting for correction, the LLM often explains that the developer should correct this, thus further work needs to be done to ensure the tool does all the work itself.
 
-Prompting in real-world examples, or more complex fabricated examples, has produced far worse results. Common issues are confusion between textual and semantic merges, which can be mitigated by clear explanation of what a semantic merge is; hallucinations of features not present in the code or hallucinations of changes where changes were not made; lack of focus on the methods where conflict is evident, despite reiterations; loss of focus when prompt has to be split into several messages. When the tools do understand the semantic conflict, the best description they can give is to point out the changes made between branches followed by the suggestion that there may be a conflict there.
+Prompting in real-world examples, or more complex fabricated examples, has produced far worse results. Several refinements were made to the prompts, most significantly: the usage of "git diff" to highlight the specific changes in branch A and branch B, the explanation of the conflict present and the specification of the target method where the conflict is evident. These modifications were largely unsuccessful and did not lead to identification of any conflicts.
+
+We also had to reckon with size limits for messages. Thus, we started with an explanatory prompt and then feed the information step by step. However, it remained crucial to remind the LLM of the goal in the last message.
+
+\begin{quote}
+We have done a merge on a piece of software and introduced a semantic conflict of types: "Update two different dependencies of a method or update one method and concurrently update one of its dependencies" and "Concurrent changes to the same method". I will now show the base commit, the diff in branch A, the diff in branch B, and the final merge version in 4 separate messages. At the end I want you to explain why and where the semantic conflict is present.
+\end{quote}
+
+Common issues are confusion between textual and semantic merges, which can be mitigated by clear explanation of what a semantic merge is; hallucinations of features not present in the code or hallucinations of changes where changes were not made; lack of focus on the methods where conflict is evident, despite reiterations; loss of focus when prompt has to be split into several messages. When the tools do understand the semantic conflict, the best description they can give is to point out the changes made between branches followed by the suggestion that there may be a conflict there.
 Part of the difference between real-world examples and fabricated scenarios may come down to the information given. The fabricated scenarios, based on work of Nuno Castanho \cite{kn:nuno}, were accompanied with a description of the specific semantic conflict present. Thus it is possible collecting and offering that information with real-world scenarios may improve the ability of LLMs in this regard.
 
+Another factor in consideration is the issue of dependencies, as so far testing had focused on just a unitary class. Given that semantic conflicts can involve interactions between classes and subclasses or other dependencies, it is relevant to provide further information. Initial tests just added one dependency, wether by calling a class methods or due to a inheritance relationship. An example, with the addition of an illustrative example of a semantic conflict follows.
+
+\begin{quote}
+We have done a merge on a piece of software and introduced a semantic conflict of type Parallel Changes in Method.
+
+Semantic conflicts occur when concurrent and syntactic-correct changes in different regions of a source file or different files cause the software system to misbehave. For example, suppose there is a Java class `Point` with a method `distance()` that computes the Euclidean distance of a Point to the origin and Bob decides to modify `distance()` so it computes instead the Manhattan distance. At the same time, Alice, not aware of Bob's changes, creates a new method `move()` that uses `distance()` to calculate the Euclidean distance. Then, the changes of both developers are merged. As Bob and Alice did not modify the same lines of code, there is no textual conflict. There is neither a syntactic conflict as the merged code still compiles. However, the program now has an unexpected behaviour. The `move()` method introduced by Alice no longer moves a Point an Euclidean distance (as Alice was expecting) but rather moves a Manhattan distance
+
+The affected declaration is copyWithDefaults().
+
+A first message will detail the class before the merge, the diffs for both branches and the class after the merge. A second message will have a dependent class, whose methods indirectly call copyWithDefaults(). After I send these next two classes, identify and describe the semantic conflict.    
+\end{quote}
+
+A more complex evolution on this idea consisted of providing textual representations of UML graphs, such as plantUML structure graphs. These however proved to be complex in their own regard as they often induced the LLM to "forget" previous information and its' goal, possibly due to their large size.
+
 No successful tests have been generated for real world scenarios.
-Experiments with other LLMs, such as Bing AI or Bard, yield similar problems, suggesting an altered approach may have to be taken.
+Experiments with other LLMs, such as Bing AI or Bard, yield similar problems and new ones, such as more stringent size limits, suggesting an altered approach may have to be taken.
 
 
 
