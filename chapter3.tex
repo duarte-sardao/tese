@@ -1,6 +1,18 @@
-\chapter{Preliminary and Future Work}\label{chap:chap3}
+\chapter{Methodology and Work}\label{chap:chap3}
 
-\section{Preliminary Work}
+\section{Tool and Subject Selection}
+
+\subsection{Subjects}
+
+To assess the validity of a developed solution, a collection of subjects to test must be collected. While several previous work has compiled collections of merge commits with semantic conflicts, the collection done by Nuno Castanho \cite{kn:nuno} is particularly useful, being publicly available, closely related to our own work, and also allowing us to draw direct comparisons. Most importantly, it aggregates merge instances from both Silva et al \cite{kn:leuson} and Sousa et al \cite{kn:safemerge}, thus being more extensive.
+
+\subsection{LLM's}
+
+While preliminary work sought to explore ChatGPT and Llama (both CodeLlama and Llama 2), hardware constraints meant we were unable to explore Llama. ChatGPT, being hosted online for free, did not suffer from such issues, but future problems may arise, most notably the possibility of the size limit for messages interfering in our work. Going forward we will further explore how to mitigate these and possible alternatives.
+
+\section{Evaluation of ChatGPT's capabilities}
+
+\subsection{Fabricated Examples}
 
 In the initial step of work, we superficially explored ChatGPT's ability to generate tests for an example conflict of Point, where a distance method is altered from euclidean to manhattan in one branch and in the other branch, a move method is changed from using the value 1 for x and y movement to using the result of the distance calculation.
 
@@ -77,9 +89,11 @@ Generate a Junit unit test to identify this semantic conflict, knowing what you 
 
 While adapted to avoid common pitfalls, the tests generate still suffered from basic issues such as missing imports, which can be mitigated by prompting the LLM for correction automatically. More complex issues of implementation, such as calling the base function instead of dependent, wrong usage of construction and function returns, parameter types or unnecessary mocks. Further, when prompting for correction, the LLM often explains that the developer should correct this, thus further work needs to be done to ensure the tool does all the work itself.
 
+\subsection{Real-World Merge Conflicts}
+
 Prompting in real-world examples, or more complex fabricated examples, has produced far worse results. Several refinements were made to the prompts, most significantly: the usage of "git diff" to highlight the specific changes in branch A and branch B, the explanation of the conflict present and the specification of the target method where the conflict is evident. These modifications were largely unsuccessful and did not lead to identification of any conflicts.
 
-We also had to reckon with size limits for messages. Thus, we started with an explanatory prompt and then feed the information step by step. However, it remained crucial to remind the LLM of the goal in the last message.
+We also had to reckon with size limits for messages. Thus, when necessary, we started with an explanatory prompt and then fed the information step by step. However, it remained crucial to remind the LLM of the goal in the last message.
 
 \begin{quote}
 We have done a merge on a piece of software and introduced a semantic conflict of types: "Update two different dependencies of a method or update one method and concurrently update one of its dependencies" and "Concurrent changes to the same method". I will now show the base commit, the diff in branch A, the diff in branch B, and the final merge version in 4 separate messages. At the end I want you to explain why and where the semantic conflict is present.
@@ -88,7 +102,7 @@ We have done a merge on a piece of software and introduced a semantic conflict o
 Common issues are confusion between textual and semantic merges, which can be mitigated by clear explanation of what a semantic merge is; hallucinations of features not present in the code or hallucinations of changes where changes were not made; lack of focus on the methods where conflict is evident, despite reiterations; loss of focus when prompt has to be split into several messages. When the tools do understand the semantic conflict, the best description they can give is to point out the changes made between branches followed by the suggestion that there may be a conflict there.
 Part of the difference between real-world examples and fabricated scenarios may come down to the information given. The fabricated scenarios, based on work of Nuno Castanho \cite{kn:nuno}, were accompanied with a description of the specific semantic conflict present. Thus it is possible collecting and offering that information with real-world scenarios may improve the ability of LLMs in this regard.
 
-Another factor in consideration is the issue of dependencies, as so far testing had focused on just a unitary class. Given that semantic conflicts can involve interactions between classes and subclasses or other dependencies, it is relevant to provide further information. Initial tests just added one dependency, wether by calling a class methods or due to a inheritance relationship. An example, with the addition of an illustrative example of a semantic conflict follows.
+Another factor in consideration is the issue of dependencies, as so far testing had focused on just a unitary class. Given that semantic conflicts can involve interactions between classes and subclasses or other dependencies, it is relevant to provide further information. Initial tests just added one dependency, whether by calling a class methods or due to a inheritance relationship. An example, with the addition of an illustrative example of a semantic conflict follows.
 
 \begin{quote}
 We have done a merge on a piece of software and introduced a semantic conflict of type Parallel Changes in Method.
@@ -100,7 +114,21 @@ The affected declaration is copyWithDefaults().
 A first message will detail the class before the merge, the diffs for both branches and the class after the merge. A second message will have a dependent class, whose methods indirectly call copyWithDefaults(). After I send these next two classes, identify and describe the semantic conflict.    
 \end{quote}
 
-A more complex evolution on this idea consisted of providing textual representations of UML graphs, such as plantUML structure graphs. These however proved to be complex in their own regard as they often induced the LLM to "forget" previous information and its' goal, possibly due to their large size.
+A more complex evolution on this idea consisted of providing textual representations of UML graphs, such as plantUML structure graphs. These however proved to be complex in their own regard as they often induced the LLM to "forget" previous information and its' goal, possibly due to their large size. Through some effort, we could get the LLM to recognize both the diagram and the class information, namely, by offering the diagram first.
+
+\begin{quote}
+We have done a merge on a piece of software. In this, we introduced a semantic conflict on the method dominates(State| State) of the class OpenTripPlanner. In a first message I will send a call diagram, in plantUML format. In a second message I will send the original class, the differences in the branches and the merged class.  At the end you must identify and explain the semantic conflict.
+\end{quote}
+
+However, it was particularly necessary to frequently refocus and concentrate the LLM. For example, after sending the diff and class information, reminding:
+
+\begin{quote}
+Explain why and where the semantic conflict is present, taking into account all the information provided in the last 2 messages. As mentioned before, focus on dominates(State| State). Make sure to mention information from the call diagram, if it is relevant to understanding the conflict.
+\end{quote}
+
+In the end, we were able to get the LLm to both recognize the merge information and the call diagram focused on the affected declaration and obtain a correct description of both the meaning of the diagram and the changes made in the merge. This however did not entail any improved description of the conflict, for all the cases tested.
+
+Underscoring these experiments with real world test cases is an overlying issue: to properly identify a semantic conflict, we may have to analyze and take into account a large amount of data across several components of the software, while at the same time focusing on the specific components that were changed. While this is natural to a human, there is no clear way to select which information to feed and which to not in the LLM prompt: while a wider breadth of information may be necessary to identify the conflict, it is extremely likely to just induce further confusion and lead ChatGPT to focus on the wrong thing, or confuse different parts of code or even lose track of the task at hand as mentioned before.
 
 No successful tests have been generated for real world scenarios.
 Experiments with other LLMs, such as Bing AI or Bard, yield similar problems and new ones, such as more stringent size limits, suggesting an altered approach may have to be taken.
@@ -126,11 +154,3 @@ Development of the solution will go through several stages. Firstly, the process
     \caption{Gantt diagram of working plan}
     \label{fig:gantt}
 \end{figure}
-
-\subsection{Subjects}
-
-To assess the validity of a developed solution, a collection of subjects to test must be collected. While several previous work has compiled collections of merge commits with semantic conflicts, the collection done by Nuno Castanho \cite{kn:nuno} is particularly useful, being publicly available, closely related to our own work, and also allowing us to draw direct comparisons. Most importantly, it aggregates merge instances from both Silva et al \cite{kn:leuson} and Sousa et al \cite{kn:safemerge}, thus being more extensive.
-
-\subsection{LLM's}
-
-While preliminary work sought to explore ChatGPT and Llama (both CodeLlama and Llama 2), hardware constraints meant we were unable to explore Llama. ChatGPT, being hosted online for free, did not suffer from such issues, but future problems may arise, most notably the possibility of the size limit for messages interfering in our work. Going forward we will further explore how to mitigate these and possible alternatives.
