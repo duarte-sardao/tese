@@ -4,11 +4,11 @@
 
 \subsection{Subjects}
 
-To assess the validity of a developed solution, a collection of subjects to test must be collected. While several previous work has compiled collections of merge commits with semantic conflicts, the collection done by Nuno Castanho \cite{kn:nuno} is particularly useful, being publicly available, closely related to our own work, and also allowing us to draw direct comparisons. Most importantly, it aggregates merge instances from both Silva et al \cite{kn:leuson} and Sousa et al \cite{kn:safemerge}, thus being more extensive.
+To assess the validity of a developed solution, a collection of subjects to test must be collected. While several previous work has compiled collections of merge commits with semantic conflicts, the collection done by Nuno Castanho \cite{kn:nuno} is particularly useful, being publicly available, closely related to our own work, and also allowing us to draw direct comparisons. Most importantly, it aggregates merge instances from both Silva et al \cite{kn:leuson} and Sousa et al \cite{kn:safemerge}, while also providing valuable information, due to the work developed, such as the specific type of conflict present and whether it was detected and correctly tested by UNSETTLE (providing us with a "base truth"). Furthermore, it has compiled a set of fabricated conflicts, which provide simpler isolated examples that can aid us as they should be easier to detect and test.
 
 \subsection{LLM's}
 
-While preliminary work sought to explore ChatGPT and Llama (both CodeLlama and Llama 2), hardware constraints meant we were unable to explore Llama. ChatGPT, being hosted online for free, did not suffer from such issues, but future problems may arise, most notably the possibility of the size limit for messages interfering in our work. Going forward we will further explore how to mitigate these and possible alternatives.
+While preliminary work sought to explore ChatGPT and Llama (both CodeLlama and Llama 2), hardware constraints meant we were unable to explore Llama. Bing AI and Bard were also considered, but they were problematic due to very stringent message size limits, in the case of Bard, and generally worse results: Bing AI, for example, could not wait for all the information to be sent, if split in more than one message and thus generated confused responses. ChatGPT, being hosted online for free and with generous message size limits, proved to be the most reliable option. Despite this, many capabalities that could prove invaluable for this work remained locked behind a premium paywall.
 
 \section{Evaluation of ChatGPT's capabilities}
 
@@ -114,7 +114,7 @@ The affected declaration is copyWithDefaults().
 A first message will detail the class before the merge, the diffs for both branches and the class after the merge. A second message will have a dependent class, whose methods indirectly call copyWithDefaults(). After I send these next two classes, identify and describe the semantic conflict.    
 \end{quote}
 
-A more complex evolution on this idea consisted of providing textual representations of UML graphs, such as plantUML structure graphs. These however proved to be complex in their own regard as they often induced the LLM to "forget" previous information and its' goal, possibly due to their large size. Through some effort, we could get the LLM to recognize both the diagram and the class information, namely, by offering the diagram first.
+A more complex evolution on this idea consisted of providing textual representations of UML graphs, such as plantUML call and structure graphs. These however proved to be complex in their own regard as they often induced the LLM to "forget" previous information and its' goal, possibly due to their large size. Through some effort, we could get the LLM to recognize both the diagram and the class information, namely, by offering the diagram first.
 
 \begin{quote}
 We have done a merge on a piece of software. In this, we introduced a semantic conflict on the method dominates(State| State) of the class OpenTripPlanner. In a first message I will send a call diagram, in plantUML format. In a second message I will send the original class, the differences in the branches and the merged class.  At the end you must identify and explain the semantic conflict.
@@ -131,7 +131,6 @@ In the end, we were able to get the LLm to both recognize the merge information 
 Underscoring these experiments with real world test cases is an overlying issue: to properly identify a semantic conflict, we may have to analyze and take into account a large amount of data across several components of the software, while at the same time focusing on the specific components that were changed. While this is natural to a human, there is no clear way to select which information to feed and which to not in the LLM prompt: while a wider breadth of information may be necessary to identify the conflict, it is extremely likely to just induce further confusion and lead ChatGPT to focus on the wrong thing, or confuse different parts of code or even lose track of the task at hand as mentioned before.
 
 No successful tests have been generated for real world scenarios.
-Experiments with other LLMs, such as Bing AI or Bard, yield similar problems and new ones, such as more stringent size limits, suggesting an altered approach may have to be taken.
 
 
 
