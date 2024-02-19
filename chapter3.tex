@@ -130,9 +130,29 @@ In the end, we were able to get the LLm to both recognize the merge information 
 
 Underscoring these experiments with real world test cases is an overlying issue: to properly identify a semantic conflict, we may have to analyze and take into account a large amount of data across several components of the software, while at the same time focusing on the specific components that were changed. While this is natural to a human, there is no clear way to select which information to feed and which to not in the LLM prompt: while a wider breadth of information may be necessary to identify the conflict, it is extremely likely to just induce further confusion and lead ChatGPT to focus on the wrong thing, or confuse different parts of code or even lose track of the task at hand as mentioned before.
 
-No successful tests have been generated for real world scenarios.
+\subsection{Test Generation without Conflict Understanding}
 
+Given the difficulty of getting ChatGPT to provide accurate descriptions of the semantic conflicts, it was worth exploring whether the conflicts can be made evident just by generating tests targeting affected methods and classes. Several strategies were adopted: the prompting with the class after merge, the prompting with the class after merge and branch diffs and prompting with the class after merge and a structure graph. In most cases, where existing test suites where available, such information was also provided, with the prompt being reformulated to ask for its' extension, rather than generation from scratch, as this shown to be important before \cite{kn:githubcopilot}.
 
+For 15 tests of 5 different projects, only 2 compiled, before and after prompting for corrections. One of these tested trivial additions to an array in both branches and the other identified a behaviour introduced in branch B that successfully carried over to merge, thus not a conflict. Positively, ChatGPT could understand the significance of this test working in branch B and merge but not A, as seen in figure \ref{fig:testexplain}, suggesting it could understand the significance of a test failing for merge but not upper branches, which would indicate conflicts.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{figures/testexplain.jpg}
+    \caption{ChatGPT explanation of meaning of failures and passes of test in different branches}
+    \label{fig:testexplain}
+\end{figure}
+
+Common issues affecting test generation were:
+
+\begin{itemize}
+  \item Faulty importing/setup: Particularly relevant in the OKHttp case, the tool was patently unable to correctly call imports, just omitting them, even when expressly being given the package names and being told to import it.
+  \item Invalid access: The LLM was generally unable to distinguish between private and public methods and frequently made attempts to invoke or access private methods and fields.
+  \item Method/Field/Class Hallucination: ChatGPT frequently invoked non-existent methods, fields or even classes. In some classes this could also be related to matters of access, as it generated calls on getters for private fields.
+  \item Incomplete/Template Tests: Despite being prompted explicitly to generate complete tests that should compile, in several cases tests were generated with incomplete template helper methods and classes.
+\end{itemize}
+
+While feeding compilation error outputs could be a solution for these, in practice no test that failed to compile was fixed in this manner, as changes made did not fix or ignored the problems present. In some cases, while the logic of correction was sound logically, they were not helpful in the context of automatic test generation. For example, a "MockConverter" class was used in a test for the Retrofit project. Upon prompting for a fix, an import was added, which still naturally was non-functional. Upon prompting for another fix, ChatGPT provided a basic empty template for the MockConverter class.
 
 \section{Future Work}
 
