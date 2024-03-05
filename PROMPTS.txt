@@ -1,0 +1,170 @@
+Vitor Guilherme and Auri Vincenzi. An initial investigation of chatgpt unit test genera-
+tion capability, 2023. Available at https://dl.acm.org/doi/10.1145/3624032.
+3624035.
+GPT-3.5 Turbo
+
+best temp 0.6
+
+Generate test cases just for the {cut}
+Java class in one Java class file with
+imports using JUnit 4 and Java 8:
+{code}
+
+best temp 0.2
+
+I need functional test cases to cover all
+decisions in the methods of the class
+under testing.
+All conditional expressions must assume
+true and false values.
+Tests with Boundary Values are also
+mandatory. For numeric data, always use
+positive and negative values.
+All tests must be in one Java class file.
+Include all necessary imports.
+It is mandatory to throws Exception
+in all test method declarations.
+It is mandatory to include timeout=1000
+in all @Test annotations.
+It is mandatory to test for the default
+constructor.
+Each method in the class under test must
+have at least one test case.
+Even simple or void methods must have a
+test calling it with valid inputs.
+@Test(expected= must be used only if the
+method under testing explicitly throws
+an exception.
+Test must be in JUnit 4 framework format.
+Test set heather package and import
+dependencies:
+package ds;
+import org.junit.Test;
+import org.junit.Before;
+import static org.junit.Assert.*;
+import ds.*;
+The class under testing is {clazz}.
+The test class must be {cut}Test
+Class under testing
+*******************
+{code}
+
+------------------------------------------------------
+Mohammed Latif Siddiq, Joanna C. S. Santos, Ridwanul Hasan Tanvir, Noshin Ulfat, Fah-
+mid Al Rifat, and Vinicius Carvalho Lopes. An empirical study of using large language
+models for unit test generation, 2023
+GPT-3.5 Trubo
+Its temperature is also set to zero and the other
+parameters are set to their defaults. Moreover, we set the system
+role’s content to “You are a coding assistant. You generate only source
+code.” and the user role’s content to the context and prompt
+
+// ${className}.java
+${packageDeclaration}
+${importedPackages}
+class ${className}{
+/* ... code before the method under test ... */
+public ${methodSignature}{ /* ... method implementation ... */ }
+/* ... code after the method under test ... */
+}
+
+// ${className}${suffix}Test.java
+${packageDeclaration}
+${importedPackages}
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+/**
+* Test class of {@link ${className}}.
+* It contains ${numberTests} unit test cases for the
+* {@link ${className}#${methodSignature}} method.
+*/
+class ${className}${suffix}Test {
+
+---------------------------------------
+huokui Xie, Yinghao Chen, Chen Zhi, Shuiguang Deng, and Jianwei Yin. Chatunitest: a
+chatgpt-based automated unit test generation tool, 2023
+chatgpt 3.5 temperature 0.5
+
+
+Please help me generate a whole JUnit test for a focal
+method in a focal class.
+I will provide the following information:
+1. Required dependencies to import.
+2. The focal class signature.
+3. Source code of the focal method.
+4. Signatures of other methods and fields in the class.
+I need you to create a whole unit test using JUnit 4 and
+Mockito 3, ensuring optimal branch and line coverage. The
+test should include necessary imports for JUnit 4 and
+Mockito 3, compile without errors, and use reflection to
+invoke private methods. No additional explanations
+required.
+
+The focal method is method_name in focal class
+class_name, the information is focal_method_context .
+
+
+
+Please help me generate a whole JUnit test for a focal method in
+a focal class.
+I will provide the following information of the focal method:
+1. Required dependencies to import.
+2. The focal class signature.
+3. Source code of the focal method.
+4. Signatures of other methods and fields in the class.
+I will provide following brief information if the focal method
+has dependencies:
+1. Signatures of dependent classes.
+2. Signatures of dependent methods and fields in the dependent
+classes.
+I need you to create a whole unit test using JUnit 4 and Mockito
+3, ensuring optimal branch and line coverage. The whole test
+should include necessary imports for JUnit 4 and Mockito 3,
+compile without errors, and use reflection to invoke private
+methods. No additional explanations required.
+
+The focal method is method_name in the focal class
+class_name, and their information is focal_method_context.
+The brief information of dependent class class_name is
+dependent_class_context. The brief information of …
+
+
+-----------------------------
+
+Zhiqiang Yuan, Mingwei Liu Yiling Lou, Shiji Ding, Kaixin Wang, Yixuan Chen, and Xin
+Peng. No more manual tests? evaluating and improving chatgpt for unit test generation,
+2023
+
+gpt3.5 default temp
+
+Intention Prompt for ChatGPT
+// Focal class
+public class StrBuilder (
+public StrBuilder ();
+// Focal method
+public StrBuilder setCharAt(final int index, final char ch) {
+if (index < 0 || index >= length()) { throw new StringIndexOutOfBoundsException (index); }
+buffer[index] = ch; return this;}}
+Please infer the intention of the "setCharAt(final int, final char)".
+
+
+// Method intention
+The intention of the 'setCharAt(final int index, final char ch)` method in the 'StrBuilder' class is to set the character at the
+specified index in the character buffer to the given character.
+You are a professional who writes Java test methods.
+Please write a test method for the "setCharAt(final int, final char)" with the given Method intention.
+
+
+
+
+------------------------------
+
+nossa
+gpt3.5 default
+
+The following class was altered in a merge, specifically the build() method.
+Analyse it and what it does.
+
+You are a Java developer. Due to changes in the build() method, you've been asked to write a complete test suite to identify possible errors. 
+Write a junit test suite for the method. All classes must be correctly imported. The tests must compile without errors. 
+The tests must be complete and require no modification and addition.

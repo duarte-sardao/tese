@@ -1,0 +1,228 @@
+---NOSSO---
+
+import org.junit.Test;
+import java.util.Set;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+public class Python2TargetTest {
+
+    @Test
+    public void testAddBadWords() {
+        Python2Target target = new Python2Target(new CodeGenerator());
+
+        Set<String> badWords = target.getBadWords();
+
+        assertTrue(badWords.contains("abs"));
+        assertTrue(badWords.contains("rule"));
+        assertTrue(badWords.contains("None"));
+        assertTrue(badWords.contains("class"));
+    }
+
+    @Test
+    public void testGetBadWords() {
+        Python2Target target = new Python2Target(new CodeGenerator());
+
+        Set<String> badWords = target.getBadWords();
+
+        assertEquals(68, badWords.size()); // 65 initial keywords + 2 custom words + 1 "rule"
+    }
+}
+
+CODEGENERATOR INITIALIZED WRONG. GETS THAT NEEDS TO CALL getBadWords(). ABsolutely not 65 initial keywords
+
+---NOMOMA---
+
+import org.junit.Test;
+import java.util.Set;
+import static org.junit.Assert.assertTrue;
+
+public class Python2TargetTest {
+
+    @Test
+    public void testAddBadWords() {
+        Python2Target pythonTarget = new Python2Target(null); // Create an instance of Python2Target for testing
+        Set<String> badWordsSet = pythonTarget.getBadWords(); // Retrieve the set of bad words
+
+        // Check if the badWordsSet contains the predefined Python keywords and additional words
+        assertTrue(badWordsSet.contains("if"));
+        assertTrue(badWordsSet.contains("for"));
+        assertTrue(badWordsSet.contains("while"));
+        assertTrue(badWordsSet.contains("rule"));
+        assertTrue(badWordsSet.contains("parserRule"));
+        // Add more assertions as needed for other words that should be avoided
+
+        // Check that the badWordsSet size matches the total number of predefined bad words
+        int expectedSize = 65; // Number of predefined bad words including "rule" and "parserRule"
+        assertTrue(badWordsSet.size() == expectedSize);
+    }
+}
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+public class Python2TargetTest {
+
+    @Test
+    public void testAddBadWords() {
+        Python2Target pythonTarget = new Python2Target(null); // Passing null for CodeGenerator as it is not needed for testing
+        pythonTarget.addBadWords();
+
+        Set<String> badWords = pythonTarget.getBadWords();
+
+        assertNotNull(badWords);
+        assertFalse(badWords.isEmpty());
+        assertTrue(badWords.contains("rule"));
+        assertTrue(badWords.contains("parserRule"));
+        
+        // Add more assertions as needed for other keywords and identifiers
+        
+        System.out.println("Bad words set: " + badWords);
+    }
+}
+
+SAME COMMENTS FOR 1. For 2, understands it can initiate it with null, but the test fails there (calls addBadWords unnecessarily)
+
+---EMPIRICAL---
+
+void testAddBadWords() {
+    Python2Target target = new Python2Target(null);
+    target.addBadWords();
+    Set<String> badWords = target.getBadWords();
+    
+    assertTrue(badWords.contains("abs"));
+    assertTrue(badWords.contains("print"));
+    assertTrue(badWords.contains("rule"));
+    assertTrue(badWords.contains("parserRule"));
+    assertEquals(97, badWords.size());
+}
+
+@Test
+void testGetVersion() {
+    Python2Target target = new Python2Target(null);
+    assertEquals("4.5.2.1", target.getVersion());
+}
+
+@Test
+void testVisibleGrammarSymbolCausesIssueInGeneratedCode() {
+    Python2Target target = new Python2Target(null);
+    GrammarAST idNode = new GrammarAST();
+    idNode.setText("abs");
+    assertTrue(target.visibleGrammarSymbolCausesIssueInGeneratedCode(idNode));
+}
+
+@Test
+void testWantsBaseListener() {
+    Python2Target target = new Python2Target(null);
+    assertFalse(target.wantsBaseListener());
+}
+
+@Test
+void testWantsBaseVisitor() {
+    Python2Target target = new Python2Target(null);
+    assertFalse(target.wantsBaseVisitor());
+}
+
+@Test
+void testSupportsOverloadedMethods() {
+    Python2Target target = new Python2Target(null);
+    assertFalse(target.supportsOverloadedMethods());
+}
+
+CALLS ADDBADWORDS
+
+---CAPAB---
+
+import org.antlr.v4.codegen.CodeGenerator;
+import org.antlr.v4.codegen.Target;
+import org.antlr.v4.tool.ast.GrammarAST;
+import org.junit.Test;
+import org.junit.Before;
+import static org.junit.Assert.*;
+
+public class Python2TargetTest {
+
+    private Python2Target python2Target;
+
+    @Before
+    public void setUp() {
+        CodeGenerator codeGenerator = new CodeGenerator();
+        python2Target = new Python2Target(codeGenerator);
+    }
+
+    @Test(timeout = 1000)
+    public void testDefaultConstructor() throws Exception {
+        assertNotNull(python2Target);
+    }
+
+    @Test(timeout = 1000)
+    public void testVisibleGrammarSymbolCausesIssueInGeneratedCode() throws Exception {
+        GrammarAST idNode = new GrammarAST();
+        boolean result = python2Target.visibleGrammarSymbolCausesIssueInGeneratedCode(idNode);
+        assertFalse(result);
+    }
+
+    @Test(timeout = 1000)
+    public void testWantsBaseListener() throws Exception {
+        boolean result = python2Target.wantsBaseListener();
+        assertFalse(result);
+    }
+
+    @Test(timeout = 1000)
+    public void testWantsBaseVisitor() throws Exception {
+        boolean result = python2Target.wantsBaseVisitor();
+        assertFalse(result);
+    }
+
+    @Test(timeout = 1000)
+    public void testSupportsOverloadedMethods() throws Exception {
+        boolean result = python2Target.supportsOverloadedMethods();
+        assertFalse(result);
+    }
+
+    @Test(timeout = 1000)
+    public void testGetVersion() throws Exception {
+        String version = python2Target.getVersion();
+        assertEquals("4.5.2.1", version);
+    }
+}
+
+CODEGEN ISSUE, nonsense tests, doesnt test badwords
+
+---CHATUNITTEST---
+
+package org.antlr.v4.codegen.target;
+
+import org.antlr.v4.codegen.CodeGenerator;
+import org.antlr.v4.tool.ast.GrammarAST;
+import org.junit.Test;
+import org.mockito.Mockito;
+
+import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
+
+public class Python2TargetTest {
+
+    @Test
+    public void testAddBadWords() throws Exception {
+        Python2Target target = Mockito.spy(new Python2Target(Mockito.mock(CodeGenerator.class)));
+        Set<String> badWords = Mockito.spy(target.getBadWords());
+
+        // Ensure badWords is empty before calling addBadWords
+        assertEquals(0, badWords.size());
+
+        // Call addBadWords using reflection
+        target.getClass().getDeclaredMethod("addBadWords").setAccessible(true);
+        target.getClass().getDeclaredMethod("addBadWords").invoke(target);
+
+        // Check if badWords has been populated with the expected keywords
+        assertEquals(84, badWords.size());
+        assertEquals(true, badWords.contains("abs"));
+        assertEquals(true, badWords.contains("rule"));
+        assertEquals(true, badWords.contains("parserRule"));
+    }
+}
+
+CHATUNITTEST PROMPT MAKES IT USE MOCKITO, even when not necessary. badWords number (84), should assert true
+

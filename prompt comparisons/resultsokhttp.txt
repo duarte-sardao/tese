@@ -1,0 +1,322 @@
+---NOSSO---
+
+import org.junit.Test;
+import java.net.ProxySelector;
+import java.net.CookieHandler;
+import java.net.ResponseCache;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.HostnameVerifier;
+import com.squareup.okhttp.OkAuthenticator;
+import com.squareup.okhttp.ConnectionPool;
+import static org.junit.Assert.*;
+
+public class OkHttpClientTest {
+
+    @Test
+    public void testCopyWithDefaults() {
+        OkHttpClient client = new OkHttpClient();
+        client.setProxySelector(ProxySelector.getDefault());
+        client.setCookieHandler(CookieHandler.getDefault());
+        client.setResponseCache(ResponseCache.getDefault());
+        client.setSSLSocketFactory(HttpsURLConnection.getDefaultSSLSocketFactory());
+        client.setHostnameVerifier(new OkHostnameVerifier());
+        client.setAuthenticator(HttpAuthenticator.SYSTEM_DEFAULT);
+        client.setConnectionPool(ConnectionPool.getDefault());
+        client.setFollowProtocolRedirects(true);
+        client.setTransports(null);
+
+        OkHttpClient result = client.copyWithDefaults();
+
+        assertNull(result.getProxy());
+        assertEquals(ProxySelector.getDefault(), result.getProxySelector());
+        assertEquals(CookieHandler.getDefault(), result.getCookieHandler());
+        assertEquals(ResponseCache.getDefault(), result.getResponseCache());
+        assertEquals(HttpsURLConnection.getDefaultSSLSocketFactory(), result.getSslSocketFactory());
+        assertEquals(new OkHostnameVerifier(), result.getHostnameVerifier());
+        assertEquals(HttpAuthenticator.SYSTEM_DEFAULT, result.getAuthenticator());
+        assertEquals(ConnectionPool.getDefault(), result.getConnectionPool());
+        assertTrue(result.getFollowProtocolRedirects());
+        assertEquals(OkHttpClient.DEFAULT_TRANSPORTS, result.getTransports());
+    }
+}
+
+ACCESS PRIVATE
+
+---NOMOMA---
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+public class OkHttpClientTest {
+
+    @Test
+    public void testCopyWithDefaults() {
+        OkHttpClient originalClient = new OkHttpClient();
+        originalClient.setCookieHandler(null); // Simulating a field that was explicitly configured
+        originalClient.setSSLSocketFactory(null); // Simulating another field that was explicitly configured
+        originalClient.setFollowProtocolRedirects(false); // Simulating another field that was explicitly configured
+
+        OkHttpClient copiedClient = originalClient.copyWithDefaults();
+
+        // Assert that the copied client has system-wide default values for fields that were not explicitly configured
+        assertNotNull(copiedClient.getProxy());
+        assertNotNull(copiedClient.getProxySelector());
+        assertNotNull(copiedClient.getCookieHandler());
+        assertNotNull(copiedClient.getResponseCache());
+        assertNotNull(copiedClient.getSslSocketFactory());
+        assertNotNull(copiedClient.getHostnameVerifier());
+        assertNotNull(copiedClient.getAuthenticator());
+        assertNotNull(copiedClient.getConnectionPool());
+        assertTrue(copiedClient.getFollowProtocolRedirects());
+        assertTrue(copiedClient.getTransports().contains("http/1.1")); // Assert that http/1.1 transport is always included
+
+        // Assert that the explicitly configured fields were not reset to defaults
+        assertNull(copiedClient.getCookieHandler());
+        assertNull(copiedClient.getSslSocketFactory());
+        assertFalse(copiedClient.getFollowProtocolRedirects());
+    }
+}
+
+GOOD LOGIC, PRIVATE ACCESS
+
+---EMPIRICAL---
+
+@Test
+void testCopyWithDefaults() {
+    OkHttpClient client = new OkHttpClient();
+    OkHttpClient copy = client.copyWithDefaults();
+    assertNotNull(copy);
+}
+
+@Test
+void testCopyWithDefaultsProxy() {
+    OkHttpClient client = new OkHttpClient();
+    client.setProxy(Proxy.NO_PROXY);
+    OkHttpClient copy = client.copyWithDefaults();
+    assertEquals(Proxy.NO_PROXY, copy.getProxy());
+}
+
+@Test
+void testCopyWithDefaultsProxySelector() {
+    OkHttpClient client = new OkHttpClient();
+    OkHttpClient copy = client.copyWithDefaults();
+    assertNotNull(copy.getProxySelector());
+}
+
+@Test
+void testCopyWithDefaultsCookieHandler() {
+    OkHttpClient client = new OkHttpClient();
+    OkHttpClient copy = client.copyWithDefaults();
+    assertNotNull(copy.getCookieHandler());
+}
+
+@Test
+void testCopyWithDefaultsResponseCache() {
+    OkHttpClient client = new OkHttpClient();
+    OkHttpClient copy = client.copyWithDefaults();
+    assertNotNull(copy.getResponseCache());
+}
+
+@Test
+void testCopyWithDefaultsSSLSocketFactory() {
+    OkHttpClient client = new OkHttpClient();
+    OkHttpClient copy = client.copyWithDefaults();
+    assertNotNull(copy.getSslSocketFactory());
+}
+
+@Test
+void testCopyWithDefaultsHostnameVerifier() {
+    OkHttpClient client = new OkHttpClient();
+    OkHttpClient copy = client.copyWithDefaults();
+    assertNotNull(copy.getHostnameVerifier());
+}
+
+@Test
+void testCopyWithDefaultsAuthenticator() {
+    OkHttpClient client = new OkHttpClient();
+    OkHttpClient copy = client.copyWithDefaults();
+    assertNotNull(copy.getAuthenticator());
+}
+
+@Test
+void testCopyWithDefaultsConnectionPool() {
+    OkHttpClient client = new OkHttpClient();
+    OkHttpClient copy = client.copyWithDefaults();
+    assertNotNull(copy.getConnectionPool());
+}
+
+@Test
+void testCopyWithDefaultsFollowProtocolRedirects() {
+    OkHttpClient client = new OkHttpClient();
+    OkHttpClient copy = client.copyWithDefaults();
+    assertTrue(copy.getFollowProtocolRedirects());
+}
+
+@Test
+void testCopyWithDefaultsTransports() {
+    OkHttpClient client = new OkHttpClient();
+    OkHttpClient copy = client.copyWithDefaults();
+    assertNotNull(copy.getTransports());
+}
+}
+
+BECAUSE IS ASKED TO GENERATE 10 TESTS, nonsensical small tests for each field.
+PRIVATE
+
+---CAPAB---
+
+import com.squareup.okhttp.OkHttpClient;
+import org.junit.Test;
+import org.junit.Before;
+import static org.junit.Assert.*;
+
+public class OkHttpClientTest {
+
+    private OkHttpClient client;
+
+    @Before
+    public void setUp() {
+        client = new OkHttpClient();
+    }
+
+    @Test(timeout=1000)
+    public void testDefaultConstructor() throws Exception {
+        assertNotNull(client);
+    }
+
+    @Test(timeout=1000)
+    public void testSetProxy() throws Exception {
+        client.setProxy(null);
+        assertNull(client.getProxy());
+        client.setProxy(Proxy.NO_PROXY);
+        assertEquals(Proxy.NO_PROXY, client.getProxy());
+    }
+
+    @Test(timeout=1000)
+    public void testSetProxySelector() throws Exception {
+        assertNull(client.getProxySelector());
+        client.setProxySelector(ProxySelector.getDefault());
+        assertNotNull(client.getProxySelector());
+    }
+
+    @Test(timeout=1000)
+    public void testSetCookieHandler() throws Exception {
+        assertNull(client.getCookieHandler());
+        client.setCookieHandler(CookieHandler.getDefault());
+        assertNotNull(client.getCookieHandler());
+    }
+
+    @Test(timeout=1000)
+    public void testSetResponseCache() throws Exception {
+        assertNull(client.getResponseCache());
+        client.setResponseCache(ResponseCache.getDefault());
+        assertNotNull(client.getResponseCache());
+    }
+
+    @Test(timeout=1000)
+    public void testSetSSLSocketFactory() throws Exception {
+        assertNull(client.getSslSocketFactory());
+        client.setSSLSocketFactory(HttpsURLConnection.getDefaultSSLSocketFactory());
+        assertNotNull(client.getSslSocketFactory());
+    }
+
+    @Test(timeout=1000)
+    public void testSetHostnameVerifier() throws Exception {
+        assertNull(client.getHostnameVerifier());
+        client.setHostnameVerifier(new OkHostnameVerifier());
+        assertNotNull(client.getHostnameVerifier());
+    }
+
+    @Test(timeout=1000)
+    public void testSetAuthenticator() throws Exception {
+        assertNull(client.getAuthenticator());
+        client.setAuthenticator(HttpAuthenticator.SYSTEM_DEFAULT);
+        assertNotNull(client.getAuthenticator());
+    }
+
+    @Test(timeout=1000)
+    public void testSetConnectionPool() throws Exception {
+        assertNull(client.getConnectionPool());
+        client.setConnectionPool(ConnectionPool.getDefault());
+        assertNotNull(client.getConnectionPool());
+    }
+
+    @Test(timeout=1000)
+    public void testSetFollowProtocolRedirects() throws Exception {
+        assertTrue(client.getFollowProtocolRedirects());
+        client.setFollowProtocolRedirects(false);
+        assertFalse(client.getFollowProtocolRedirects());
+    }
+
+    @Test(timeout=1000)
+    public void testSetTransports() throws Exception {
+        List<String> transports = Arrays.asList("http/1.1", "spdy/3");
+        client.setTransports(transports);
+        assertEquals(transports, client.getTransports());
+    }
+
+    @Test(timeout=1000)
+    public void testOpen() throws Exception {
+        URL url = new URL("http://www.example.com");
+        HttpURLConnection connection = client.open(url);
+        assertNotNull(connection);
+    }
+}
+
+UNTESTED
+
+---CHATUNITTEST---
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Collections;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+@RunWith(MockitoJUnitRunner.class)
+public class OkHttpClientTest {
+    
+    @Mock
+    private OkHttpClient okHttpClientMock;
+    
+    @Test
+    public void testOpenHttpConnection() throws Exception {
+        URL url = new URL("http://www.example.com");
+        OkHttpClient copy = new OkHttpClient();
+        
+        when(okHttpClientMock.copyWithDefaults()).thenReturn(copy);
+        
+        HttpURLConnection connection = okHttpClientMock.open(url);
+        
+        assertEquals(HttpURLConnectionImpl.class, connection.getClass());
+    }
+    
+    @Test
+    public void testOpenHttpsConnection() throws Exception {
+        URL url = new URL("https://www.example.com");
+        OkHttpClient copy = new OkHttpClient();
+        
+        when(okHttpClientMock.copyWithDefaults()).thenReturn(copy);
+        
+        HttpURLConnection connection = okHttpClientMock.open(url);
+        
+        assertEquals(HttpsURLConnectionImpl.class, connection.getClass());
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testOpenInvalidProtocol() throws Exception {
+        URL url = new URL("ftp://www.example.com");
+        
+        OkHttpClient copy = new OkHttpClient();
+        
+        when(okHttpClientMock.copyWithDefaults()).thenReturn(copy);
+        
+        okHttpClientMock.open(url);
+    }
+}
+
+PRIVATE

@@ -1,0 +1,275 @@
+---NOSSO---
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+public class PointTest {
+
+    @Test
+    public void testMove() {
+        Point point = new Point(3, 4);
+        point.move();
+        assertEquals(10.0, point.getX(), 0.0001);
+        assertEquals(11.0, point.getY(), 0.0001);
+    }
+
+    @Test
+    public void testMoveWithNegativeCoordinates() {
+        Point point = new Point(-3, -4);
+        point.move();
+        assertEquals(4.0, point.getX(), 0.0001);
+        assertEquals(5.0, point.getY(), 0.0001);
+    }
+
+    @Test
+    public void testMoveWithZeroCoordinates() {
+        Point point = new Point(0, 0);
+        point.move();
+        assertEquals(0.0, point.getX(), 0.0001);
+        assertEquals(0.0, point.getY(), 0.0001);
+    }
+}
+
+ONE GOOD BUT ONE WRONG TEST, SHOULD BE 3 NOT 5
+
+---NOMOMA---
+
+```java
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+
+public class PointTest {
+    
+    @Test
+    public void testMove() {
+        Point point = new Point(3.0, 4.0);
+        
+        double initialDistance = point.distance();
+        
+        point.move();
+        
+        double newX = point.getX();
+        double newY = point.getY();
+        
+        double newDistance = point.distance();
+        
+        // Check that the coordinates have been updated correctly after moving
+        assertEquals(newX, 3.0 + initialDistance);
+        assertEquals(newY, 4.0 + initialDistance);
+        
+        // Check that the distance has been updated correctly after moving
+        assertEquals(newDistance, initialDistance * 2);
+    }
+}
+```
+
+This test method creates a Point object, calculates the initial distance and coordinates, calls the move() method, and then verifies that the coordinates have been updated correctly according to the distance calculated by the distance() method.
+Sure, here is a sample test method written in JUnit to test the move() method of the Point class:
+
+```java
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+
+public class PointTest {
+
+    @Test
+    public void testMove() {
+        // Create a new Point at coordinates (3, 4)
+        Point point = new Point(3, 4);
+
+        // Move the Point
+        point.move();
+
+        // The new coordinates after moving should be (6, 8)
+        assertEquals(6.0, point.getX(), 0.01);
+        assertEquals(8.0, point.getY(), 0.01);
+    }
+}
+```
+
+In this test method, we first create a new Point object with initial coordinates (3, 4). Then we call the move() method on the Point object to move it. Finally, we use the assertEquals method to check whether the new coordinates of the Point after moving are as expected (6, 8).
+
+FIRST TEST IS CORRECT, BUT CANT IDENTIFY CONFLICT, DUE TO CALLING DISTANCE
+SECOND TEST MISSES (does x+x, y+y for move)
+
+---EMPIRICAL---
+
+@Test
+void testMove() {
+    Point point = new Point(3, 4);
+    
+    // Test moving the point
+    point.move();
+    assertEquals(7.0, point.getX());
+    assertEquals(8.0, point.getY());
+    
+    // Test moving the point again
+    point.move();
+    assertEquals(15.0, point.getX());
+    assertEquals(16.0, point.getY());
+    
+    // Test moving the point with negative coordinates
+    Point point2 = new Point(-2, -5);
+    point2.move();
+    assertEquals(-7.0, point2.getX());
+    assertEquals(-10.0, point2.getY());
+    
+    // Test moving the point with zero coordinates
+    Point point3 = new Point(0, 0);
+    point3.move();
+    assertEquals(0.0, point3.getX());
+    assertEquals(0.0, point3.getY());
+    
+    // Test moving the point with one coordinate as zero
+    Point point4 = new Point(3, 0);
+    point4.move();
+    assertEquals(6.0, point4.getX());
+    assertEquals(0.0, point4.getY());
+    
+    // Test moving the point with one coordinate as zero
+    Point point5 = new Point(0, 4);
+    point5.move();
+    assertEquals(0.0, point5.getX());
+    assertEquals(8.0, point5.getY());
+    
+    // Test moving the point with decimal coordinates
+    Point point6 = new Point(1.5, 2.5);
+    point6.move();
+    assertEquals(4.0, point6.getX());
+    assertEquals(5.0, point6.getY());
+    
+    // Test moving the point with negative decimal coordinates
+    Point point7 = new Point(-1.5, -2.5);
+    point7.move();
+    assertEquals(-4.0, point7.getX());
+    assertEquals(-5.0, point7.getY());
+    
+    // Test moving the point with large coordinates
+    Point point8 = new Point(1000, 2000);
+    point8.move();
+    assertEquals(3000.0, point8.getX());
+    assertEquals(4000.0, point8.getY());
+    
+    // Test moving the point with very small coordinates
+    Point point9 = new Point(0.0001, 0.0002);
+    point9.move();
+    assertEquals(0.0003, point9.getX());
+    assertEquals(0.0004, point9.getY());
+}
+
+INCORRECT EXPECTATIONS OF MOVE. NOT BEING MOVED BY MANHATTAN DISTANCE
+
+---CAPAB---
+
+import org.junit.Test;
+import org.junit.Before;
+import static org.junit.Assert.*;
+
+public class PointTest {
+
+    private Point point;
+
+    @Before
+    public void setUp() {
+        point = new Point(3.0, 4.0);
+    }
+
+    @Test(timeout=1000)
+    public void testDefaultConstructor() throws Exception {
+        Point defaultPoint = new Point(0.0, 0.0);
+        assertNotNull(defaultPoint);
+    }
+
+    @Test(timeout=1000)
+    public void testGetX() throws Exception {
+        assertEquals(3.0, point.getX(), 0.0);
+    }
+
+    @Test(timeout=1000)
+    public void testGetY() throws Exception {
+        assertEquals(4.0, point.getY(), 0.0);
+    }
+
+    @Test(timeout=1000)
+    public void testMove() throws Exception {
+        point.move();
+        assertEquals(7.0, point.getX(), 0.0);
+        assertEquals(8.0, point.getY(), 0.0);
+    }
+
+    @Test(timeout=1000)
+    public void testDistance() throws Exception {
+        assertEquals(7.0, point.distance(), 0.0);
+    }
+
+    @Test(timeout=1000)
+    public void testToString() throws Exception {
+        assertEquals("(3.0, 4.0)", point.toString());
+    }
+}
+
+INCORRECT EXPECTATIONS AGAIN, ALL TRIES
+OBSERVATION: Chatgpt loves starting point at 3,4 and expecting 7,8 (+4 for both). Happens across all prompts
+
+---CHATUNITTEST---
+
+```java
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Point.class)
+public class PointTest {
+
+    @Test
+    public void testMove() throws Exception {
+        Point point = new Point(3, 4);
+
+        Point spy = Mockito.spy(point);
+        when(spy.distance()).thenReturn(5.0);
+
+        spy.move();
+
+        assertEquals(8.0, spy.getX(), 0.0);
+        assertEquals(9.0, spy.getY(), 0.0);
+    }
+}
+``````java
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+
+import org.junit.Test;
+
+public class PointTest {
+
+    @Test
+    public void testMove() throws Exception {
+        Point point = spy(new Point(3.0, 4.0));
+        
+        point.move();
+        
+        assertEquals(7.0, point.getX(), 0.0);
+        assertEquals(8.0, point.getY(), 0.0);
+        verify(point).distance();
+    }
+    
+    @Test
+    public void testDistance() throws Exception {
+        Point point = new Point(3.0, 4.0);
+        
+        double distance = point.distance();
+        
+        assertEquals(7.0, distance, 0.0);
+    }
+}
+```
+
+FIRST CASE, WRONG DISTANCE, RIGHT MOVE (based on distance)
+SECOND CASE, SAME ERROR AS ALWAYS
