@@ -1,0 +1,24 @@
+CM
+
+The merge introduced a semantic conflict:
+In Version A, a check was added to total_cost: If the user is an admin, the cost is set to 0.
+In Version B, a check is added to checkout: if the cost returned by total_cost is 0, an exception is thrown.
+Thus, in the merged version, if the user is an admin checking out will always throw an exception.
+
+PM
+
+The merge introduced a semantic conflict:
+In Version A, an existing Math.max check is removed from the return. This ensured the sum was 0 or greater.
+In Version B, we check if items are of type "coupon". If so, their value is subtracted, rather than added.
+Thus, in the merged version, new behaviour is introduced: in Version B, the sum returned was 0 or greater, thus coupons could lead to the return of a
+negative value. With the merge of Version A, however, this does not hold, thus we may receive unexpected results witht the usage of coupons.
+
+
+
+PF
+
+The merge introduced a semantic conflict:
+In Version A, a new discount introduced at the end of dictionary, with the name "megasaver" and value 0.4d.
+In Version B, the existing 0.25d discount "superpromo" is updated to "megasaver".
+Thus, in the merged version, we have 2 puts for a "megasaver" discount. Due to the order of operations, the 0.4d value takes precedence, the 0.25d discount
+is thus overwritten and "lost" in the merge.
