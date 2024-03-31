@@ -737,7 +737,7 @@ There doesn't seem to be a direct semantic conflict between the changes introduc
 In version A, the change made might be seen as simplifying the logic, removing the unnecessary `Math.max(0, sum)` line, while version B introduces a more complex logic with the conditional statement, probably to handle special cases related to coupons. The merged version appropriately combines these changes without conflicts.
 
 Therefore, there is no semantic conflict in the merged version.</div></pre>
-<h4>Changes between branches correctly identified: 3</h4>
+<h4>Changes between branches correctly identified: ~3</h4>
 <h4>No conflict misunderstanding: 1</h4>
 <h4>Positive response: 0</h4>
 <h4>Origin of conflict correctly described: 0</h4>
