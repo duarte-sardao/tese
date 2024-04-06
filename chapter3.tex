@@ -277,6 +277,8 @@ Merge version:
 
 For each semantic conflict example, the prompt would be submitted 3 times, allowing us to see a broader range of responses and avoiding what might be one-time flukes.
 
+The complete prompts, with results and evaluated metrics, can be found in the attachments. The following is just the results, with metric evaluations and necessary comments.
+
 \subsection{Point}
 
 Answer 1 was:
@@ -1174,7 +1176,12 @@ Identification of the origins of conflict falls squarely in the middle of our gi
 
 - Effect of conflict described: 0.667/3
 
-With the relatively lowest value, we find that ChatGPT struggles with accurately describing the results of semantic conflicts, ie, how the behaviour is specifically altered and how the outputs change. Indeed, even when the origin of the conflict is found, an accurate description of the results does not necessarily follow. Excluding 0 value results, we find an average 1.6: unlike identification of the origin, which was generally reliable when present, identification of the effect was still often vague or innacurate.
+With the relatively lowest value, we find that ChatGPT struggles with accurately describing the results of semantic conflicts, ie, how the behaviour is specifically altered and how the outputs change. Indeed, even when the origin of the conflict is found, an accurate description of the results does not necessarily follow. Excluding 0 value results, we find an average 1.6: unlike identification of the origin, which was generally reliable when present, identification of the effect was still often vague or inaccurate.
+
+
+Overall, we can say ChatGPT can indeed identify and explain whether there is a semantic conflict in a merge. This comes with many caveats however, firstly being that identification does not necessarily lead to a proper explanation. This is not a particularly pressing issue, as a tool that identifies conflicts and then alerts humans, who can themselves describe and fix the issue would already be a great boon for efficient software development.
+
+The bigger caveat is the situations in which it identifies the conflicts: simple fabricated scenarios, whose changes are simple to identify and immediately clearly related. In real world scenarios, where its not immediately obvious what functions the changes serve and how they relate to each other. To resolve this, it might necessary to work out how to efficiently feed the LLM so it can gain an accurate understanding of the whole system without losing focus on the specific task at hand.
 
 
 
