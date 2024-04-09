@@ -155,12 +155,12 @@ With unit testing generation in particular, Zhiqiang Yuan et al, in developing t
 
 \begin{figure}[!h]
     \includegraphics[width=0.86\textwidth]{figures/basicprompt.jpg}
-    \caption{Basic Prompt in ChatTester. Code context and natural language instructions can be identified. \citep{kn:chattester}.}
+    \caption{Basic prompt used in ChatTester~\cite{kn:chattester}.\todo{Convert figure to text.}}
     \label{fig:basprompt}
 \end{figure}
 \begin{figure}[!h]
     \includegraphics[width=0.86\textwidth]{figures/inferenceprompt.jpg}
-    \caption{Inference Prompt in ChatTester \citep{kn:chattester}.}
+    \caption{Inference prompt in ChatTester~\cite{kn:chattester}.\todo{Convert figure to text.}}
     \label{fig:inf}
 \end{figure}
 
@@ -175,7 +175,7 @@ The team behind ChatUniTest presents a two step prompting system, where instruct
 \begin{figure}
     \centering
     \includegraphics[width=0.86\textwidth]{figures/chatunittestprompt.png}
-    \caption{ChatUniTest two-step prompting \citep{kn:chatunitest}}
+    \caption{ChatUniTest two-step prompting~\cite{kn:chatunitest}.\todo{Convert figure to text.}}
     \label{fig:chunit}
 \end{figure}
 
@@ -183,8 +183,7 @@ The team behind ChatUniTest presents a two step prompting system, where instruct
 The training of LLM's in open source repositories gives cause to the fear that automatic test generation might be reliant on the model being trained in the code under test, or simply replicating existing testing suites. To assuage this, it was identified that even when generating tests for packages hosted in GitLab (which were not used to train the LLM under study, gpt3.5-turbo), they still maintained high coverage. In addition, it was found that 60.0\% of the tests had <= 40\% similarity to existing tests and 92.8\% had <= 50\%. Thus we can conclude the LLM is not simply copying tests from the training set without alteration\citep{kn:max}.
 
 
-\section{Conclusions}
-
+\section{Summary}
 
 The related work aids our own work in several ways: the work explored as regards unit test generation can provide show us a baseline functioning of the idea we are trying to implement. Particularly, we can use their statistics regarding percentage of conflicts found to assess whether our own solution is an improvement with regards to previous work.
 
