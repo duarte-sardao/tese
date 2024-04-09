@@ -25,27 +25,12 @@
 %% and uncomment the next line
 %% \documentclass[11pt,a4paper,twoside,openright]{report}
 
-%% For iso-8859-1 (latin1), comment next line and uncomment the second line
-\usepackage[utf8]{inputenc}
-%\usepackage[latin1]{inputenc}
-
-
-\usepackage{tabularx,ragged2e}
-\usepackage{etoolbox}
-\usepackage{listings}
-\lstset{
-basicstyle=\small\ttfamily,
-columns=flexible,
-breaklines=true
-}
-
-%% English version
-
 %% MEIC options
-\usepackage[meic]{feupteses}
+% \usepackage[meic]{feupteses}
 %\usepackage[meic,juri]{feupteses}
 %\usepackage[meic,final]{feupteses}
 %\usepackage[meic,final,onpaper]{feupteses}
+\usepackage[meic,juri,backrefs]{feupteses}
 
 %% MEEC options
 %\usepackage[meec]{feupteses}
@@ -62,9 +47,62 @@ breaklines=true
 %% Uncomment to create an index (at the end of the document)
 %\makeindex
 
-%% Path to the figures directory
-%% TIP: use folder ``figures'' to keep all your figures
+\usepackage[utf8]{inputenc}
+
+\usepackage{xspace}
+\xspaceaddexceptions{\%}
+\xspaceremoveexception{-}
+
+% *** GRAPHICS RELATED PACKAGES ***
+
 \graphicspath{{figures/}}
+
+\usepackage{tabularx,ragged2e}
+\usepackage{etoolbox}
+
+\usepackage{tikz}
+
+% *** HYPHENATION ***
+
+\usepackage{soul} % Hyphenation for letterspacing, underlining, and more
+
+% *** SPECIALIZED LIST PACKAGES ***
+
+\usepackage{paralist}
+\usepackage{verbatim}
+\usepackage{listings}
+
+\lstset{
+  basicstyle=\small\ttfamily,
+  columns=flexible,
+  breaklines=true
+}
+
+\usepackage{enumitem}
+\setitemize{noitemsep,topsep=1pt,parsep=1pt,partopsep=1pt}
+
+% *** PDF, URL AND HYPERLINK PACKAGES ***
+
+% \usepackage[hyphens]{url}
+\usepackage{hyperref}
+\hypersetup{
+  pdftitle={},
+  pdfauthor={},
+  colorlinks=true,
+  bookmarks=false,
+  bookmarksopen,
+  bookmarksnumbered
+}
+\def\UrlBreaks{\do\/\do-}
+
+\usepackage[hang,flushmargin]{footmisc}
+
+% *** CITE AND REF PACKAGES ***
+
+\usepackage[capitalise,noabbrev]{cleveref} % Must be loaded *after* hyperref
+\newcommand{\creflastconjunction}{, and\nobreakspace} % use serial comma
+\usepackage[numbers,sort]{natbib}
+% \usepackage{balance}
 
 %%----------------------------------------
 %% TIP: if you want to define more macros, use an external file to keep them

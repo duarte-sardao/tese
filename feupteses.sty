@@ -59,12 +59,12 @@
 %% Option for numeric references (citation order)
 \newif\if@numericrefs
 \@numericrefsfalse
-%\DeclareOption{numericrefs}{\@numericrefstrue}
+\DeclareOption{numericrefs}{\@numericrefstrue}
 
 %% Option for alpha references
 \newif\if@alpharefs
 \@alpharefsfalse
-%\DeclareOption{alpharefs}{\@alpharefstrue}
+\DeclareOption{alpharefs}{\@alpharefstrue}
 
 %% Internal option: page headers are centered
 \newif\if@headerscentered
@@ -190,17 +190,17 @@ with the `report' document style}{}}{}
 \fi
 \RequirePackage{xcolor}
 
-\if@numericrefs
-  \newcommand{\citet}{\cite}
-  \newcommand{\citep}{\cite}
-\else
-  \if@alpharefs 
-     \newcommand{\citet}{\cite}
-     \newcommand{\citep}{\cite}
-  \else
-     \RequirePackage[round]{natbib}
-  \fi
-\fi
+% \if@numericrefs
+%   \newcommand{\citet}{\cite}
+%   \newcommand{\citep}{\cite}
+% \else
+%   \if@alpharefs 
+%      \newcommand{\citet}{\cite}
+%      \newcommand{\citep}{\cite}
+%   \else
+%      \RequirePackage[round]{natbib}
+%   \fi
+% \fi
 
 %% Global style defaults
 
@@ -597,15 +597,16 @@ with the `report' document style}{}}{}
 
   \newcommand{\PrintBib}[1]{%
     \renewcommand{\bibname}{References}%
-    \if@numericrefs%
-      \bibliographystyle{plain}%
-    \else%
-      \if@alpharefs%
-        \bibliographystyle{alpha}%
-      \else%
-        \bibliographystyle{plainnat}%
-      \fi%
-    \fi%
+    % \if@numericrefs%
+    %   \bibliographystyle{plain}%
+    % \else%
+    %   \if@alpharefs%
+    %     \bibliographystyle{alpha}%
+    %   \else%
+    %     \bibliographystyle{plainnat}%
+    %   \fi%
+    % \fi%
+    \bibliographystyle{plainnat}%
     \cleardoublepage%
     \phantomsection%
     \addcontentsline{toc}{chapter}{References}%
