@@ -8,6 +8,10 @@ Entre conflitos de integração, os semânticos emergem com um tipo particularme
 Procuramos explorar como o emergente ramo de Modelos de Linguagem Grande podem fornecer um enorme avanço na nossa abilidade de testar o comportamento alterado, introduzido ou perdido devido a conflitos semânticos.
 Especificamente, com base em trabalho anteriore que identifica prováveis conflitos e gera outputs, numa linguagem de domínio específica, analisamos a abilidade de ChatGPT para gerar testes unitários apropriados that evidenciam a presença de conflitos semânticos, com prompting adequado.
 
+\bigskip\noindent
+\textbf{Palavras-chave:} \todo{At least 3.}
+
+% ------------------------------------------------------------------------------
 
 \chapter*{Abstract}
 %\addcontentsline{toc}{chapter}{Abstract}
@@ -17,3 +21,6 @@ In collaborative software development, parallel work done by several different b
 Among merge conflicts, semantic merges arise as particularly difficult to resolve, as they avoid detection by version control systems and lacking syntactic errors, compile successfully. An example of a semantic conflict can be seen in a class such as Point, containing a method to calculate the distance to another Point: in a scenario where one developer in branch A changes the distance calculation (from euclidean to manhattan, for example), while another calls the distance method for a movement function in branch B, we find that upon a merge while no errors are raised, the code exhibits altered behaviour from the original branches: specifically, the movement will be different from what was developed in branch B.
 
 We seek to explore how the emerging field of Large Language Models can provide a breakthrough in our ability to test for the altered, introduced and lost behaviours arising from semantic conflicts. Specifically, building upon previous work that identifies probable conflicts and generates outputs, on a domain-specific language, we analyse the ability of ChatGPT to generate appropriate unit tests that highlight the presence of semantic conflicts, given appropriate prompting.
+
+\bigskip\noindent
+\textbf{Keywords:} \todo{At least 3.}
