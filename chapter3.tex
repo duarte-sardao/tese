@@ -1,14 +1,77 @@
-\chapter{Methodology and Work}\label{chap:chap3}
+\chapter{Empirical methodology}\label{chap:chap3}
 
-\section{Tool and Subject Selection}
+\todo{Provide a brief intro.}
 
-\subsection{Subjects}
+\section{Experimental subjects}
 
-To assess the validity of a developed solution, a collection of subjects to test must be collected. While several previous work has compiled collections of merge commits with semantic conflicts, the collection done by Nuno Castanho \cite{kn:nuno} is particularly useful, being publicly available, closely related to our own work, and also allowing us to draw direct comparisons. Most importantly, it aggregates merge instances from both Silva et al \cite{kn:leuson} and Sousa et al \cite{kn:safemerge}, while also providing valuable information, due to the work developed, such as the specific type of conflict present and whether it was detected and correctly tested by UNSETTLE (providing us with a "base truth"). Furthermore, it has compiled a set of fabricated conflicts, which provide simpler isolated examples that can aid us as they should be easier to detect and test.
+\todo{\begin{itemize}
+  \item Cart (PF)
+  \item Cart (PM)
+  \item Cart (CM)
+  \item Point (Adicao e mudanca)
+  \item Fabricated (OAC)
+  \item Fabricated (RO)
+  \item OkHttp (Parallel changes to method)
+  \item Antrl4 (Parallel no field)
+\end{itemize}}
 
-\subsection{LLM's}
+To assess the validity of a developed solution, a collection of subjects to test must be collected. While several previous work has compiled collections of merge commits with semantic conflicts, the collection done by \citet{kn:nuno} is particularly useful, being publicly available, closely related to our own work, and also allowing us to draw direct comparisons. Most importantly, it aggregates merge instances from both \citet{kn:leuson} and \citet{kn:safemerge}, while also providing valuable information, due to the work developed, such as the specific type of conflict present and whether it was detected and correctly tested by UNSETTLE (providing us with a ``base truth''). Furthermore, it has compiled a set of fabricated conflicts, which provide simpler isolated examples that can aid us as they should be easier to detect and test.
+
+
+\section{Large language models}
+
+\todo{\begin{itemize}
+  \item ChatGPT
+  \item (if time allows) GitHub Copilot Chat on VS Code / IntelliJ IDE
+\end{itemize}}
 
 While preliminary work sought to explore ChatGPT and Llama (both CodeLlama and Llama 2), hardware constraints meant we were unable to explore Llama. Bing AI and Bard were also considered, but they were problematic due to very stringent message size limits, in the case of Bard, and generally worse results: Bing AI, for example, could not wait for all the information to be sent, if split in more than one message and thus generated confused responses. ChatGPT, being hosted online for free and with generous message size limits, proved to be the most reliable option. Despite this, many capabalities that could prove invaluable for this work remained locked behind a premium paywall.
+
+
+\section{Research questions}
+
+\begin{itemize}
+  \item[\textbf{RQ1:}] Can ChatGPT identify, understand, and explain, whether
+  there is a semantic conflict in a merge commit?
+
+  \item[\textbf{RQ2:}] \todo{???}
+\end{itemize}
+
+\section{Experimental procedure}
+
+\subsection{RQ1}
+
+\todo{Describe RQ1's prompt and metrics used}
+
+\subsection{RQ2}
+
+\todo{Describe RQ2's prompt and metrics used}
+
+
+\section{Threats to validity}
+
+\todo{Describe any threat to our study, e.g., subjects, llms, our prompts, and
+what have we done to mitigate them.}
+
+Based on the guidelines reported by \citet{wohlin2012experimentation}, we have
+taken all reasonable steps to mitigate the effect of potential threats, which
+are described in detail in this section.
+
+\subsection{Threats to construct validity}
+%
+\todo{Are associated with the correspondence between theory and observation.}
+
+\subsection{Threats to internal validity}
+%
+\todo{Are associated with uncontrollable internal factors that may influence our results.}
+
+\subsection{Threats to external validity}
+%
+\todo{Are associated with the generalization of the results reported.}
+
+
+
+
 
 \section{Evaluation of ChatGPT's capabilities}
 
@@ -72,7 +135,7 @@ Do you believe there could be a *semantic* merge conflict here? Where? Explain w
 
 The first two prompts failed. Indeed for prompt ChatGPT only mentioned the changes in move, but even after prompting it to pay attention to distance, it failed to identify the conflict. For both, it seemed to not understand what was being referred to when speaking of conflict, describing all changes as a "conflict". Thus it would say, there is a conflict between whether to use euclidian and manhattan distance and there is a conflict on how the move function works.
 
-The last prompt given, highlighting the *semantic* aspect of the merge conflict, yielded good results, with the conflict being perfectly described, as seen in figure \ref{fig:semconf}. After prompting for a test, it generates an appropriate one: it tests if the move function updates Point appropriately based on the euclidean distance. Thus it fails for base and branch B, where movement is still done with the value of 1, it passes for branch A as there move is based on distance; and it fails in merge, as now movement is being done with the distance calculation, but the calculation is now manhattan.
+The last prompt given, highlighting the *semantic* aspect of the merge conflict, yielded good results, with the conflict being perfectly described, as seen in \Cref{fig:semconf}. After prompting for a test, it generates an appropriate one: it tests if the move function updates Point appropriately based on the euclidean distance. Thus it fails for base and branch B, where movement is still done with the value of 1, it passes for branch A as there move is based on distance; and it fails in merge, as now movement is being done with the distance calculation, but the calculation is now manhattan.
 
 \begin{figure}
     \centering
@@ -99,7 +162,7 @@ We also had to reckon with size limits for messages. Thus, when necessary, we st
 We have done a merge on a piece of software and introduced a semantic conflict of types: "Update two different dependencies of a method or update one method and concurrently update one of its dependencies" and "Concurrent changes to the same method". I will now show the base commit, the diff in branch A, the diff in branch B, and the final merge version in 4 separate messages. At the end I want you to explain why and where the semantic conflict is present.
 \end{quote}
 
-Common issues are confusion between textual and semantic merges, which can be mitigated by clear explanation of what a semantic merge is; hallucinations of features not present in the code or hallucinations of changes where changes were not made; lack of focus on the methods where conflict is evident, despite reiterations; loss of focus when prompt has to be split into several messages. When the tools do understand what a semantic conflict is and what changes have been made to the code, the best description they can give is to point out them out followed by the suggestion that there may be a conflict there, usually passing on the responsibility of identifying and resolving it to the human user, as seen on figure \ref{fig:cantfind}.
+Common issues are confusion between textual and semantic merges, which can be mitigated by clear explanation of what a semantic merge is; hallucinations of features not present in the code or hallucinations of changes where changes were not made; lack of focus on the methods where conflict is evident, despite reiterations; loss of focus when prompt has to be split into several messages. When the tools do understand what a semantic conflict is and what changes have been made to the code, the best description they can give is to point out them out followed by the suggestion that there may be a conflict there, usually passing on the responsibility of identifying and resolving it to the human user, as seen in \Cref{fig:cantfind}.
 
 \begin{figure}
     \centering
@@ -108,7 +171,7 @@ Common issues are confusion between textual and semantic merges, which can be mi
     \label{fig:cantfind}
 \end{figure}
 
-While we found that ChatGPT could not identify the semantic conflicts present in real software solutions, in some of Nuno Castanho's fabricated scenarios \cite{kn:nuno}, these were correctly explained. Part of the difference between real-world examples and fabricated scenarios may come down to the information given. The fabricated scenarios were accompanied with a description of the specific semantic conflict present and the changes made perfectly reflected the description, with clear modifications and no extraneous changes. Thus it is possible collecting and offering that information with real-world scenarios may improve the ability of LLMs in this regard, but the higher "noise" of these scenarios may be too disruptive in this regard.
+While we found that ChatGPT could not identify the semantic conflicts present in real software solutions, in some of \citet{kn:nuno}'s fabricated scenarios, these were correctly explained. Part of the difference between real-world examples and fabricated scenarios may come down to the information given. The fabricated scenarios were accompanied with a description of the specific semantic conflict present and the changes made perfectly reflected the description, with clear modifications and no extraneous changes. Thus it is possible collecting and offering that information with real-world scenarios may improve the ability of LLMs in this regard, but the higher "noise" of these scenarios may be too disruptive in this regard.
 
 Another factor in consideration is the issue of dependencies, as so far testing had focused on just a unitary class. Given that semantic conflicts can involve interactions between classes and subclasses or other dependencies, it is relevant to provide further information. Initial tests just added one dependency, whether by calling a class methods or due to a inheritance relationship. An example, with the addition of an illustrative example of a semantic conflict follows.
 
@@ -140,9 +203,9 @@ Underscoring these experiments with real world test cases is an overlying issue:
 
 \subsection{Test Generation without Conflict Understanding}
 
-Given the difficulty of getting ChatGPT to provide accurate descriptions of the semantic conflicts, it was worth exploring whether the conflicts can be made evident just by generating tests targeting affected methods and classes. Several strategies were adopted: the prompting with the class after merge, the prompting with the class after merge and branch diffs and prompting with the class after merge and a structure graph. In most cases, where existing test suites where available, such information was also provided, with the prompt being reformulated to ask for its extension, rather than generation from scratch, as this shown to be important before \cite{kn:githubcopilot}.
+Given the difficulty of getting ChatGPT to provide accurate descriptions of the semantic conflicts, it was worth exploring whether the conflicts can be made evident just by generating tests targeting affected methods and classes. Several strategies were adopted: the prompting with the class after merge, the prompting with the class after merge and branch diffs and prompting with the class after merge and a structure graph. In most cases, where existing test suites where available, such information was also provided, with the prompt being reformulated to ask for its extension, rather than generation from scratch, as this shown to be important before~\cite{kn:githubcopilot}.
 
-For 15 tests of 5 different projects, only 2 compiled, before and after prompting for corrections. One of these tested trivial additions to an array in both branches and the other identified a behaviour introduced in branch B that successfully carried over to merge, thus not a conflict. Positively, ChatGPT could understand the significance of this test working in branch B and merge but not A, as seen in figure \ref{fig:testexplain}, suggesting it could understand the significance of a test failing for merge but not upper branches, which would indicate conflicts.
+For 15 tests of 5 different projects, only 2 compiled, before and after prompting for corrections. One of these tested trivial additions to an array in both branches and the other identified a behaviour introduced in branch B that successfully carried over to merge, thus not a conflict. Positively, ChatGPT could understand the significance of this test working in branch B and merge but not A, as seen in \Cref{fig:testexplain}, suggesting it could understand the significance of a test failing for merge but not upper branches, which would indicate conflicts.
 
 \begin{figure}
     \centering
@@ -167,7 +230,7 @@ Results were generic, many times not even referring to aspects of the code itsel
 
 \section{Comparison of Developed Prompts with State of the Art}
 
-To evaluated our progressively developed prompt with existing state of the art, we selected 5 prompts from comparison, henceforth referred as 1 \cite{kn:chattester}, 2 \cite{kn:siddiq2023empirical}, 3 \cite{kn:gptunitbra} and 4 \cite{kn:chatunitest}. Our prompt, in turn, was 2-step prompt as follows:
+To evaluated our progressively developed prompt with existing state of the art, we selected 5 prompts from comparison, henceforth referred as 1 \cite{kn:chattester}, 2 \cite{kn:siddiq2023empirical}, 3 \cite{kn:gptunitbra}, and 4 \cite{kn:chatunitest}. Our prompt, in turn, was 2-step prompt as follows:
 
 \begin{quote}
 The following class was altered in a merge, specifically the METHOD method. Analyse it and what it does, with focus on the method and its usage: CLASS INFO
@@ -202,8 +265,8 @@ Despite failing, due to previously mentioned issue with access, Prompt 1 notably
 
 The first research question we established sought to more systematically evaluate ChatGPT's capabilities to assess and describe semantic conflicts: "Can ChatGPT identify, understand and explain whether there is a semantic conflict in a merge commit?"
 To evaluate this research question, we established 8 subjects:
-3 fabricated scenarios, one on a Point class and 2 by Nuno Castanho \cite{kn:nuno}, that had shown success in earlier experiments.
-3 fabricated scenarios on a Cart class. These represent conflicts of type Parallel Changes in Field, Parallel Changes in Method and Change Method, which were shown to be the most common in real world scenarios \cite{kn:nuno}. Finally, 2 real world scenarios, in the Antlr and OkHttp projects.
+3 fabricated scenarios, one on a Point class and 2 by \citet{kn:nuno}, that had shown success in earlier experiments.
+3 fabricated scenarios on a Cart class. These represent conflicts of type Parallel Changes in Field, Parallel Changes in Method and Change Method, which were shown to be the most common in real world scenarios~\cite{kn:nuno}. Finally, 2 real world scenarios, in the Antlr and OkHttp projects.
 
 
 For assessment, we established 5 metrics, with likert scales:
@@ -1182,25 +1245,3 @@ With the relatively lowest value, we find that ChatGPT struggles with accurately
 Overall, we can say ChatGPT can indeed identify and explain whether there is a semantic conflict in a merge. This comes with many caveats however, firstly being that identification does not necessarily lead to a proper explanation. This is not a particularly pressing issue, as a tool that identifies conflicts and then alerts humans, who can themselves describe and fix the issue would already be a great boon for efficient software development.
 
 The bigger caveat is the situations in which it identifies the conflicts: simple fabricated scenarios, whose changes are simple to identify and immediately clearly related. In real world scenarios, where its not immediately obvious what functions the changes serve and how they relate to each other. To resolve this, it might necessary to work out how to efficiently feed the LLM so it can gain an accurate understanding of the whole system without losing focus on the specific task at hand.
-
-
-
-\section{Future Work}
-
-\subsection{Development Plan and Tool Functioning}
-
-Development of the solution will go through several stages. Firstly, the process which has already been in progress, is the initial evaluation of LLM's and prompt techniques. After acquiring the list of subjects to test and deciding on the LLM, we can systematize this to develop the prototype solution. From here we start developing a tool that can automatically generate a prompt, get a test from the LLM and then run it. This prototype tool can then be further augmented, by applying corrections for tests that may fail to compile. Figure \ref{fig:tool} details the expected functioning of the tool once completed. A final period of evaluation and observations will compare our results to previous work and reflect on possible further improvements.
-
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{figures/tool.png}
-    \caption{Functioning pipeline of proposed tool}
-    \label{fig:tool}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{figures/gantt.jpg}
-    \caption{Gantt diagram of working plan}
-    \label{fig:gantt}
-\end{figure}
