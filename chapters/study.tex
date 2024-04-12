@@ -1,21 +1,14 @@
 \chapter{Empirical methodology}\label{chap:study}
 
-\todo{Provide a brief intro.}
+The purpose of this chapter of work was to assess the capabilities of LLM to identify and test semantic conflicts.
+Thus, it was divided into two phases: an initial exploratory phase, where an unstructured exploration allowed us to develop prompts, identify characteristics of the LLM and narrow down on its abilities and limitations.
+In a second phase, work was systematized, with the elaboration of research questions and metrics to evaluate results.
 
 \section{Experimental subjects}
 
-\todo{\begin{itemize}
-  \item Cart (PF)
-  \item Cart (PM)
-  \item Cart (CM)
-  \item Point (Adicao e mudanca)
-  \item Fabricated (OAC)
-  \item Fabricated (RO)
-  \item OkHttp (Parallel changes to method)
-  \item Antrl4 (Parallel no field)
-\end{itemize}}
-
 To assess the validity of a developed solution, a collection of subjects to test must be collected. While several previous work has compiled collections of merge commits with semantic conflicts, the collection done by \citet{kn:nuno} is particularly useful, being publicly available, closely related to our own work, and also allowing us to draw direct comparisons. Most importantly, it aggregates merge instances from both \citet{kn:leuson} and \citet{kn:safemerge}, while also providing valuable information, due to the work developed, such as the specific type of conflict present and whether it was detected and correctly tested by UNSETTLE (providing us with a ``base truth''). Furthermore, it has compiled a set of fabricated conflicts, which provide simpler isolated examples that can aid us as they should be easier to detect and test.
+In analyzing the work of Nuno Castanho, we found the predominant types of semantic conflicts in real scenarios where "Parallel Changes in Field", "Parallel Changes in Method" and "Change Method" \citet{kn:nuno}. Using a simple Cart class as a base, 3 examples were made for these scenarios.
+These Cart examples would be part of the group of subjects used to answer and evaluate the research questions we defined. These were complemented by a simple Point class, two examples fabricated by Nuno Castanho of type "Override by Access Change" and "Remove Override", which had achieved good results in exploratory testing, Antlr4 and OkHttp, respectively a simple and a hard to test real-world scenario.
 
 
 \section{Large language models}
