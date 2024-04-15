@@ -6,13 +6,30 @@ In a second phase, work was systematized, with the elaboration of research quest
 
 \section{Experimental subjects}\label{chap:study:subjects}
 
+\begin{table}[t]
+\centering
+% \tabcolsep=1cm
+% \renewcommand{\arraystretch}{0.90}
+\begin{tabular}{@{\extracolsep{\fill}} lll} \toprule
+                 & Real & Conflict \\
+\midrule
+Point            & No  & \todo{???} \\
+Fabricated (RO)  & No  & Remove Override \\
+Fabricated (OAC) & No  & Overload by Access Change \\
+Cart (CM)        & No  & Change Method \\
+Cart (PF)        & No  & Parallel Field \\
+Cart (PM)        & No  & Parallel Method \\
+Antlr            & Yes & \todo{???} \\
+OkHttp           & Yes & \todo{???} \\
+\bottomrule
+\end{tabular}
+\caption{Subjects used in the empirical study.\label{tab:subjects}}
+\end{table}
+
+\todo{Mention \Cref{tab:subjects}.}
 To assess the validity of a developed solution, a collection of subjects to test must be collected. While several previous work has compiled collections of merge commits with semantic conflicts, the collection done by \citet{kn:nuno} is particularly useful, being publicly available, closely related to our own work, and also allowing us to draw direct comparisons. Most importantly, it aggregates merge instances from both \citet{kn:leuson} and \citet{kn:safemerge}, while also providing valuable information, due to the work developed, such as the specific type of conflict present and whether it was detected and correctly tested by UNSETTLE (providing us with a ``base truth''). Furthermore, it has compiled a set of fabricated conflicts, which provide simpler isolated examples that can aid us as they should be easier to detect and test.
 In analyzing the work of Nuno Castanho, we found the predominant types of semantic conflicts in real scenarios where "Parallel Changes in Field", "Parallel Changes in Method" and "Change Method" \citet{kn:nuno}. Using a simple Cart class as a base, 3 examples were made for these scenarios.
 These Cart examples would be part of the group of subjects used to answer and evaluate the research questions we defined. These were complemented by a simple Point class, two examples fabricated by Nuno Castanho of type "Override by Access Change" and "Remove Override", which had achieved good results in exploratory testing, Antlr4 and OkHttp, respectively a simple and a hard to test real-world scenario.
-
-\todo{In addition to the text above, I would also suggest a table with three columns:
-name of the subject, whether is fabricated, and what conflict is present.  Although
-the text is ok, it is not that easy to spot which subjects were used.}
 
 
 \section{Large language models}
