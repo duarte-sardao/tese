@@ -44,55 +44,50 @@ To evaluate this research question, we established 8 subjects:\todo{the subjects
 3 fabricated scenarios on a Cart class. These represent conflicts of type Parallel Changes in Field, Parallel Changes in Method and Change Method, which were shown to be the most common in real world scenarios~\cite{kn:nuno}. Finally, 2 real world scenarios, in the Antlr and OkHttp projects.
 
 
-For assessment, we established 5 metrics, with likert scales:
+For assessment, we established five metrics, with likert scales:
 
--A: Changes between branches correctly identified (Correct description of Version A and B)
+\begin{itemize}
+  \item[\textbf{A}:] Changes between branches correctly identified (Correct description of Version A and B).
+  \begin{itemize}
+    \item[\textbf{0}:] Large errors in description for both branches.
+    \item[\textbf{1}:] Large error in description of one branch.
+    \item[\textbf{2}:] Minor insignificant errors.
+    \item[\textbf{3}:] Changes correctly identified.
+  \end{itemize}
 
-0: Large errors in description for both branches
+  \item[\textbf{B}:] No conflict misunderstanding (Does not describe textual conflict, understand merge succeed).
+  \begin{itemize}
+    \item[\textbf{0}:] Understands conflict as textual.
+    \item[\textbf{1}:] Understands the conflict as semantic.
+  \end{itemize}
 
-1: Large error in description of one branch
+  \item[\textbf{C}:] Positive response (3 types: says conflict exists/may exist/does not exist)
+  \begin{itemize}
+    \item[\textbf{0}:] Denies existence of conflict
+    \item[\textbf{1}:] Asserts conflict is possible
+    \item[\textbf{2}:] Asserts conflict exists
+  \end{itemize}
 
-2: Minor insignificant errors
+  \item[\textbf{D}:] Origin of conflict described (What code interactions lead to altered behaviour)
+  \begin{itemize}
+    \item[\textbf{0}:] Incorrect or non-existent explanation
+    \item[\textbf{1}:] Identifies origin of conflict, with lack of clarity or imprecisions
+    \item[\textbf{2}:] Identifies origin of conflict, with lack of confidence
+    \item[\textbf{3}:] Identifies origin of conflict
+  \end{itemize}
 
-3: Changes correctly identified
-
--B: No conflict misunderstanding (Does not describe textual conflict, understand merge succeed)
-
-0: Understands conflict as textual
-
-1: Understands the conflict as semantic
-
--C: Positive response (3 types: says conflict exists/may exist/does not exist)
-
-0: Denies existence of conflict
-
-1: Asserts conflict is possible
-
-2: Asserts conflict exists
-
--D: Origin of conflict described (What code interactions lead to altered behaviour)
-
-0: Incorrect or non-existent explanation
-
-1: Identifies origin of conflict, with lack of clarity or imprecisions
-
-2: Identifies origin of conflict, with lack of confidence
-
-3: Identifies origin of conflict
-
--E: Effect of conflict described (What is the result of the code interactions/expected output)
-
-0: Result of conflict is omitted, too vague or wrong
-
-1: Result of conflict is expressed, but with imprecisions or generically
-
-2: Possible code outputs are expressed, with little confidence
-
-3: Assertively points out expected outputs due to conflict
+  \item[\textbf{E}:] Effect of conflict described (What is the result of the code interactions/expected output)
+  \begin{itemize}
+    \item[\textbf{0}:] Result of conflict is omitted, too vague or wrong
+    \item[\textbf{1}:] Result of conflict is expressed, but with imprecisions or generically
+    \item[\textbf{2}:] Possible code outputs are expressed, with little confidence
+    \item[\textbf{3}:] Assertively points out expected outputs due to conflict
+  \end{itemize}
+\end{itemize}
 
 For the purposes of this research question, we settled on a final prompt:
 
-\begin{quote}
+\begin{prompt}
 You are a software developer that has to assess whether there is a semantic conflict in a merge commit.  Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, assess whether there is a semantic conflict and explain it.
 
 Base version:
@@ -110,8 +105,7 @@ Diff version B and the base:
 Merge version:
 ```java
 ```
-
-\end{quote}
+\end{prompt}
 
 For each semantic conflict example, the prompt would be submitted 3 times, allowing us to see a broader range of responses and avoiding what might be one-time flukes.
 
