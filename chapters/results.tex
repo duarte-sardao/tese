@@ -1,3 +1,286 @@
 \chapter{Experimental results}\label{chap:results}
 
 This chapters answers \textbf{RQ1 – RQ?}, which study \todo{???}.
+
+\section{RQ1}
+
+The complete prompts, with results and evaluated metrics, can be found in the attachments. The following is just metric evaluations and necessary comments.
+
+\subsection{Point}
+
+First prompting:
+A:3
+B:1
+C:0
+D:0
+E:0
+
+Second prompting:
+A:3
+B:1
+C:2
+D:3
+E:2
+
+Third prompting:
+A:3
+B:1
+C:0
+D:0
+E:0
+
+This first example shows particularly the importance of running several trials as despite the simplicity of the conflict, the LLM fails to identify it 2/3 times. Despite this, when it does identify it, it puts forth a good description.
+
+\subsection{Fabricated, Remove Override}
+
+First promtping:
+A:3
+B:1
+C:2
+D:3
+E:1
+
+
+Second promtping:
+A:3
+B:1
+C:0
+D:0
+E:0
+
+
+Third prompting:
+A:3
+B:1
+C:1
+D:3
+E:1
+
+\subsection{Fabricated, Overload by Access Change}
+First prompting:
+A:1
+B:1
+C:0
+D:3
+E:1
+
+Second prompting:
+A:3
+B:1
+C:2
+D:3
+E:1
+
+Third prompting:
+A:3
+B:1
+C:1
+D:3
+E:0
+
+In these fabricated examples, the biggest issue was the identification of the effects of the semantic conflict, namely that when an overriden function was removed or had its' access changed, the other function, with different behaviour, would be used instead. However, given the constraints of the prompt, which is limited to one class, the necessary information could not be transmitted and the LLM argued there would be compilation errors. Better results were observed when doing more manual, ad-hoc experiments, as we could identify exactly all the classes involved in the conflict and offer all the required information.
+
+\subsection{Cart, Change Method}
+
+First prompting:
+A:3
+B:1
+C:1
+D:2
+E:2
+
+Second prompting:
+A:3
+B:1
+C:0
+D:0
+E:0
+
+Third prompting:
+A:3
+B:1
+C:2
+D:3
+E:0
+
+We see variability in these results. Notably, in the cases where the conflict is identified, with varying exactness, it falls short of being able to explain the exact result of the conflict, namely that if an admin tries to checkout, there will always be a exception thrown. Instead, we see more vague declarations, such as "As a result, it may lead to unexpected behavior or exceptions during execution, especially if the admin status of a user is incorrectly handled" and unnecessary usage of expressions such as 'potentially' in "If `user.admin` is true, `total\_cost` will return 0, potentially causing the `checkout` method in version B to throw a `RuntimeException` even if `user.admin` is true".
+In the scenario where detection failed we see an example of the LLM providing a grossly wrong explanation: "If the user is an admin and a discount code that results in a cost of 0 is applied, the exception will never be thrown because the `checkout` method won't be called.".
+\subsection{Cart, Parallel Field}
+
+First prompting:
+A:1
+B:1
+C:2
+D:1
+E:0
+
+Second prompting:
+A:1
+B:1
+C:2
+D:3
+E:1
+
+Third prompting:
+A:1
+B:1
+C:2
+D:3
+E:1
+
+In this case, ChatGPT consistently failed to accurately describe the changes made:
+\begin{lstlisting}
+- Version A introduces a new discount code called "megasaver" with a discount value of 0.4.
+- Version B modifies the discount value of the "superpromo" code to 0.25 instead of 0.3.
+------------------------------------------------------------------------
+1. **Version A**:
+   - It adds a new discount code `"megasaver"` with a discount of 0.4d.
+
+2. **Version B**:
+   - It changes the discount value for the `"superpromo"` code from 0.25d to 0.25d.
+------------------------------------------------------------------------
+- Version A adds a new discount code "megasaver" with a discount of 0.4.
+- Version B modifies the discount of the "superpromo" code to 0.25.
+\end{lstlisting}
+However this did not worsen it's ability to identify the conflict. Despite this it also consistently falls back on vaguer descriptions on the result: even if can point out that the order of operations influences the result, in an ideal scenario we would hope it would be able to point out that the 0.4d value, set last, would override 0.25d.
+
+
+\subsection{Cart, Parallel Method}
+
+First prompting:
+A:3
+B:1
+C:1
+D:3
+E:3
+
+Second prompting:
+A:3
+B:1
+C:0
+D:0
+E:0
+
+Third prompting:
+A:3
+B:1
+C:1
+D:3
+E:3
+
+Despite one failure of detection, this example provided very good results, both in identifying and describing the consequences of the conflict.
+
+\subsection{Antlr}
+
+First prompting:
+A:1
+B:1
+C:0
+D:0
+E:0
+
+Second prompting:
+A:3
+B:1
+C:0
+D:0
+E:0
+
+Third prompting:
+A:1
+B:1
+C:0
+D:0
+E:0
+
+No conflict was identified. Notably there was also repeated failure in describing the changes made on the branches, specifically mistaking addition for replacement.
+\begin{lstlisting}
+1. **Diff A vs Base:**
+    - In version A, the `reduce` keyword was replaced with `return` in the `python2Keywords` array.
+ 
+2. **Diff B vs Base:**
+    - In version B, the `del` keyword was added to the `python2Keywords` array.
+-------------------------------------------------------------------------------
+1. **Diff A vs. Base**:
+    - Addition of `"return"` keyword in the `python2Keywords` array.
+    - No conflicting changes with other methods or properties.
+ 
+2. **Diff B vs. Base**:
+    - Replacement of `"delattr"` with `"del"` in the `python2Keywords` array.
+    - No conflicting changes with other methods or properties.
+\end{lstlisting}
+We observed this before with the Parallel Field example in cart, so it is possible the fact that the changes are being made to fields may have some relation.
+
+\subsection{OkHttp}
+
+First prompting:
+A:3
+B:1
+C:0
+D:0
+E:0
+
+Second prompting:
+A:3
+B:1
+C:1
+D:0
+E:0
+
+Third prompting:
+A:3
+B:1
+C:1
+D:0
+E:0
+
+While the LLM in 2 cases recognized the possibility of a conflict existing, it could not narrow down where.
+\begin{lstlisting}
+### Potential Semantic Conflict:
+While there's no direct semantic conflict, there could be conflicts in the usage and interpretation of the `transports` field and its associated methods. For instance:
+- How are these transports selected and utilized within the class?
+- Do they introduce any performance or compatibility issues?
+- How do these changes impact existing functionality and client behavior?
+---------------------------------------------------------------------------------------
+### Semantic Conflict Assessment:
+Looking at the changes introduced in versions A and B, there doesn't seem to be a direct semantic conflict between them. Version A primarily deals with transport configuration and introduces a new field `transports` along with related methods. On the other hand, version B modifies the hostname verifier behavior.
+
+However, when merging both changes, we need to ensure that the introduced hostname verifier (`OkHostnameVerifier`) is consistent with the overall configuration of the `OkHttpClient`. Specifically, we need to verify whether `OkHostnameVerifier` is compatible with the behavior and expectations of the existing codebase.
+\end{lstlisting}
+Alternatively to this response, which does not make any factual mistake but is not confident to propose an explanation, we also find a response that is confidently wrong:
+\begin{lstlisting}
+### Explanation:
+The conflict arises because both changes affect the same field (`hostnameVerifier`), but they prescribe different default values.
+   
+In the merge commit, the decision was made to adopt the change from Version B, which explicitly sets the default `hostnameVerifier` to `OkHostnameVerifier()`. This decision potentially overrides any behavior or configuration related to the default `hostnameVerifier` set in Version A.
+    
+If the intended behavior was to preserve the default `hostnameVerifier` as defined in Version A, then this would be considered a semantic conflict, as the behavior of the merged version may differ from the behavior of either Version A or Version B individually.
+\end{lstlisting}
+Here just the change is branch B is presented as a conflict on its own.
+\subsection{Averages and Conclusion}
+
+By averaging out the results for each metric, we can find where the systems excel and where they fail the most. Thus, we find:
+
+- Changes between branches correctly identified: 2.5/3
+ChatGPT is generally able to identify changes made between branches. In cases where they were incorrectly describe, the error were mostly in one branch, relating to altered fields. Despite this, we observed it can still describe conflicts, even when it fails to properly describe changes.
+
+- No conflict misunderstanding: 1/1
+
+In none of our examples did the tool mistake the kind of conflict under discussion. This might be because the prompt did not assert the existence of a conflict, allowing negative responses, whereas other prompts, which asked to find a conflict that did exist, lead the model to find any explanation, which often consisted of describing a textual conflict.
+
+- Positive response: 0.875/2
+
+The average here is slightly under 1, reflecting our observations: answers given tend to identify a conflict, but with uncertainty (with language such as "possible", "might"). In other cases, the cases where no conflict was found outweighed the cases where one was found with uncertainty.
+
+- Origin of conflict described: 1.5/3
+
+Identification of the origins of conflict falls squarely in the middle of our given range.  When we exclude 0 value results, the average is 2.77 instead. This indicates to us in nearly half the cases, the model failed to produce any description, but when it did, it was generally very accurate.
+
+- Effect of conflict described: 0.667/3
+
+With the relatively lowest value, we find that ChatGPT struggles with accurately describing the results of semantic conflicts, ie, how the behaviour is specifically altered and how the outputs change. Indeed, even when the origin of the conflict is found, an accurate description of the results does not necessarily follow. Excluding 0 value results, we find an average 1.6: unlike identification of the origin, which was generally reliable when present, identification of the effect was still often vague or inaccurate.
+
+
+Overall, we can say ChatGPT can indeed identify and explain whether there is a semantic conflict in a merge. This comes with many caveats however, firstly being that identification does not necessarily lead to a proper explanation. This is not a particularly pressing issue, as a tool that identifies conflicts and then alerts humans, who can themselves describe and fix the issue would already be a great boon for efficient software development.
+
+The bigger caveat is the situations in which it identifies the conflicts: simple fabricated scenarios, whose changes are simple to identify and immediately clearly related. In real world scenarios, where its not immediately obvious what functions the changes serve and how they relate to each other. To resolve this, it might necessary to work out how to efficiently feed the LLM so it can gain an accurate understanding of the whole system without losing focus on the specific task at hand.
