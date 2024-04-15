@@ -47,12 +47,12 @@ The second module is the test generator, a modified version of EvoSuite that tak
 
 Of particular interest to us is Changes-Matcher, as this is also the starting point for our work, with the usage of a LLM over EvoSuite for test generation instead.
 
-\begin{table}[!h]
+\begin{table}[t]
 \setlength\extrarowheight{2pt}
-\begin{tabularx}{\textwidth}{|l|l|X|}
- \hline
- Group & ID & Description \\ [0.5ex] 
- \hline\hline
+\begin{tabularx}{\textwidth}{llX}
+ \toprule
+ \textbf{Group} & \textbf{ID} & \textbf{Description} \\
+ \midrule
  Change Method  & CM & Update two different dependencies of a method or update one method and concurrently update one of its
 dependencies \\ 
  \hline
@@ -82,8 +82,8 @@ concurrently add a dependency to it \\
 add a dependency to it \\  
   \hline
  Unexpected Overriding & UO & Override a method in a subclass while a dependency to it is added concurrently (AO) or override an
-Object-inherited method and concurrently add a dependency to it (UO) \\ [1ex] 
- \hline
+Object-inherited method and concurrently add a dependency to it (UO) \\
+ \bottomrule
 \end{tabularx}
 \caption{\label{table:pattern-table}Semantic Conflict Patterns identified by Changes-Matcher~\cite{kn:nuno}.}
 \end{table}
@@ -94,21 +94,18 @@ Ti Jao et al have proposed test oracles for program merges. Most significantly, 
 \Cref{table:tool-comparison} shows a comparison between some key features of the presented solutions.
 
 
-\begin{table}[!h]
+\begin{table}[t]
 \setlength\extrarowheight{2pt}
-\begin{tabularx}{\textwidth}{|p{0.15\textwidth} | 
-p{0.20\textwidth} | p{0.10\textwidth} | p{0.10\textwidth}  | p{0.305\textwidth}|}
- \hline
- Tool & Recall & Octopus Merge Support & Publicly Available & Test Generator \\ [0.5ex] 
- \hline\hline
-  SAM & 43\% \newline (12 out of 28) & No & Yes & EvoSuite, Differential EvoSuite, Randoop, Randoop Clean \\ 
- \hline
-  UNSETTLE & 35\% \newline (6 out of 17) & No & Yes & EvoSuite \\
- \hline
-   TOM & 17\% \newline (132 out of 778) & Yes & No & EvoSuite \\ [1ex] 
- \hline
+\begin{tabularx}{\textwidth}{p{0.15\textwidth}p{0.17\textwidth}p{0.10\textwidth}p{0.13\textwidth}p{0.305\textwidth}}
+  \toprule
+  \textbf{Tool} & \textbf{Recall} & \textbf{Octopus Merge Support} & \textbf{Publicly Available} & \textbf{Test Generator} \\
+  \midrule
+  SAM & 43\% \newline (12 out of 28) & No & Yes & EvoSuite, Differential EvoSuite, Randoop, Randoop Clean \\ \hline
+  UNSETTLE & 35\% \newline (6 out of 17) & No & Yes & EvoSuite \\ \hline
+  TOM & 17\% \newline (132 out of 778) & Yes & No & EvoSuite \\
+ \bottomrule
 \end{tabularx}
-\caption{\label{table:tool-comparison}Comparison of SAM, UNSETTLE and TOM tools~\cite{kn:leuson2,kn:nuno,kn:ji2022}.}
+\caption{\label{table:tool-comparison}Comparison of SAM~\cite{kn:leuson2}, UNSETTLE~\cite{kn:nuno}, and TOM tools~\cite{kn:ji2022}.}
 \end{table}
 
 
