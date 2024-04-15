@@ -26,10 +26,10 @@ OkHttp           & Yes & Parallel Method \\
 \caption{Subjects used in the empirical study.\label{tab:subjects}}
 \end{table}
 
-\todo{Mention \Cref{tab:subjects}.}
 To assess the validity of a developed solution, a collection of subjects to test must be collected. While several previous work has compiled collections of merge commits with semantic conflicts, the collection done by \citet{kn:nuno} is particularly useful, being publicly available, closely related to our own work, and also allowing us to draw direct comparisons. Most importantly, it aggregates merge instances from both \citet{kn:leuson} and \citet{kn:safemerge}, while also providing valuable information, due to the work developed, such as the specific type of conflict present and whether it was detected and correctly tested by UNSETTLE (providing us with a ``base truth''). Furthermore, it has compiled a set of fabricated conflicts, which provide simpler isolated examples that can aid us as they should be easier to detect and test.
 In analyzing the work of Nuno Castanho, we found the predominant types of semantic conflicts in real scenarios where "Parallel Changes in Field", "Parallel Changes in Method" and "Change Method" \citet{kn:nuno}. Using a simple Cart class as a base, 3 examples were made for these scenarios.
 These Cart examples would be part of the group of subjects used to answer and evaluate the research questions we defined. These were complemented by a simple Point class, two examples fabricated by Nuno Castanho of type "Override by Access Change" and "Remove Override", which had achieved good results in exploratory testing, Antlr4 and OkHttp, respectively a simple and a hard to test real-world scenario.
+The collection of subjects and corresponding conflict type can be found in \Cref{tab:subjects}.
 
 
 \section{Large language models}
@@ -56,10 +56,6 @@ The instance of ChatGPT used was the web-based ChatGPT 3.5 Turbo, with default t
 \subsection{RQ1}
 
 The first research question we established sought to more systematically evaluate ChatGPT's capabilities to assess and describe semantic conflicts: "Can ChatGPT identify, understand and explain whether there is a semantic conflict in a merge commit?"
-To evaluate this research question, we established 8 subjects:\todo{the subjects have already been described in \Cref{chap:study:subjects}, thus no need to describe or list them in here.}
-3 fabricated scenarios, one on a Point class and 2 by \citet{kn:nuno}, that had shown success in earlier experiments.
-3 fabricated scenarios on a Cart class. These represent conflicts of type Parallel Changes in Field, Parallel Changes in Method and Change Method, which were shown to be the most common in real world scenarios~\cite{kn:nuno}. Finally, 2 real world scenarios, in the Antlr and OkHttp projects.
-
 
 For assessment, we established five metrics, with likert scales:
 
@@ -124,7 +120,7 @@ Merge version:
 ```
 \end{prompt}
 
-For each semantic conflict example, the prompt was submitted three times,
+For each semantic conflict example, as listed previously, the prompt was submitted three times,
 allowing us to see a broader range of responses and avoiding what might be
 one-time flukes.
 
