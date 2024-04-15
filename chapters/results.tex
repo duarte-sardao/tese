@@ -2,9 +2,33 @@
 
 This chapters answers \textbf{RQ1 – RQ?}, which study \todo{???}.
 
-\section{RQ1}
+\section{RQ1}\label{sec:results:rq1}
 
-The complete prompts, with results and evaluated metrics, can be found in the attachments. The following is just metric evaluations and necessary comments.
+\begin{table}[t]
+\centering
+% \tabcolsep=1cm
+% \renewcommand{\arraystretch}{0.90}
+\begin{tabular}{@{\extracolsep{\fill}} lrrrrr} \toprule
+                 & A & B & C & D & E \\
+\midrule
+Point            & 3.0 & 1.0 & 0.0 & 0.0 & 0.0 \\
+Fabricated (RO)  & 3.0 & 1.0 & 1.0 & 3.0 & 1.0 \\
+Fabricated (OAC) & 3.0 & 1.0 & 1.0 & 3.0 & 1.0 \\
+Cart (CM)        & 3.0 & 1.0 & 1.0 & 2.0 & 0.0 \\
+Cart (PF)        & 1.0 & 1.0 & 2.0 & 3.0 & 1.0 \\
+Cart (PM)        & 3.0 & 1.0 & 1.0 & 3.0 & 3.0 \\
+Antlr            & 1.0 & 1.0 & 0.0 & 0.0 & 0.0 \\
+OkHttp           & 3.0 & 1.0 & 1.0 & 0.0 & 0.0 \\
+\midrule
+\textit{Median}  & 3.0 & 1.0 & 1.0 & 2.5 & 0.5 \\
+\bottomrule
+\end{tabular}
+\caption{Median values per subject and metric.\label{tab:results:rq1}}
+\end{table}
+
+\Cref{tab:results:rq1} summarizes the metrics achieved per subject.
+The complete prompts, with results and evaluated metrics, can be found in the attachments \todo{Which one? Do not forget to cref it here}.
+The following sections discuss the results achieved.
 
 \subsection{Point}
 
