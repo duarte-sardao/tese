@@ -151,7 +151,7 @@ Given the LLM can produce unreliable results, the maximization of ChatGPT's abil
 Regarding prompting, understanding how to best engineer prompts to achieve the desired output from the LLM is a particularly relevant issue. For example, in the generation of test inputs, research found ``generate diverse test input'' to be preferable over ``generate test inputs that result in different outputs between PUT and reference versions'', as ChatGPT could not accurately identify the nuances required to correctly carry out the latter's instructions~\cite{kn:nuances}.
 With unit testing generation in particular, Zhiqiang Yuan et al, in developing the ChatTester tool, highlight the importance of combining a natural language descriptor with the appropriate code context~\cite{kn:chattester}.
 
-\begin{lstlisting}
+\begin{prompt}
 public class Travis {
 public static final String TRAVIS NAME = ""travis-ci"";
 public static final String TRAVIS = ""TRAVIS"";
@@ -163,6 +163,7 @@ public String getName();
 public String getJobId();
 public String getBranch();
 public String getPull Request();
+
 //Focal Method
 public Properties getEnvironment() {
   Properties environment new Properties();
@@ -171,33 +172,45 @@ public Properties getEnvironment() {
   return environment;
   }
 }
+
 You are a professional who writes Java test methods;
 Please write a test method for the method "getEnvironment()" based on the given information using Junit4.
-\end{lstlisting}
+\end{prompt}
 
 Another technique utilised is asking the LLM to infer the intention before developing the tests, which leads it to generate correct tests where basic prompting would fail~\cite{kn:chattester}.
 
-\begin{lstlisting}
+\begin{prompt}
 Intention Prompt for ChatGPT
-//Focal class
-pbulic class StrBuilder {
-public StrBuilder();
-//Focal method
-public StrBuilder setCharAt(final int index, final char c){
-  if(index < 0 || index >=length()) { throw new
-StringIndexOutOfBoundsException(index);}
-  buffer[index] = ch; return this;}}
+
+// Focal class
+public class StrBuilder {
+  public StrBuilder();
+
+  // Focal method
+  public StrBuilder setCharAt(final int index, final char c){
+    if(index < 0 || index >=length()) {
+      throw new StringIndexOutOfBoundsException(index);
+    }
+    buffer[index] = ch; return this;
+  }
+}
+
 Please infer the intention of the "setCharAt(final int, final char)".
+\end{prompt}
 
-ChatGPT
+\begin{answer}
 The intention of 'setCharAt(final int index, final char c)' in the 'StrBuilder' class is to set the character at the specified index in the character buffer to the given character.
+\end{answer}
 
+\begin{prompt}
 Generation Prompt for ChatGPT
-//Method Intention
+
+// Method Intention
 The intention of 'setCharAt(final int index, final char c)' in the 'StrBuilder' class is to set the character at the specified index in the character buffer to the given character.
+
 You are a professional who writes Java test methods.
 Please write a test method for the "setCharAt(final int, final char)" with the given Method intention.
-\end{lstlisting}
+\end{prompt}
 
 While they argue that it is little known how effective these strategies are, \citet{kn:johnny} and others highlight several prompting strategies: give examples of desired interaction, write prompts that look somewhat like code and repeat yourself. They note difficulties participants have in prompt generation, such as avoiding giving examples due to fear the LLM will simply replicate it, difficulty in searching online for help and adapting existing solutions and overgeneralizing from a single example~\cite{kn:johnny}.
 
@@ -207,7 +220,7 @@ Given the natural language aspect of LLM prompting is one the features that most
 
 The team behind ChatUniTest presents a two step prompting system, where instructions of what is to be done and how are first provided~\cite{kn:chatunitest}:
 
-\begin{lstlisting}
+\begin{prompt}
 Setup Prompt
 Please help me generate a JUnit test for a specific Java method using JUnit5 and Mockito3.
 I will provide the source code for the method, relevant method signatures and fields, required dependencies, Java class containing the method, expected behavior, and involved classes in the project.
@@ -216,7 +229,7 @@ No explanations needed.
 
 Specific Test Information
 The focal method is ... in the class ..., and the class information is .... The brief information of involved class ... is ...   
-\end{lstlisting}
+\end{prompt}
 
 
 The training of LLM's in open source repositories gives cause to the fear that automatic test generation might be reliant on the model being trained in the code under test, or simply replicating existing testing suites. To assuage this, it was identified that even when generating tests for packages hosted in GitLab (which were not used to train the LLM under study, gpt3.5-turbo), they still maintained high coverage. In addition, it was found that 60.0\% of the tests had <= 40\% similarity to existing tests and 92.8\% had <= 50\%. Thus we can conclude the LLM is not simply copying tests from the training set without alteration~\cite{kn:max}.

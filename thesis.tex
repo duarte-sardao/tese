@@ -77,9 +77,27 @@
 \usepackage{listings}
 
 \lstset{
-  basicstyle=\small\ttfamily,
-  columns=flexible,
-  breaklines=true
+  frame=tb,
+  aboveskip=1.5mm,
+  belowskip=1.5mm,
+  showstringspaces=false,
+  columns=fullflexible,
+  basicstyle={\scriptsize\ttfamily},
+  numbers=none,
+  %numbers=left,
+  %firstnumber=0,
+  numberstyle=\scriptsize\color{gray},
+  keywordstyle=\color{black},
+  commentstyle=\color{black},
+  stringstyle=\color{black},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=2,
+  xleftmargin=0em,
+  xrightmargin=0pt,
+  breakindent=0pt,
+  resetmargins=true,
+  breakautoindent=false
 }
 
 \lstdefinelanguage{prompt}{}
@@ -102,7 +120,7 @@
     breakatwhitespace=true,
     postbreak={\mbox{$\hookrightarrow\space$}},
     tabsize=2,
-    xleftmargin=2em,
+    xleftmargin=1em,
     xrightmargin=0pt,
     breakindent=0pt,
     resetmargins=true,
@@ -114,12 +132,53 @@
   outerlinewidth=9pt,outerlinecolor=white,
   innerleftmargin=3pt,
   innerrightmargin=3pt,
-  leftmargin=-9pt,rightmargin=-24pt,
+  leftmargin=-9pt,rightmargin=-10pt,
   skipabove=\topskip,
   skipbelow=\topskip,
   roundcorner=3pt,
   singleextra={\node[draw, fill=white,anchor=west, xshift=10pt+1pt,font=\bfseries] at (O|-P) {Prompt};},
   firstextra={\node[draw, fill=white,anchor=west, xshift=10pt+1pt,font=\bfseries] at (O|-P) {Prompt};}
+  ]%
+}{\endmdframed}
+
+\lstdefinelanguage{answer}{}
+\lstnewenvironment{answer}{%
+  \lstset{language=answer,
+    frame=none,
+    aboveskip=1.5mm,
+    belowskip=1.5mm,
+    showstringspaces=false,
+    columns=fullflexible,
+    basicstyle={\scriptsize\ttfamily},
+    numbers=none,
+    %numbers=left,
+    %firstnumber=0,
+    numberstyle=\scriptsize\color{gray},
+    keywordstyle=\color{black},
+    commentstyle=\color{black},
+    stringstyle=\color{black},
+    breaklines=true,
+    breakatwhitespace=true,
+    postbreak={\mbox{$\hookrightarrow\space$}},
+    tabsize=2,
+    xleftmargin=1em,
+    xrightmargin=0pt,
+    breakindent=0pt,
+    resetmargins=true,
+    breakautoindent=false
+  }
+  \mdframed[%
+  innertopmargin=5pt,
+  middlelinewidth=1pt,
+  outerlinewidth=9pt,outerlinecolor=white,
+  innerleftmargin=3pt,
+  innerrightmargin=3pt,
+  leftmargin=-9pt,rightmargin=-10pt,
+  skipabove=\topskip,
+  skipbelow=\topskip,
+  roundcorner=3pt,
+  singleextra={\node[draw, fill=white,anchor=west, xshift=10pt+1pt,font=\bfseries] at (O|-P) {Answer};},
+  firstextra={\node[draw, fill=white,anchor=west, xshift=10pt+1pt,font=\bfseries] at (O|-P) {Answer};}
   ]%
 }{\endmdframed}
 
