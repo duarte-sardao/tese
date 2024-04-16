@@ -125,11 +125,141 @@ allowing us to see a broader range of responses and avoiding what might be
 one-time flukes.
 
 A motivating example of this process for the Point class is:
-\todo{prompt
+\begin{prompt}
+You are a software developer that has to assess whether there is a semantic conflict in a merge commit.  Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, assess whether there is a semantic conflict and explain it.
 
-response
+Base version:
+```java
+public class Point {
+    private double x;
+    private double y;
 
-metric and why }
+    public Point(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+      public void move() {
+          this.x += 1;
+          this.y += 1;
+      }
+
+    public double distance() {
+        return Math.sqrt(Math.pow(getX(), 2)+ Math.pow(getY(), 2));
+    }
+
+    public String toString() {
+        return "(" + getX() + ", " + getY() + ")";
+    }
+}
+```
+
+Diff version A and the base:
+```diff
+@@ -16,8 +16,9 @@ public class Point {
+      }
+
+      public void move() {
+-         this.x += 1;
+-         this.y += 1;
++         double dist = distance();
++         this.x += dist;
++         this.y += dist;
+      }
+
+      public double distance() {
+```
+
+Diff version B and the base:
+```diff
+@@ -21,7 +21,7 @@ public class Point {
+      }
+
+      public double distance() {
+-        return Math.sqrt(Math.pow(getX(), 2)+ Math.pow(getY(), 2));
++        return Math.abs(getX())+Math.abs(getY());
+      }
+
+      public String toString() {
+```
+
+Merge version:
+```java
+public class Point {
+    private double x;
+    private double y;
+
+    public Point(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+      public void move() {
+          double dist = distance();
+          this.x += dist;
+          this.y += dist;
+      }
+
+    public double distance() {
+        return Math.abs(getX())+Math.abs(getY());
+    }
+
+    public String toString() {
+        return "(" + getX() + ", " + getY() + ")";
+    }
+}
+```
+\end{prompt}
+This prompt nets us the following response from the LLM.
+\begin{answer}
+To assess whether there is a semantic conflict in the merge commit, let's analyze the changes introduced in versions A and B compared to the base version, and then compare them with the merged version.
+
+### Changes introduced in Version A:
+- The `move()` method has been modified to calculate the distance using the `distance()` method and then update the `x` and `y` coordinates accordingly.
+- This change effectively moves the point by the distance it currently is from the origin.
+
+### Changes introduced in Version B:
+- The `distance()` method has been modified to calculate the Manhattan distance instead of the Euclidean distance.
+- The Manhattan distance is calculated by taking the absolute value of the x and y differences.
+
+### Analysis of Merged Version:
+- The `move()` method from Version A has been kept in the merged version, which calculates the distance using the Euclidean distance.
+- The `distance()` method from Version B has been kept, which calculates the Manhattan distance.
+
+### Potential Semantic Conflict:
+- The potential conflict arises from the inconsistency between how distance is calculated in the `move()` method and the `distance()` method in the merged version.
+- While the `move()` method assumes Euclidean distance for movement, the `distance()` method calculates the Manhattan distance.
+- This inconsistency could lead to unexpected behavior, as the `move()` method might not accurately reflect the intended behavior of the `distance()` method.
+
+### Conclusion:
+- There is a semantic conflict in the merge commit because the merged version contains methods with conflicting assumptions about how distance should be calculated.
+- Resolving this conflict would require ensuring consistency in the distance calculation method used throughout the class, either sticking with Euclidean distance or Manhattan distance for both `move()` and `distance()` methods.
+\end{answer}
+From this we derive the metrics:
+
+A: 3
+B: 1
+C: 2
+D: 3
+E: 2
+
+In this case, given the correctness of the answer, all metrics have perfect scores, except for metric D (Effect of conflict described), due to the reduced confidence.
 
 \subsection{RQ2}
 
