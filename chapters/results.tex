@@ -1,4 +1,4 @@
-\chapter{Experimental results}\label{chap:results}
+    \chapter{Experimental results}\label{chap:results}
 
 This chapters answers \textbf{RQ1 – RQ?}, which study \todo{???}.
 
@@ -28,131 +28,28 @@ OkHttp           & 3.0 & 1.0 & 1.0 & 0.0 & 0.0 \\
 
 \Cref{tab:results:rq1} summarizes the metrics achieved per subject.
 The complete prompts, with results and evaluated metrics, can be found in the attachments \todo{Which one? Do not forget to cref it here}.
-The following sections discuss the results achieved.
 
-\subsection{Point}
+A first observation to make is the variability of results, which highlights the importance of running 3 trials for our evaluation.
+For example, the point class had high variation: two of the results failed to identify any conflict at all, but one of the three not only identified, but quite accurately describe it's origin and results.
 
-First prompting:
-A:3
-B:1
-C:0
-D:0
-E:0
+In the more complex fabricated examples, the biggest issue was the identification of the effects of the semantic conflict, namely that when an overriden function was removed or had its' access changed, the other function, with different behaviour, would be used instead. However, given the constraints of the prompt, which is limited to one class, the necessary information could not be transmitted and the LLM argued there would be compilation errors. 
+Better results were observed when doing more manual, ad-hoc experiments, as we could identify exactly all the classes involved in the conflict and offer all the required information.
 
-Second prompting:
-A:3
-B:1
-C:2
-D:3
-E:2
+As we proceeded testing the "Cart" scenario, it was notable that in the cases where the conflict is identified, with varying exactness, it falls short of being able to explain the exact result of the conflict, namely that if an admin tries to checkout, there will always be a exception thrown. Instead, we see more vague declarations, such as "As a result, it may lead to unexpected behavior or exceptions during execution, especially if the admin status of a user is incorrectly handled" and unnecessary usage of expressions such as 'potentially' in "If `user.admin` is true, `total\_cost` will return 0, potentially causing the `checkout` method in version B to throw a `RuntimeException` even if `user.admin` is true".
+This was a recurring trend that was observed throughout all tests, as can be observed by a low final average score for metric E.
 
-Third prompting:
-A:3
-B:1
-C:0
-D:0
-E:0
+In a scenario where detection failed we see an example of the LLM providing a grossly wrong explanation: "If the user is an admin and a discount code that results in a cost of 0 is applied, the exception will never be thrown because the `checkout` method won't be called.". As regards the conflict itself, this was only completely wrong assertion of it's kind: in general where answers failed they were either vague or omitted, not present. The only other major example of a factually incorrect answer came with OkHttp:
+\begin{lstlisting}
+### Explanation:
+The conflict arises because both changes affect the same field (`hostnameVerifier`), but they prescribe different default values.
+    
+In the merge commit, the decision was made to adopt the change from Version B, which explicitly sets the default `hostnameVerifier` to `OkHostnameVerifier()`. This decision potentially overrides any behavior or configuration related to the default `hostnameVerifier` set in Version A.
+    
+If the intended behavior was to preserve the default `hostnameVerifier` as defined in Version A, then this would be considered a semantic conflict, as the behavior of the merged version may differ from the behavior of either Version A or Version B individually.
+\end{lstlisting}
+In this case, the changes made in only one branch are described as a conflict.
 
-This first example shows particularly the importance of running several trials as despite the simplicity of the conflict, the LLM fails to identify it 2/3 times. Despite this, when it does identify it, it puts forth a good description.
-
-\subsection{Fabricated, Remove Override}
-
-First promtping:
-A:3
-B:1
-C:2
-D:3
-E:1
-
-
-Second promtping:
-A:3
-B:1
-C:0
-D:0
-E:0
-
-
-Third prompting:
-A:3
-B:1
-C:1
-D:3
-E:1
-
-\subsection{Fabricated, Overload by Access Change}
-First prompting:
-A:1
-B:1
-C:0
-D:3
-E:1
-
-Second prompting:
-A:3
-B:1
-C:2
-D:3
-E:1
-
-Third prompting:
-A:3
-B:1
-C:1
-D:3
-E:0
-
-In these fabricated examples, the biggest issue was the identification of the effects of the semantic conflict, namely that when an overriden function was removed or had its' access changed, the other function, with different behaviour, would be used instead. However, given the constraints of the prompt, which is limited to one class, the necessary information could not be transmitted and the LLM argued there would be compilation errors. Better results were observed when doing more manual, ad-hoc experiments, as we could identify exactly all the classes involved in the conflict and offer all the required information.
-
-\subsection{Cart, Change Method}
-
-First prompting:
-A:3
-B:1
-C:1
-D:2
-E:2
-
-Second prompting:
-A:3
-B:1
-C:0
-D:0
-E:0
-
-Third prompting:
-A:3
-B:1
-C:2
-D:3
-E:0
-
-We see variability in these results. Notably, in the cases where the conflict is identified, with varying exactness, it falls short of being able to explain the exact result of the conflict, namely that if an admin tries to checkout, there will always be a exception thrown. Instead, we see more vague declarations, such as "As a result, it may lead to unexpected behavior or exceptions during execution, especially if the admin status of a user is incorrectly handled" and unnecessary usage of expressions such as 'potentially' in "If `user.admin` is true, `total\_cost` will return 0, potentially causing the `checkout` method in version B to throw a `RuntimeException` even if `user.admin` is true".
-In the scenario where detection failed we see an example of the LLM providing a grossly wrong explanation: "If the user is an admin and a discount code that results in a cost of 0 is applied, the exception will never be thrown because the `checkout` method won't be called.".
-\subsection{Cart, Parallel Field}
-
-First prompting:
-A:1
-B:1
-C:2
-D:1
-E:0
-
-Second prompting:
-A:1
-B:1
-C:2
-D:3
-E:1
-
-Third prompting:
-A:1
-B:1
-C:2
-D:3
-E:1
-
-In this case, ChatGPT consistently failed to accurately describe the changes made:
+Another case of wrong information given by ChatGPT regarded the changes made, both in Cart(PF):
 \begin{lstlisting}
 - Version A introduces a new discount code called "megasaver" with a discount value of 0.4.
 - Version B modifies the discount value of the "superpromo" code to 0.25 instead of 0.3.
@@ -166,58 +63,7 @@ In this case, ChatGPT consistently failed to accurately describe the changes mad
 - Version A adds a new discount code "megasaver" with a discount of 0.4.
 - Version B modifies the discount of the "superpromo" code to 0.25.
 \end{lstlisting}
-However this did not worsen it's ability to identify the conflict. Despite this it also consistently falls back on vaguer descriptions on the result: even if can point out that the order of operations influences the result, in an ideal scenario we would hope it would be able to point out that the 0.4d value, set last, would override 0.25d.
-
-
-\subsection{Cart, Parallel Method}
-
-First prompting:
-A:3
-B:1
-C:1
-D:3
-E:3
-
-Second prompting:
-A:3
-B:1
-C:0
-D:0
-E:0
-
-Third prompting:
-A:3
-B:1
-C:1
-D:3
-E:3
-
-Despite one failure of detection, this example provided very good results, both in identifying and describing the consequences of the conflict.
-
-\subsection{Antlr}
-
-First prompting:
-A:1
-B:1
-C:0
-D:0
-E:0
-
-Second prompting:
-A:3
-B:1
-C:0
-D:0
-E:0
-
-Third prompting:
-A:1
-B:1
-C:0
-D:0
-E:0
-
-No conflict was identified. Notably there was also repeated failure in describing the changes made on the branches, specifically mistaking addition for replacement.
+As well as Antlr:
 \begin{lstlisting}
 1. **Diff A vs Base:**
     - In version A, the `reduce` keyword was replaced with `return` in the `python2Keywords` array.
@@ -233,32 +79,10 @@ No conflict was identified. Notably there was also repeated failure in describin
     - Replacement of `"delattr"` with `"del"` in the `python2Keywords` array.
     - No conflicting changes with other methods or properties.
 \end{lstlisting}
-We observed this before with the Parallel Field example in cart, so it is possible the fact that the changes are being made to fields may have some relation.
+However this did not worsen it's ability to identify the conflict in the case of Cart, where the description of the conflict as in line with the changes made.
+We observed both of these are "Parallel Field" semantic conflicts so it is possible the fact that the changes are being made to fields may have some relation to its' inability to express them correctly.
 
-\subsection{OkHttp}
-
-First prompting:
-A:3
-B:1
-C:0
-D:0
-E:0
-
-Second prompting:
-A:3
-B:1
-C:1
-D:0
-E:0
-
-Third prompting:
-A:3
-B:1
-C:1
-D:0
-E:0
-
-While the LLM in 2 cases recognized the possibility of a conflict existing, it could not narrow down where.
+As the most complex example, OkHttp generated the least conclusive answers. In particular it tended to offer advice on how identify and diagnose semantic conflicts and make good merges. This is a behaviour that was also observed with other complex, real-world conflicts, during the period of ad-hoc testing.
 \begin{lstlisting}
 ### Potential Semantic Conflict:
 While there's no direct semantic conflict, there could be conflicts in the usage and interpretation of the `transports` field and its associated methods. For instance:
@@ -271,16 +95,6 @@ Looking at the changes introduced in versions A and B, there doesn't seem to be 
 
 However, when merging both changes, we need to ensure that the introduced hostname verifier (`OkHostnameVerifier`) is consistent with the overall configuration of the `OkHttpClient`. Specifically, we need to verify whether `OkHostnameVerifier` is compatible with the behavior and expectations of the existing codebase.
 \end{lstlisting}
-Alternatively to this response, which does not make any factual mistake but is not confident to propose an explanation, we also find a response that is confidently wrong:
-\begin{lstlisting}
-### Explanation:
-The conflict arises because both changes affect the same field (`hostnameVerifier`), but they prescribe different default values.
-   
-In the merge commit, the decision was made to adopt the change from Version B, which explicitly sets the default `hostnameVerifier` to `OkHostnameVerifier()`. This decision potentially overrides any behavior or configuration related to the default `hostnameVerifier` set in Version A.
-    
-If the intended behavior was to preserve the default `hostnameVerifier` as defined in Version A, then this would be considered a semantic conflict, as the behavior of the merged version may differ from the behavior of either Version A or Version B individually.
-\end{lstlisting}
-Here just the change is branch B is presented as a conflict on its own.
 
 
 \subsection{Averages and Conclusion}
