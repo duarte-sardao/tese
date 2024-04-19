@@ -26,10 +26,21 @@ OkHttp           & 3.0 & 1.0 & 0.67 & 0.0 & 0.0 \\
 \caption{Average values per subject and metric.\label{tab:results:rq1}}
 \end{table}
 
-\Cref{tab:results:rq1} summarizes the metrics achieved per subject.
+\Cref{tab:results:rq1} summarizes the metrics achieved per subject. From these we can note that:
+
+A: ChatGPT is generally able to identify changes made between branches.
+
+B: In none of our examples did the tool mistake the kind of conflict under discussion. This might be because the prompt did not assert the existence of a conflict, allowing negative responses, whereas other prompts, which asked to find a conflict that did exist, lead the model to find any explanation, which often consisted of describing a textual conflict.
+
+C: Answers given tend to identify a conflict, but with uncertainty (with language such as "possible", "might"). In other cases, the cases where no conflict was found outweighed the cases where one was found with uncertainty.
+
+D: Identification of the origins of conflict falls squarely in the middle of our given range.  When we exclude 0 value results, the average is 2.77 instead. This indicates to us in nearly half the cases, the model failed to produce any description, but when it did, it was generally very accurate.
+
+E: ChatGPT struggles with accurately describing the results of semantic conflicts, ie, how the behaviour is specifically altered and how the outputs change. Indeed, even when the origin of the conflict is found, an accurate description of the results does not necessarily follow, with the topic being vague or not touched upon.
+
 The complete prompts, with results and evaluated metrics, can be found in the attachments \todo{Which one? Do not forget to cref it here}.
 
-A first observation to make is the variability of results, which highlights the importance of running 3 trials for our evaluation.
+An important observation to make is the variability of results, which highlights the importance of running 3 trials for our evaluation.
 For example, the point class had high variation: two of the results failed to identify any conflict at all, but one of the three not only identified, but quite accurately describe it's origin and results.
 
 In the more complex fabricated examples, the biggest issue was the identification of the effects of the semantic conflict, namely that when an overriden function was removed or had its' access changed, the other function, with different behaviour, would be used instead. However, given the constraints of the prompt, which is limited to one class, the necessary information could not be transmitted and the LLM argued there would be compilation errors. 
@@ -95,33 +106,6 @@ Looking at the changes introduced in versions A and B, there doesn't seem to be 
 
 However, when merging both changes, we need to ensure that the introduced hostname verifier (`OkHostnameVerifier`) is consistent with the overall configuration of the `OkHttpClient`. Specifically, we need to verify whether `OkHostnameVerifier` is compatible with the behavior and expectations of the existing codebase.
 \end{lstlisting}
-
-
-\subsection{Averages and Conclusion}
-
-\todo{Summarize the following and move it to the beginning of \Cref{sec:results:rq1}.}
-
-By averaging out the results for each metric, we can find where the systems excel and where they fail the most. Thus, we find:
-
-- Changes between branches correctly identified: 2.5/3
-ChatGPT is generally able to identify changes made between branches. In cases where they were incorrectly describe, the error were mostly in one branch, relating to altered fields. Despite this, we observed it can still describe conflicts, even when it fails to properly describe changes.
-
-- No conflict misunderstanding: 1/1
-
-In none of our examples did the tool mistake the kind of conflict under discussion. This might be because the prompt did not assert the existence of a conflict, allowing negative responses, whereas other prompts, which asked to find a conflict that did exist, lead the model to find any explanation, which often consisted of describing a textual conflict.
-
-- Positive response: 0.875/2
-
-The average here is slightly under 1, reflecting our observations: answers given tend to identify a conflict, but with uncertainty (with language such as "possible", "might"). In other cases, the cases where no conflict was found outweighed the cases where one was found with uncertainty.
-
-- Origin of conflict described: 1.5/3
-
-Identification of the origins of conflict falls squarely in the middle of our given range.  When we exclude 0 value results, the average is 2.77 instead. This indicates to us in nearly half the cases, the model failed to produce any description, but when it did, it was generally very accurate.
-
-- Effect of conflict described: 0.667/3
-
-With the relatively lowest value, we find that ChatGPT struggles with accurately describing the results of semantic conflicts, ie, how the behaviour is specifically altered and how the outputs change. Indeed, even when the origin of the conflict is found, an accurate description of the results does not necessarily follow. Excluding 0 value results, we find an average 1.6: unlike identification of the origin, which was generally reliable when present, identification of the effect was still often vague or inaccurate.
-
 
 Overall, we can say ChatGPT can indeed identify and explain whether there is a semantic conflict in a merge. This comes with many caveats however, firstly being that identification does not necessarily lead to a proper explanation. This is not a particularly pressing issue, as a tool that identifies conflicts and then alerts humans, who can themselves describe and fix the issue would already be a great boon for efficient software development.
 
