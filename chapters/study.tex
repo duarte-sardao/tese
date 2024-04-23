@@ -98,7 +98,7 @@ For assessment, we established five metrics, with likert scales:
   \end{itemize}
 \end{itemize}
 
-For the purposes of this research question, we settled on a final prompt:
+For the purposes of this research question, we settled on a final prompt, based on the prompts that were iteratively developed on previously:
 
 \begin{prompt}
 You are a software developer that has to assess whether there is a semantic conflict in a merge commit.  Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, assess whether there is a semantic conflict and explain it.
@@ -120,13 +120,11 @@ Merge version:
 ```
 \end{prompt}
 
-For each semantic conflict example, as listed previously, the prompt was submitted three times,
-allowing us to see a broader range of responses and avoiding what might be
-one-time flukes.
+For each semantic conflict example, as listed previously, the prompt was submitted three times, allowing us to see a broader range of responses and avoiding what might be one-time flukes.
 
-A motivating example of this process for the Point class is:
+A motivating example of this process for the Point class (where a conflict is introduced by the simultaneous change of Euclidean to Manhattan distance followed by the usage of the same distance method in another method) is:
 \begin{prompt}
-You are a software developer that has to assess whether there is a semantic conflict in a merge commit.  Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, assess whether there is a semantic conflict and explain it.
+You are a software developer that has to assess whether there is a semantic conflict in a merge commit.  Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, assess whether there is a semantic conflict and explain it. 
 
 Base version:
 ```java
