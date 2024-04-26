@@ -32,7 +32,7 @@ A (2.5/3): ChatGPT is generally able to identify changes made between branches.
 
 B (1/1): In none of our examples did the tool mistake the kind of conflict under discussion. This might be because the prompt did not assert the existence of a conflict, allowing negative responses, whereas other prompts, which asked to find a conflict that did exist, lead the model to find any explanation, which often consisted of describing a textual conflict.
 
-C (0.9/2): Answers given tend to identify a conflict, but with uncertainty (with language such as "possible", "might"). In other cases, the cases where no conflict was found outweighed the cases where one was found with uncertainty.
+C (0.9/2): Answers given tend to identify a conflict, but with uncertainty (with language such as ``possible'', ``might''). In other cases, the cases where no conflict was found outweighed the cases where one was found with uncertainty.
 
 D (1.5/3): Identification of the origins of conflict falls squarely in the middle of our given range.  When we exclude 0 value results, the average is 2.77 instead. This indicates to us in nearly half the cases, the model failed to produce any description, but when it did, it was generally very accurate.
 
@@ -46,10 +46,10 @@ For example, the point class had high variation: two of the results failed to id
 In the more complex fabricated examples, the biggest issue was the identification of the effects of the semantic conflict, namely that when an overriden function was removed or had its access changed, the other function, with different behaviour, would be used instead. However, given the constraints of the prompt, which is limited to one class, the necessary information could not be transmitted and the LLM argued there would be compilation errors. 
 Better results were observed when doing more manual, ad-hoc experiments, as we could identify exactly all the classes involved in the conflict and offer all the required information.
 
-As we proceeded testing the "Cart" scenario, it was notable that in the cases where the conflict is identified, with varying exactness, it falls short of being able to explain the exact result of the conflict, namely that if an admin tries to checkout, there will always be a exception thrown. Instead, we see more vague declarations, such as "As a result, it may lead to unexpected behavior or exceptions during execution, especially if the admin status of a user is incorrectly handled" and unnecessary usage of expressions such as 'potentially' in "If `user.admin` is true, `total\_cost` will return 0, potentially causing the `checkout` method in version B to throw a `RuntimeException` even if `user.admin` is true".
+As we proceeded testing the ``Cart'' scenario, it was notable that in the cases where the conflict is identified, with varying exactness, it falls short of being able to explain the exact result of the conflict, namely that if an admin tries to checkout, there will always be a exception thrown. Instead, we see more vague declarations, such as ``As a result, it may lead to unexpected behavior or exceptions during execution, especially if the admin status of a user is incorrectly handled'' and unnecessary usage of expressions such as 'potentially' in ``If `user.admin` is true, `total\_cost` will return 0, potentially causing the `checkout` method in version B to throw a `RuntimeException` even if `user.admin` is true''.
 This was a recurring trend that was observed throughout all tests, as can be observed by a low final average score for metric E.
 
-In a scenario where detection failed we see an example of the LLM providing a grossly wrong explanation: "If the user is an admin and a discount code that results in a cost of 0 is applied, the exception will never be thrown because the `checkout` method will not be called.". As regards the conflict itself, this was only completely wrong assertion of its kind: in general where answers failed they were either vague or omitted, not present. The only other major example of a factually incorrect answer came with OkHttp:
+In a scenario where detection failed we see an example of the LLM providing a grossly wrong explanation: ``If the user is an admin and a discount code that results in a cost of 0 is applied, the exception will never be thrown because the `checkout` method will not be called.''. As regards the conflict itself, this was only completely wrong assertion of its kind: in general where answers failed they were either vague or omitted, not present. The only other major example of a factually incorrect answer came with OkHttp:
 \begin{lstlisting}
 ### Explanation:
 The conflict arises because both changes affect the same field (`hostnameVerifier`), but they prescribe different default values.
@@ -91,7 +91,7 @@ As well as Antlr:
     - No conflicting changes with other methods or properties.
 \end{lstlisting}
 However this did not worsen its ability to identify the conflict in the case of Cart, where the description of the conflict as in line with the changes made.
-We observed both of these are "Parallel Field" semantic conflicts so it is possible the fact that the changes are being made to fields may have some relation to its inability to express them correctly.
+We observed both of these are ``Parallel Field'' semantic conflicts so it is possible the fact that the changes are being made to fields may have some relation to its inability to express them correctly.
 
 As the most complex example, OkHttp generated the least conclusive answers. In particular it tended to offer advice on how identify and diagnose semantic conflicts and make good merges. This is a behaviour that was also observed with other complex, real-world conflicts, during the period of ad-hoc testing.
 \begin{lstlisting}
