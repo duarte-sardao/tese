@@ -31,6 +31,10 @@ In analyzing the work of Nuno Castanho, we found the predominant types of semant
 These Cart examples would be part of the group of subjects used to answer and evaluate the research questions we defined. These were complemented by a simple Point class, two examples fabricated by Nuno Castanho of type ``Override by Access Change'' and ``Remove Override'', which had achieved good results in exploratory testing, Antlr4 and OkHttp, respectively a simple and a hard to test real-world scenario.
 The collection of subjects and corresponding conflict type can be found in \Cref{tab:subjects}.
 
+\todo{Jose: Para o leitor melhor perceber os resultados (quando estes forem
+apresentados), vai ter de perceber que conflictos temos aqui.  Sugiro uma breve
+descricação de (1) cada programa usado e (2) uma breve descricação do conflito
+presente em cada programa.}
 
 \section{Large language models}
 
@@ -55,50 +59,8 @@ The instance of ChatGPT used was the web-based ChatGPT 3.5 Turbo, with default t
 
 \subsection{RQ1}
 
-The first research question we established sought to more systematically evaluate ChatGPT's capabilities to assess and describe semantic conflicts: ``Can ChatGPT identify, understand and explain whether there is a semantic conflict in a merge commit?''
-
-For assessment, we established five metrics, with likert scales:
-
-\begin{itemize}
-  \item[\textbf{A}:] Changes between branches correctly identified (Correct description of Version A and B).
-  \begin{itemize}
-    \item[\textbf{0}:] Large errors in description for both branches.
-    \item[\textbf{1}:] Large error in description of one branch.
-    \item[\textbf{2}:] Minor insignificant errors.
-    \item[\textbf{3}:] Changes correctly identified.
-  \end{itemize}
-
-  \item[\textbf{B}:] No conflict misunderstanding (Does not describe textual conflict, understand merge succeed).
-  \begin{itemize}
-    \item[\textbf{0}:] Understands conflict as textual.
-    \item[\textbf{1}:] Understands the conflict as semantic.
-  \end{itemize}
-
-  \item[\textbf{C}:] Positive response (3 types: says conflict exists/may exist/does not exist)
-  \begin{itemize}
-    \item[\textbf{0}:] Denies existence of conflict
-    \item[\textbf{1}:] Asserts conflict is possible
-    \item[\textbf{2}:] Asserts conflict exists
-  \end{itemize}
-
-  \item[\textbf{D}:] Origin of conflict described (What code interactions lead to altered behaviour)
-  \begin{itemize}
-    \item[\textbf{0}:] Incorrect or non-existent explanation
-    \item[\textbf{1}:] Identifies origin of conflict, with lack of clarity or imprecisions
-    \item[\textbf{2}:] Identifies origin of conflict, with lack of confidence
-    \item[\textbf{3}:] Identifies origin of conflict
-  \end{itemize}
-
-  \item[\textbf{E}:] Effect of conflict described (What is the result of the code interactions/expected output)
-  \begin{itemize}
-    \item[\textbf{0}:] Result of conflict is omitted, too vague or wrong
-    \item[\textbf{1}:] Result of conflict is expressed, but with imprecisions or generically
-    \item[\textbf{2}:] Possible code outputs are expressed, with little confidence
-    \item[\textbf{3}:] Assertively points out expected outputs due to conflict
-  \end{itemize}
-\end{itemize}
-
-For the purposes of this research question, we settled on a final prompt, based on the prompts that were iteratively developed on previously:
+In our first research question we established sought to more systematically evaluate ChatGPT's capabilities to assess and describe semantic conflicts.
+We first settled on a prompt, based on the prompts that were iteratively developed on previously work.
 
 \begin{prompt}
 You are a software developer that has to assess whether there is a semantic conflict in a merge commit.  Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, assess whether there is a semantic conflict and explain it.
@@ -120,10 +82,15 @@ Merge version:
 ```
 \end{prompt}
 
-For each semantic conflict example, as listed previously, the prompt was submitted three times, allowing us to see a broader range of responses and avoiding what might be one-time flukes.
+% For each semantic conflict example, as listed previously,
+The prompt was submitted three times to account for the randomess nature of the
+LLM, which in turn allowed us to see a broader range of responses and avoiding
+what might be one-time flukes.
 
-A motivating example of this process for the Point class (where a conflict is introduced by the simultaneous change of Euclidean to Manhattan distance followed by the usage of the same distance method in another method) is:
-\todo{breaks when split between 3+ pages}
+As an example how one would instantiate this prompt is listed below for the
+Point subject, where a conflict is introduced by the simultaneous change of
+euclidean to manhattan distance followed by the usage of the same distance method
+in another method.  \todo{breaks when split between 3+ pages}
 \begin{prompt}
 You are a software developer that has to assess whether there is a semantic conflict in a merge commit.  Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, assess whether there is a semantic conflict and explain it. 
 
@@ -225,40 +192,80 @@ public class Point {
 }
 ```
 \end{prompt}
-This prompt nets us the following response from the LLM.
-\begin{answer}
-To assess whether there is a semantic conflict in the merge commit, let's analyze the changes introduced in versions A and B compared to the base version, and then compare them with the merged version.
+%
+% \todo{Jose: Given the motivational example is one of the subject, I might not
+% sure we should provide results in here.}
+% This prompt nets us the following response from the LLM.
+%
+% \begin{answer}
+% To assess whether there is a semantic conflict in the merge commit, let's analyze the changes introduced in versions A and B compared to the base version, and then compare them with the merged version.
+% 
+% ### Changes introduced in Version A:
+% - The `move()` method has been modified to calculate the distance using the `distance()` method and then update the `x` and `y` coordinates accordingly.
+% - This change effectively moves the point by the distance it currently is from the origin.
+% 
+% ### Changes introduced in Version B:
+% - The `distance()` method has been modified to calculate the Manhattan distance instead of the Euclidean distance.
+% - The Manhattan distance is calculated by taking the absolute value of the x and y differences.
+% 
+% ### Analysis of Merged Version:
+% - The `move()` method from Version A has been kept in the merged version, which calculates the distance using the Euclidean distance.
+% - The `distance()` method from Version B has been kept, which calculates the Manhattan distance.
+% 
+% ### Potential Semantic Conflict:
+% - The potential conflict arises from the inconsistency between how distance is calculated in the `move()` method and the `distance()` method in the merged version.
+% - While the `move()` method assumes Euclidean distance for movement, the `distance()` method calculates the Manhattan distance.
+% - This inconsistency could lead to unexpected behavior, as the `move()` method might not accurately reflect the intended behavior of the `distance()` method.
+% 
+% ### Conclusion:
+% - There is a semantic conflict in the merge commit because the merged version contains methods with conflicting assumptions about how distance should be calculated.
+% - Resolving this conflict would require ensuring consistency in the distance calculation method used throughout the class, either sticking with Euclidean distance or Manhattan distance for both `move()` and `distance()` methods.
+% \end{answer}
 
-### Changes introduced in Version A:
-- The `move()` method has been modified to calculate the distance using the `distance()` method and then update the `x` and `y` coordinates accordingly.
-- This change effectively moves the point by the distance it currently is from the origin.
+To evaluate the answers generated by ChatGPT, we established five metrics, with likert scales:
+%
+\begin{itemize}
+  \item[\textbf{A}:] Changes between branches correctly identified (Correct description of Version A and B).
+  \begin{itemize}
+    \item[\textbf{0}:] Large errors in description for both branches.
+    \item[\textbf{1}:] Large error in description of one branch.
+    \item[\textbf{2}:] Minor insignificant errors.
+    \item[\textbf{3}:] Changes correctly identified.
+  \end{itemize}
 
-### Changes introduced in Version B:
-- The `distance()` method has been modified to calculate the Manhattan distance instead of the Euclidean distance.
-- The Manhattan distance is calculated by taking the absolute value of the x and y differences.
+  \item[\textbf{B}:] No conflict misunderstanding (Does not describe textual conflict, understand merge succeed).
+  \begin{itemize}
+    \item[\textbf{0}:] Understands conflict as textual.
+    \item[\textbf{1}:] Understands the conflict as semantic.
+  \end{itemize}
 
-### Analysis of Merged Version:
-- The `move()` method from Version A has been kept in the merged version, which calculates the distance using the Euclidean distance.
-- The `distance()` method from Version B has been kept, which calculates the Manhattan distance.
+  \item[\textbf{C}:] Positive response (3 types: says conflict exists/may exist/does not exist)
+  \begin{itemize}
+    \item[\textbf{0}:] Denies existence of conflict
+    \item[\textbf{1}:] Asserts conflict is possible
+    \item[\textbf{2}:] Asserts conflict exists
+  \end{itemize}
 
-### Potential Semantic Conflict:
-- The potential conflict arises from the inconsistency between how distance is calculated in the `move()` method and the `distance()` method in the merged version.
-- While the `move()` method assumes Euclidean distance for movement, the `distance()` method calculates the Manhattan distance.
-- This inconsistency could lead to unexpected behavior, as the `move()` method might not accurately reflect the intended behavior of the `distance()` method.
+  \item[\textbf{D}:] Origin of conflict described (What code interactions lead to altered behaviour)
+  \begin{itemize}
+    \item[\textbf{0}:] Incorrect or non-existent explanation
+    \item[\textbf{1}:] Identifies origin of conflict, with lack of clarity or imprecisions
+    \item[\textbf{2}:] Identifies origin of conflict, with lack of confidence
+    \item[\textbf{3}:] Identifies origin of conflict
+  \end{itemize}
 
-### Conclusion:
-- There is a semantic conflict in the merge commit because the merged version contains methods with conflicting assumptions about how distance should be calculated.
-- Resolving this conflict would require ensuring consistency in the distance calculation method used throughout the class, either sticking with Euclidean distance or Manhattan distance for both `move()` and `distance()` methods.
-\end{answer}
-From this we derive the metrics:
+  \item[\textbf{E}:] Effect of conflict described (What is the result of the code interactions/expected output)
+  \begin{itemize}
+    \item[\textbf{0}:] Result of conflict is omitted, too vague or wrong
+    \item[\textbf{1}:] Result of conflict is expressed, but with imprecisions or generically
+    \item[\textbf{2}:] Possible code outputs are expressed, with little confidence
+    \item[\textbf{3}:] Assertively points out expected outputs due to conflict
+  \end{itemize}
+\end{itemize}
 
-A: 3
-B: 1
-C: 2
-D: 3
-E: 2
-
-In this case, given the correctness of the answer, all metrics have perfect scores, except for metric D (Effect of conflict described), due to the reduced confidence.
+% From this we derive the metrics: A=3, B=1, C=2, D=3, and E=2.
+% In this case, given the correctness of the answer, all metrics have perfect scores,
+% except for metric D (Effect of conflict described), due to the reduced confidence.
 
 \subsection{RQ2}
 
