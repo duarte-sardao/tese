@@ -2449,7 +2449,9 @@ public class CartTest {
         assertDoesNotThrow(() -&gt; cart.checkout("loyal"));
     }
 }
-```</div></pre></div><div class="conversation"><h4>RQ2, Cart PM, P2, T3</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+```
+
+</div></pre></div><div class="conversation"><h4>RQ2, Cart PM, P2, T3</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
 
 Base version:
@@ -2676,7 +2678,18 @@ public class CartTest {
         assertEquals(-45, cart.getUser().getBalance(), 0.001);
     }
 }
-```</div></pre></div><div class="conversation"><h4>RQ2, Cart PM, P2, T2</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+```
+<h4> Detection: No </h4>
+<h4> Edit distance: 3 </h4>
+<h4> Amended test: </h4>
+    @Test
+    public void testSumItemsWithCoupon() {
+        Cart cart = new Cart(new User());
+        Item item = new Item(50, 1, true); // Item with coupon
+        cart.add_item(item);
+        assertEquals(-50, cart.sum_items(), 0.001);
+    }
+</div></pre></div><div class="conversation"><h4>RQ2, Cart PM, P2, T2</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
 
 Base version:
@@ -2897,7 +2910,11 @@ public class CartTest {
         assertEquals(-14, cart.total_cost(0.2));
     }
 }
-```</div></pre></div><div class="conversation"><h4>RQ2, Cart PM, P2, T1</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+```
+<h4> Detection: Yes </h4>
+<h4> Edit distance: 0 </h4>
+
+</div></pre></div><div class="conversation"><h4>RQ2, Cart PM, P2, T1</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
 
 Base version:
@@ -3116,7 +3133,23 @@ public class CartTest {
         assertEquals(-8, cart.total_cost(0.2), 0.001);
     }
 }
-```</div></pre></div><div class="conversation"><h4>RQ2, Cart PM, P1, T3</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+```
+<h4> Detection: No </h4>
+<h4> Edit distance: 6 </h4>
+<h4> Amended test: </h4>
+    @Test
+    public void testSumItems() {
+        Cart cart = new Cart(new User());
+        Item item1 = new Item(10, 1);
+        Item item2 = new Item(20, 1, true); // item with coupon
+        cart.add_item(item1);
+        cart.add_item(item2);
+        
+        // Expected sum without considering coupon: 10 + 20 = 30
+        // Expected sum considering coupon: 10 - 20 = -10
+        assertEquals(-10, cart.sum_items(), 0.001);
+    }
+</div></pre></div><div class="conversation"><h4>RQ2, Cart PM, P1, T3</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
 
 Base version:
@@ -3317,7 +3350,18 @@ public class CartTest {
         assertEquals(50, cart.total_cost(0.1));
     }
 }
-```</div></pre></div><div class="conversation"><h4>RQ2, Cart PM, P1, T2</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+```
+<h4> Detection: No </h4>
+<h4> Edit distance: 6 </h4>
+<h4> Amended test: </h4>
+    @Test
+    void testSumItemsWithCoupon() {
+        Cart cart = new Cart(new User());
+        cart.add_item(new Item(20, 1, true));
+        cart.add_item(new Item(30, 1, true));
+        assertEquals(-50, cart.sum_items());
+    }
+</div></pre></div><div class="conversation"><h4>RQ2, Cart PM, P1, T2</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
 
 Base version:
@@ -3516,7 +3560,17 @@ public class CartTest {
         assertEquals(-8, cart.user.balance);
     }
 }
-```</div></pre></div><div class="conversation"><h4>RQ2, Cart PM, P1, T1</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+```
+<h4> Detection: No </h4>
+<h4> Edit distance: 3 </h4>
+<h4> Amended test: </h4>
+    @Test
+    void testSumItemsWithNegativeCoupon() {
+        Cart cart = new Cart(new User());
+        cart.add_item(new Item(10, 1, true));
+        assertEquals(0, cart.sum_items());
+    }
+</div></pre></div><div class="conversation"><h4>RQ2, Cart PM, P1, T1</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
 
 Base version:
@@ -3705,7 +3759,21 @@ public class CartTest {
         assertEquals(0, cart.sum_items(), "Sum of items should not be negative");
     }
 }
-```</div></pre></div><div class="conversation"><h4>RQ2, Cart PF, P2, T3</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+```
+<h4> Detection: No </h4>
+<h4> Edit distance: 7 </h4>
+<h4> Amended test: </h4>
+    @Test
+    public void testNegativeSumWithCoupon() {
+        User user = new User();
+        Cart cart = new Cart(user);
+        Item item1 = new Item(30, 1, true); // Coupon item
+        Item item2 = new Item(20, 1, false); // Regular item
+        cart.add_item(item1);
+        cart.add_item(item2);
+        assertEquals(0, cart.sum_items(), "Sum of items should not be negative");
+    }
+</div></pre></div><div class="conversation"><h4>RQ2, Cart PF, P2, T3</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
 
 Base version:
@@ -3871,7 +3939,29 @@ public class CartTest {
         assertEquals(expectedCostWithoutConflict, user.balance);
     }
 }
-```</div></pre></div><div class="conversation"><h4>RQ2, Cart PF, P2, T2</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+```
+<h4> Detection: No </h4>
+<h4> Edit distance: 21 </h4>
+<h4> Amended test: </h4>
+    @Test
+    public void testMergedDiscountConflict() {
+        User user = new User(); // create a user object
+        Cart cart = new Cart(user); // create a cart
+
+        // Add items to cart
+        cart.add_item(new Item(10, 2));
+        cart.add_item(new Item(20, 3));
+
+        // Calculate expected cost without discount conflict
+        double expectedCostWithoutConflict = -(10 * 2 + 20 * 3) * (1 - 0.25);
+
+        // Checkout with "megasaver" code
+        cart.checkout("megasaver");
+
+        // Verify that the cost matches the expected cost without conflict
+        assertEquals(expectedCostWithoutConflict, user.balance);
+    }
+</div></pre></div><div class="conversation"><h4>RQ2, Cart PF, P2, T2</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
 
 Base version:
@@ -4023,7 +4113,19 @@ public class CartTest {
         assertEquals(16.0, cart.user.balance, 0.01);
     }
 }
-```</div></pre></div><div class="conversation"><h4>RQ2, Cart PF, P2, T1</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+```
+<h4> Detection: No </h4>
+<h4> Edit distance: 54 </h4>
+<h4> Amended test: </h4>
+    @Test
+    public void testMergeConflict_MegasaverDiscount() {
+        User user = new User();
+        Cart cart = new Cart(user);
+        cart.add_item(new Item(10, 2));
+        cart.checkout("megasaver");
+        assertEquals(-15.0, user.balance, 0.01);
+    }
+</div></pre></div><div class="conversation"><h4>RQ2, Cart PF, P2, T1</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
 
 Base version:
@@ -4182,7 +4284,22 @@ public class CartTest {
         assertEquals(974.0, user.balance, 0.001);
     }
 }
-```</div></pre></div><div class="conversation"><h4>RQ2, Cart PF, P1, T3</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+```
+<h4> Detection: No </h4>
+<h4> Edit distance: 33 </h4>
+<h4> Amended test: </h4>
+    @Test
+    public void testMergedDiscount() {
+        User user = new User();
+        Cart cart = new Cart(user);
+        cart.add_item(new Item(10, 2));
+        cart.add_item(new Item(20, 1));
+
+        // In the B version, "megasaver" discount should be 0.25d
+        cart.checkout("megasaver");
+        assertEquals(-30.0, user.balance, 0.001);
+    }
+</div></pre></div><div class="conversation"><h4>RQ2, Cart PF, P1, T3</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
 
 Base version:
@@ -4331,7 +4448,24 @@ public class CartTest {
         assertEquals(8.0, user.balance, 0.01);
     }
 }
-```</div></pre></div><div class="conversation"><h4>RQ2, Cart PF, P1, T2</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+```
+<h4> Detection: No </h4>
+<h4> Edit distance: 12 </h4>
+<h4> Amended test: </h4>
+    @Test
+    public void testMergedDiscounts() {
+        User user = new User();
+        Cart cart = new Cart(user);
+
+        cart.add_item(new Item(10, 2));
+
+        // Checkout with the code that was renamed in branch B
+        cart.checkout("megasaver");
+
+		// Expected total cost is (10*2) - 0.25 * (10 * 2) = 15
+        assertEquals(-15.0, user.balance, 0.01);
+    }
+</div></pre></div><div class="conversation"><h4>RQ2, Cart PF, P1, T2</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
 
 Base version:
@@ -4482,7 +4616,26 @@ public class CartTest {
         assertEquals(user.balance, -6.0d);
     }
 }
-```</div></pre></div><div class="conversation"><h4>RQ2, Cart PF, P1, T1</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+```
+<h4> Detection: No </h4>
+<h4> Edit distance: 10 </h4>
+<h4> Amended test: </h4>
+    @Test
+    public void testMegaSaverDiscountConflict() {
+        User user = new User();
+        Cart cart = new Cart(user);
+        Item item = new Item(10, 1);
+
+        // Adding item to cart
+        cart.add_item(item);
+
+        // Checkout with megaSaver discount
+        cart.checkout("megasaver");
+
+        // Assert user balance after checkout
+        assertEquals(user.balance, -7.5d);
+    }
+</div></pre></div><div class="conversation"><h4>RQ2, Cart PF, P1, T1</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
 
 Base version:
@@ -4629,5 +4782,19 @@ public class CartTest {
         assertEquals(8.0, user.balance); // (10*2) - (10*2*0.4) = 16 - 6.4 = 9.6
     }
 }
-```</div></pre></div>
+```
+<h4> Detection: No </h4>
+<h4> Edit distance: 3 </h4>
+<h4> Amended test: </h4>
+    public void testMergedDiscount() {
+        User user = new User();
+        Cart cart = new Cart(user);
+        Item item = new Item(10, 2);
+
+        cart.add_item(item);
+        cart.checkout("megasaver");
+
+        assertEquals(-15.0, user.balance);
+    }
+</div></pre></div>
 </body></html>
