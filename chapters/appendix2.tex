@@ -732,10 +732,10 @@ public final class OkHttpClient {
   import java.util.Map;
   
   public class Cart {
-      private List cartItems;
+      private List<Item> cartItems;
       private final User user;
   
-      private static final Map discounts = Collections.unmodifiableMap(new HashMap<>() {{
+      private static final Map<String, Double> discounts = Collections.unmodifiableMap(new HashMap<>() {{
           put("loyal", 0.1d);
           put("superpromo", 0.25d);
           put("30ff", 0.3d);
@@ -758,7 +758,11 @@ public final class OkHttpClient {
           double sum = sum_items();
           return sum - sum * discount;
       }
-      void checkout(String code) {
+  
+      public void add_item(Item item) {
+          cartItems.add(item);
+      }
+      public void checkout(String code) {
           double cost = total_cost(discounts.get(code));
           user.balance -= cost;
           cartItems.clear();
@@ -783,12 +787,12 @@ public final class OkHttpClient {
   Diff version B and the base:
   ```diff
   diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
-  index 501b06f..796cf41 100644
+  index fbdd81f..0f8e11a 100644
   --- a/src/main/java/Cart.java
   +++ b/src/main/java/Cart.java
   @@ -9,7 +9,7 @@ public class Cart {
   
-       private static final Map discounts = Collections.unmodifiableMap(new HashMap<>() {{
+       private static final Map<String, Double> discounts = Collections.unmodifiableMap(new HashMap<>() {{
            put("loyal", 0.1d);
   -        put("superpromo", 0.25d);
   +        put("megasaver", 0.25d);
@@ -805,10 +809,10 @@ public final class OkHttpClient {
   import java.util.Map;
   
   public class Cart {
-      private List cartItems;
+      private List<Item> cartItems;
       private final User user;
   
-      private static final Map discounts = Collections.unmodifiableMap(new HashMap<>() {{
+      private static final Map<String, Double> discounts = Collections.unmodifiableMap(new HashMap<>() {{
           put("loyal", 0.1d);
           put("megasaver", 0.25d);
           put("30ff", 0.3d);
@@ -820,9 +824,23 @@ public final class OkHttpClient {
       public Cart(User user) {
           this.user = user;
       }
-  rn sum - sum * discount;
+  
+      public double sum_items() {
+          double sum = 0;
+          for(Item item: cartItems) {
+              sum += item.value*item.amount;
+          }
+          return Math.max(0, sum);
       }
-      void checkout(String code) {
+      public double total_cost(double discount) {
+          double sum = sum_items();
+          return sum - sum * discount;
+      }
+  
+      public void add_item(Item item) {
+          cartItems.add(item);
+      }
+      public void checkout(String code) {
           double cost = total_cost(discounts.get(code));
           user.balance -= cost;
           cartItems.clear();
@@ -832,27 +850,33 @@ public final class OkHttpClient {
 \end{prompt}
 
 \begin{answer}
-  In the provided scenario, there is indeed a semantic conflict in the merge commit. Let's break down the changes from versions A, B, and the merge to understand the conflict:
+  In the given scenario, let's analyze the merge commit to determine whether there is a semantic conflict and explain it.
 
-  - Version A introduces a new discount code called "megasaver" with a discount value of 0.4.
-  - Version B modifies the discount value of the "superpromo" code to 0.25 instead of 0.3.
+  1. **Base Version**:
+     - It defines a `Cart` class with methods for managing a shopping cart.
+     - It includes a `discounts` map with predefined discount codes and their corresponding discount values.
   
-  Now, let's analyze the merge commit:
+  2. **Diff Version A**:
+     - Adds a new discount code "megasaver" with a discount value of 0.4d to the `discounts` map.
   
-  - In the merge commit, both changes from versions A and B are included, resulting in the following discount map:
-  ```java
-  private static final Map discounts = Collections.unmodifiableMap(new HashMap<>() {{
-      put("loyal", 0.1d);
-      put("megasaver", 0.25d); // Conflict here!
-      put("30ff", 0.3d);
-      put("2024", 0.2d);
-      put("megasaver", 0.4d); // Conflict here!
-  }});
-  ```
+  3. **Diff Version B**:
+     - Modifies the discount value for the "superpromo" code to 0.25d.
   
-  The conflict arises because both version A and version B attempt to modify the same key in the discounts map, "megasaver", with conflicting values (0.25 and 0.4, respectively). This means that after the merge, the final discount for "megasaver" will depend on the order of the changes applied, which can lead to unexpected behavior.
+  4. **Merge Version**:
+     - Combines the changes from both versions.
+     - Includes the changes from Version A, adding the "megasaver" discount code with a value of 0.4d.
+     - Includes the changes from Version B, modifying the "superpromo" discount value to 0.25d.
   
-  To resolve this semantic conflict, you need to decide which discount value should be used for the "megasaver" code or whether both should be kept with different keys. Additionally, you may need to communicate with your team to ensure consistency and prevent future conflicts.
+  Now, let's analyze if there is a semantic conflict:
+  
+  - Both Version A and Version B modify the `discounts` map, but they affect different keys: "megasaver" in Version A and "superpromo" in Version B.
+  - In the merge version, both changes are included. However, there's a conflict because both Version A and Version B attempt to define the discount for the "megasaver" code, but with different values.
+  
+  **Semantic Conflict Explanation**:
+  - The semantic conflict arises because the same key "megasaver" is being assigned different discount values in the two branches that are being merged. This means there's ambiguity about which value should be used for the "megasaver" discount code.
+  - Resolving this conflict would require manual intervention to decide which discount value should be kept for the "megasaver" code, or to merge the changes in a way that preserves both values if that's feasible based on the application's logic.
+  
+  In summary, the semantic conflict arises due to conflicting changes to the same map key in different branches, and it needs to be resolved to ensure consistent behavior in the merged code.
 \end{answer}
 
 \subsection{Antlr, Trial 1}
