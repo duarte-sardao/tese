@@ -14,31 +14,30 @@ This chapters answers \textbf{RQ1 – RQ?}, which study \todo{???}.
 Point (CM)       & 3.0 & 1.0 & 0.7 & 1.0 & 0.7 \\
 Fabricated (RO)  & 3.0 & 1.0 & 1.0 & 2.0 & 0.7 \\
 Fabricated (OAC) & 2.3 & 1.0 & 1.0 & 3.0 & 0.7 \\
-Cart (CM)        & 3.0 & 1.0 & 1.0 & 1.7 & 0.7 \\
-Cart (PF)        & 1.0 & 1.0 & 2.0 & 2.3 & 0.7 \\
-Cart (PM)        & 3.0 & 1.0 & 0.7 & 2.0 & 2.0 \\
+Cart (CM)        & 3.0 & 1.0 & 2.0 & 3.0 & 2.7 \\
+Cart (PF)        & 1.0 & 1.0 & 2.0 & 3.0 & 1.7 \\
+Cart (PM)        & 2.0 & 1.0 & 1.3 & 1.0 & 0.3 \\
 Antlr (PF)       & 1.7 & 1.0 & 0.0 & 0.0 & 0.0 \\
 OkHttp (PM)      & 3.0 & 1.0 & 0.7 & 0.0 & 0.0 \\
 \midrule
-\textit{Average}  & 2.5 & 1.0 & 0.9 & 1.5 & 0.7 \\
+\textit{Average}  & 2.4 & 1.0 & 1.1 & 1.6 & 0.8 \\
 \bottomrule
 \end{tabular}
 \caption{Average values per subject and metric.\label{tab:results:rq1}}
 \end{table}
 
-\Cref{tab:results:rq1} summarizes the metrics achieved per subject. %From these we can note that:
-Overall:
-%
+\Cref{tab:results:rq1} summarizes the metrics achieved per subject. From these we can note that:
+
 \begin{itemize}
-  \item \textbf{ChatGPT is generally able to identify changes made between branches} ($A=2.5$).
+  \item \textbf{ChatGPT is generally able to identify changes made between branches} ($A=2.4$).
 
   \item \textbf{In none of the subject did the tool mistake the kind of conflict under discussion} ($B=1.0$). This might be because the prompt did not assert the existence of a conflict, allowing negative responses, whereas other prompts, which asked to find a conflict that did exist, lead the model to find any explanation, which often consisted of describing a textual conflict.
 
-  \item \textbf{Answers tend to identify a conflict}, but with uncertainty, e.g., with words such as ``possible'', and ``might'' ($C=0.9$). In other cases, the cases where no conflict was found outweighed the cases where one was found with uncertainty.
+  \item \textbf{Answers tend to identify a conflict}, but with uncertainty, e.g., with words such as ``possible'', and ``might'' ($C=1.1$). In other cases, the cases where no conflict was found outweighed the cases where one was found with uncertainty.
 
-  \item \textbf{Identification of the origins of conflict falls squarely in the middle of our given range}\todo{Can we say it differently? E.g., On average, it identifies the origin of the conflict.} ($D=1.5$).  When we exclude 0 value results, the average is 2.77\todo{2.7 ou 2.8?} instead. This indicates to us in nearly half the cases, the model failed to produce any description, but when it did, it was generally very accurate.
+  \item \textbf{On average, it can identify what originates conflicts} ($D=1.6$).  Despite the range given, values given to the metric was either 0 or 3. This indicates to us in nearly half the cases, the model failed to produce any accurate description, but when it did, it was generally very accurate.
 
-  \item \textbf{ChatGPT struggles with accurately describing the results of semantic conflicts} ($E=0.7$), i.e., how the behaviour is specifically altered and how the outputs change. Indeed, even when the origin of the conflict is found, an accurate description of the results does not necessarily follow, with the topic being vague or not touched upon.
+  \item \textbf{ChatGPT struggles with accurately describing the results of semantic conflicts} ($E=0.8$), i.e., how the behaviour is specifically altered and how the outputs change. Indeed, even when the origin of the conflict is found, an accurate description of the results does not necessarily follow, with the topic being vague or not touched upon.
 \end{itemize}
 
 The complete prompts, with results and evaluated metrics, can be found in the attachments \todo{Which one? Do not forget to cref it here}.
@@ -49,8 +48,10 @@ For example, the point class had high variation: two of the results failed to id
 In the more complex fabricated examples, the biggest issue was the identification of the effects of the semantic conflict, namely that when an overriden function was removed or had its access changed, the other function, with different behaviour, would be used instead. However, given the constraints of the prompt, which is limited to one class, the necessary information could not be transmitted and the LLM argued there would be compilation errors. 
 Better results were observed when doing more manual, ad-hoc experiments, as we could identify exactly all the classes involved in the conflict and offer all the required information.
 
-As we proceeded testing the ``Cart'' scenario, it was notable that in the cases where the conflict is identified, with varying exactness, it falls short of being able to explain the exact result of the conflict, namely that if an admin tries to checkout, there will always be a exception thrown. Instead, we see more vague declarations, such as ``As a result, it may lead to unexpected behavior or exceptions during execution, especially if the admin status of a user is incorrectly handled'' and unnecessary usage of expressions such as 'potentially' in ``If `user.admin` is true, `total\_cost` will return 0, potentially causing the `checkout` method in version B to throw a `RuntimeException` even if `user.admin` is true''.
-This was a recurring trend that was observed throughout all tests, as can be observed by a low final average score for metric E.
+As we proceeded testing the ``Cart'' scenario, we observed a reversal of a trend of very low results for the E metric, particularly for CM and PM.
+Indeed for these examples, not only did the LLM identify the origins of the conflict, but exactly the result of this, such as:
+``Now, in the merged version, both changes are included. So, when an admin user proceeds to checkout (assuming the admin check in version A evaluates to true), the cost will be set to 0. But immediately after, the checkout method checks if the cost is 0 and throws an exception if it is. This leads to a contradictory behavior: the system sets the cost to 0 for admin users but then doesn't allow them to proceed with checkout due to the cost being 0.''
+It is possible this is due to the very straighforward logic of the CM example in particular. /todo{include this next bit?} What is surprising is that due to some minor changes in the Cart class, we re-ran these tests and originally these values were much lower. Why there was such an improvement is unknown but it is evidence of the variability of these tools.
 
 In a scenario where detection failed we see an example of the LLM providing a grossly wrong explanation: ``If the user is an admin and a discount code that results in a cost of 0 is applied, the exception will never be thrown because the `checkout` method will not be called.''. As regards the conflict itself, this was only completely wrong assertion of its kind: in general where answers failed they were either vague or omitted, not present. The only other major example of a factually incorrect answer came with OkHttp:
 \begin{lstlisting}
@@ -65,17 +66,14 @@ In this case, the changes made in only one branch are described as a conflict.
 
 Another case of wrong information given by ChatGPT regarded the changes made, both in Cart(PF):
 \begin{lstlisting}
-- Version A introduces a new discount code called "megasaver" with a discount value of 0.4.
-- Version B modifies the discount value of the "superpromo" code to 0.25 instead of 0.3.
+1. Version A added a new discount code `"megasaver"` with a discount of 0.4d.
+2. Version B changed the discount for the `"superpromo"` code from 0.25d to 0.4d.
 ------------------------------------------------------------------------
-1. **Version A**:
-   - It adds a new discount code `"megasaver"` with a discount of 0.4d.
+2. **Diff Version A**:
+   - Adds a new discount code "megasaver" with a discount value of 0.4d to the `discounts` map.
 
-2. **Version B**:
-   - It changes the discount value for the `"superpromo"` code from 0.25d to 0.25d.
-------------------------------------------------------------------------
-- Version A adds a new discount code "megasaver" with a discount of 0.4.
-- Version B modifies the discount of the "superpromo" code to 0.25.
+3. **Diff Version B**:
+   - Modifies the discount value for the "superpromo" code to 0.25d.
 \end{lstlisting}
 As well as Antlr:
 \begin{lstlisting}
@@ -94,7 +92,7 @@ As well as Antlr:
     - No conflicting changes with other methods or properties.
 \end{lstlisting}
 However this did not worsen its ability to identify the conflict in the case of Cart, where the description of the conflict as in line with the changes made.
-We observed both of these are ``Parallel Field'' semantic conflicts so it is possible the fact that the changes are being made to fields may have some relation to its inability to express them correctly.
+We observed both of these are ``Parallel Field'' semantic conflicts so it is possible the fact that the changes are being made to fields may have some relation to its inability to express them correctly. Further credence to this involves Cart (PM), where edits to the field of an auxiliary class also were misdescribed.
 
 As the most complex example, OkHttp generated the least conclusive answers. In particular it tended to offer advice on how identify and diagnose semantic conflicts and make good merges. This is a behaviour that was also observed with other complex, real-world conflicts, during the period of ad-hoc testing.
 \begin{lstlisting}
@@ -111,9 +109,12 @@ However, when merging both changes, we need to ensure that the introduced hostna
 \end{lstlisting}
 
 Evaluating the results as a whole, it is worth imagining in which way the types of conflicts affect the model's capabilities. As observed earlier, it seem that Parallel Field conflicts induce errors in branch change description. However, it does not follow that this results in a failure of detection and description, as Cart (PF) shows above average results (although Antlr, also PF, fails to detect any conflicts at all). 
-If we compare conflicts of type Change Method (where changes are made in two related methods) and Parallel Method (where changes are constrained to one method), it is possible that ChatGPT can more easily describe PM conflicts, as for the metrics that describe the conflict (D and E), Cart (PM) has high values of 2 for both. Indeed, it is the only test where a value over 0.7 is achieved for E. For both CM conflicts these results are lower: 1.0 and 1.7 for D; 0.7 for E for both.
-Of course, OkHttp is also of type Parallel Method but its values for metrics D and E are 0. This is because, far more than type of conflict, the complexity was the far greater determining factor.
-It is also worth pointing out the good results for Remove Override and Overload by Access Change, with a perfect 3 for metric D in the latter. We find that although explanations of the result was flawed, due to a lack of information, ChatGPT reliably understood that trying a function that was removed or that had its access changed would produce errors. We could say given the relative simplicity of this type of conflict, it is liable to be very easily detected.
+It is difficult to assess to what extent the type of conflict affects detection ability. If we observe PM and CM, Cart (PM) and Point (CM) are comparable, while Cart (CM) has near perfect scores and OkHttp (PM) very low ones.
+It seems by far that the complexity of the conflict is the determining factor and this complexity can be noted as the complexity of the whole class under test (with OkHttp being the clear outlier), but also in the intricacies of the conflict.
+We observe Cart (CM) is fairly straighforward: if the user is an admin, checkout throws and exception. Indeed, even without any of the merge info, it would be fairly trivial to identify this is unintended, whereas
+Point and Cart (PM) require the identification of the original behaviour and how it has changed.
+
+It is also worth pointing out that despite good results for metric D in Remove Override and Overload by Access Change, with a perfect 3 in the latter, explanations of the result was flawed, due to a lack of information, ChatGPT reliably understood that trying a function that was removed or that had its access changed would produce errors. Thus it is worth noting in this case, accurate identification of the conflict's result would require a prompt that provides further information.
 
 Overall, we can say ChatGPT can indeed identify and explain whether there is a semantic conflict in a merge. This comes with many caveats however, firstly being that identification does not necessarily lead to a proper explanation. This is not a particularly pressing issue, as a tool that identifies conflicts and then alerts humans, who can themselves describe and fix the issue would already be a great boon for efficient software development.
 
