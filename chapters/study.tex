@@ -280,6 +280,33 @@ We evaluate by observing whether a functional unit test is generated and if not,
 \end{itemize}
 These allow us to further evaluate how the prompting can be improved and if these errors can be fixed.
 
+The basic structure of the prompt follows:
+\begin{prompt}
+You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
+
+Base version:
+```java
+```
+
+Diff version A and the base:
+```diff
+```
+
+Diff version B and the base:
+```diff
+```
+
+Merge version:
+```java
+```
+
+Explanation of the semantic conflict:
+Generate just code with necessary imports. No explanation needed.  
+\end{prompt}
+Two versions of the prompt were run, each with three trials: in the first, the explanation was manually written, whereas in the highest performance answer from ChatGPT in RQ1 was used.
+This way it could be evaluated to what extent this influence test generation results.
+
 \section{Threats to validity}
 
 \todo{Describe any threat to our study, e.g., subjects, llms, our prompts, and
