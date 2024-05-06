@@ -223,6 +223,7 @@ public class InstalacaoAssentosTest {
 ```
 <h4> Detection: No </h4>
 <h4> Edit distance: 18 </h4>
+<h4> Error: Other </h4>
 <h4> Amended test: </h4>
     @Test
     public void testHashString() {
@@ -425,6 +426,7 @@ public class InstalacaoAssentosTest {
 ```
 <h4> Detection: No </h4>
 <h4> Edit distance: 38 </h4>
+<h4> Error: Other </h4>
 <h4> Amended test: </h4>
     @Test
     public void testHashString() {
@@ -627,6 +629,7 @@ public class InstalacaoAssentosTest {
 ```
 <h4> Detection: No </h4>
 <h4> Edit distance: 9 </h4>
+<h4> Error: Assert </h4>
 <h4> Amended test: </h4>
     @Test
     public void testHashString() {
@@ -796,12 +799,13 @@ public class InstalacaoAssentosTest {
 }
 ```
 <h4> Detection: No </h4>
-<h4> Edit distance: 74 </h4>
+<h4> Edit distance: 18 </h4>
+<h4> Error: Other </h4>
 <h4> Amended test: </h4>
 	@Test
 	public void testHashString() {
 		InstalacaoAssentos instance = new InstalacaoAssentos();
-		assertEquals(-317330565, instance.hashString()); // Expected hash code value
+		assertEquals(-317330565, instance.hashString());
 	}
 </div></pre></div><div class="conversation"><h4>RQ2, RO, P1, T2</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
@@ -968,12 +972,13 @@ public class InstalacaoAssentosConflictTest {
 }
 ```
 <h4> Detection: No </h4>
-<h4> Edit distance: 66 </h4>
+<h4> Edit distance: 18 </h4>
+<h4> Error: Other </h4>
 <h4> Amended test: </h4>
 	@Test
 	public void testHashString() {
 		InstalacaoAssentos instance = new InstalacaoAssentos();
-		assertEquals(-317330565, instance.hashString()); // Expected hash code value
+		assertEquals(-317330565, instance.hashString());
 	}
 </div></pre></div><div class="conversation"><h4>RQ2, RO, P1, T1</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
@@ -1142,6 +1147,7 @@ public class InstalacaoAssentosTest {
 ```
 <h4> Detection: No </h4>
 <h4> Edit distance: 9 </h4>
+<h4> Error: Assert </h4>
 <h4> Amended test: </h4>
 	@Test
 	public void testHashString() {
@@ -2787,6 +2793,7 @@ public class EventMergeConflictTest {
 ```
 <h4> Detection: No </h4>
 <h4> Edit distance: 3 </h4>
+<h4> Error: Assert </h4>
 <h4> Amended test: </h4>
     @Test
     public void testSetProducerNumber() {
@@ -3326,6 +3333,7 @@ public class EventTest {
 ```
 <h4> Detection: No </h4>
 <h4> Edit distance: 4 </h4>
+<h4> Error: Assert/Other </h4>
 <h4> Amended test: </h4>
     @Test
     public void testSetProducerNumber() {
@@ -3862,8 +3870,9 @@ public class EventTest {
     }
 }
 ```
-<h4> Detection: Yes </h4>
+<h4> Detection: No </h4>
 <h4> Edit distance: 1 </h4>
+<h4> Error: Other </h4>
 <h4> Amended test: </h4>
     @Test
     public void testSetProducerNumber() {
@@ -4551,6 +4560,7 @@ public class PointTest {
 ```
 <h4> Detection: No </h4>
 <h4> Edit distance: 4 </h4>
+<h4> Error: Assert </h4>
 <h4> Amended test: </h4>
     @Test
     public void testMove() {
@@ -4705,6 +4715,7 @@ public class PointTest {
 ```
 <h4> Detection: No </h4>
 <h4> Edit distance: 4 </h4>
+<h4> Error: Assert </h4>
 <h4> Amended test: </h4>
     @Test
     public void testMove() {
@@ -4859,6 +4870,7 @@ public class PointTest {
 ```
 <h4> Detection: No </h4>
 <h4> Edit distance: 4 </h4>
+<h4> Error: Assert </h4>
 <h4> Amended test: </h4>
     @Test
     public void testMove() {
@@ -4978,7 +4990,7 @@ public class PointTest {
 
     @Test
     public void testMove() {
-        Point point = new Point(2, 3);
+        Point point = new Point(3, 4);
         point.move();
         assertEquals("(7.0, 8.0)", point.toString()); // Expected after merge
     }
@@ -4986,17 +4998,14 @@ public class PointTest {
 ```
 <h4> Detection: No </h4>
 <h4> Edit distance: 2 </h4>
+<h4> Error: Assert </h4>
 <h4> Amended test: </h4>
-public class PointTest {
-
     @Test
-    void testMove() {
-        Point point = new Point(3, 4);
+    public void testMove() {
+        Point point = new Point(2, 3);
         point.move();
-        assertEquals(10, point.getX());
-        assertEquals(11, point.getY());
+        assertEquals("(7.0, 8.0)", point.toString()); // Expected after merge
     }
-}
 </div></pre></div><div class="conversation"><h4>RQ2, Point, P1, T2</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
 
@@ -5117,6 +5126,7 @@ public class PointTest {
 ```
 <h4> Detection: No </h4>
 <h4> Edit distance: 2 </h4>
+<h4> Error: Assert </h4>
 <h4> Amended test: </h4>
 public class PointTest {
 
@@ -5247,6 +5257,7 @@ public class PointTest {
 ```
 <h4> Detection: No </h4>
 <h4> Edit distance: 4 </h4>
+<h4> Error: Assert </h4>
 <h4> Amended test: </h4>
 public class PointTest {
 
