@@ -124,20 +124,20 @@ The bigger caveat is the situations in which it identifies the conflicts: simple
 
 \begin{table}[t]
     \centering
-    \begin{tabular}{@{\extracolsep{\fill}} lrrrrr} \toprule
-                     & A [0-3] & B [0-1] & C [0-2] & D [0-3] & E [0-3] \\
+    \begin{tabular}{@{\extracolsep{\fill}} lrrr} \toprule
+                         & Successes (of 3) & Average Edit Distance & Errors \\
     \midrule
-    Point (CM) Manual       & 3.0 & 1.0 & 0.7 & 1.0 & 0.7 \\
-    Fabricated (RO) ChatGPT & 3.0 & 1.0 & 1.0 & 2.0 & 0.7 \\
-    Fabricated (OAC) & 2.3 & 1.0 & 1.0 & 3.0 & 0.7 \\
-    Cart (CM)        & 3.0 & 1.0 & 2.0 & 3.0 & 2.7 \\
-    Cart (PF)        & 1.0 & 1.0 & 2.0 & 3.0 & 1.7 \\
-    Cart (PM)        & 2.0 & 1.0 & 1.3 & 1.0 & 0.3 \\
-    Antlr (PF)       & 1.7 & 1.0 & 0.0 & 0.0 & 0.0 \\
-    OkHttp (PM)      & 3.0 & 1.0 & 0.7 & 0.0 & 0.0 \\
+    Point (CM) Manual    & 0 & 0 & N/A \\
+    Point (CM) ChatGPT   & 0 & 0 & N/A \\
+    Point (RO) Manual    & 0 & 0 & N/A \\
+    Point (OAC) ChatGPT  & 0 & 0 & N/A \\
+    Cart (CM) Manual     & 0 & 0 & N/A \\
+    Cart (CM) ChatGPT    & 0 & 0 & N/A \\
+    Cart (PF) Manual     & 0 & 0 & N/A \\
+    Cart (PF) ChatGPT    & 0 & 0 & N/A \\
+    Cart (PM) Manual     & 0 & 0 & N/A \\
+    Cart (PM) ChatGPT    & 0 & 0 & N/A \\
     \midrule
-    \textit{Average}  & 2.4 & 1.0 & 1.1 & 1.6 & 0.8 \\
-    \bottomrule
     \end{tabular}
-    \caption{Average values per subject and metric.\label{tab:results:rq1}}
+    \caption{Results by conflict and explanation type.\label{tab:results:rq2}}
     \end{table}
