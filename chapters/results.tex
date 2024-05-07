@@ -122,6 +122,12 @@ The bigger caveat is the situations in which it identifies the conflicts: simple
 
 \section{RQ2}\label{sec:results:rq2}
 
+\Cref{tab:results:rq2} summarizes the results achieved, split by conflict and evaluation type.
+From this we can observe:
+-asserts nearly always failed
+-little difference between chatgpt and manual save for exceptions
+-generally very low edit distance to success (usually just assert)
+
 \begin{table}[t]
     \centering
     \begin{tabular}{@{\extracolsep{\fill}} lrrr} \toprule
@@ -143,3 +149,24 @@ The bigger caveat is the situations in which it identifies the conflicts: simple
     \end{tabular}
     \caption{Results by conflict and explanation type.\label{tab:results:rq2}}
     \end{table}
+
+
+-deeper analysis things to observe:
+asserts: bad at math. but some more understandable like hash
+only non-assert is Cart (CM) (there is one case but the assert there is unnecessary to confl)
+this is because it handles an exception, not a specific value
+
+
+oac success:
+simple intuitive program behavior, so more successes. just checking if value is set
+setresgistration example
+
+go deeper into cm ro big diffs (seem unrelated?)
+
+talk abt constructor errors (easily fixed, but more complex real world)
+(also cuz errors, the amount issue)
+importance of code that follows norms
+
+talk abt other type errors
+
+possibility of correction of asserts and constructor?
