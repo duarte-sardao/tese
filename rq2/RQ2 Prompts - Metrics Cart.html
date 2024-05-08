@@ -2390,6 +2390,7 @@ public class CartTest {
         cart.add_item(item2);
         assertEquals(0, cart.sum_items(), "Sum of items should not be negative");
     }
+<h1> HERE NOW </h1>
 </div></pre></div><div class="conversation"><h4>RQ2, Cart PF, P2, T3</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
 
@@ -2558,8 +2559,9 @@ public class CartTest {
 }
 ```
 <h4> Detection: No </h4>
-<h4> Edit distance: 21 </h4>
+<h4> Edit distance: 18 </h4>
 <h4> Error: Assert/Constructor/Branch </h4>
+<h4> Results: R/FF/F </h4>
 <h4> Amended test: </h4>
     @Test
     public void testMergedDiscountConflict() {
@@ -2571,11 +2573,11 @@ public class CartTest {
         cart.add_item(new Item(20, 3));
 
         // Calculate expected cost without discount conflict
-        double expectedCostWithoutConflict = -(10 * 2 + 20 * 3) * (1 - 0.25);
-
+        double expectedCostWithoutConflict = (10 * 2 + 20 * 3) * (1 - 0.4);
+        
         // Checkout with "megasaver" code
         cart.checkout("megasaver");
-
+        
         // Verify that the cost matches the expected cost without conflict
         assertEquals(expectedCostWithoutConflict, user.balance);
     }
@@ -2733,8 +2735,9 @@ public class CartTest {
 }
 ```
 <h4> Detection: No </h4>
-<h4> Edit distance: 54 </h4>
+<h4> Edit distance: 52 </h4>
 <h4> Error: Assert/Constructor/Other </h4>
+<h4> Results: R/FF/F </h4>
 <h4> Amended test: </h4>
     @Test
     public void testMergeConflict_MegasaverDiscount() {
@@ -2742,7 +2745,7 @@ public class CartTest {
         Cart cart = new Cart(user);
         cart.add_item(new Item(10, 2));
         cart.checkout("megasaver");
-        assertEquals(-15.0, user.balance, 0.01);
+        assertEquals(16.0, user.balance, 0.01);
     }
 </div></pre></div><div class="conversation"><h4>RQ2, Cart PF, P2, T1</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
@@ -2905,8 +2908,9 @@ public class CartTest {
 }
 ```
 <h4> Detection: No </h4>
-<h4> Edit distance: 33 </h4>
+<h4> Edit distance: 30 </h4>
 <h4> Error: Assert/Constructor/Branch </h4>
+<h4> Results: R/FF/F </h4>
 <h4> Amended test: </h4>
     @Test
     public void testMergedDiscount() {
@@ -2917,7 +2921,7 @@ public class CartTest {
 
         // In the B version, "megasaver" discount should be 0.25d
         cart.checkout("megasaver");
-        assertEquals(-30.0, user.balance, 0.001);
+        assertEquals(974.0, user.balance, 0.001);
     }
 </div></pre></div><div class="conversation"><h4>RQ2, Cart PF, P1, T3</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
@@ -3070,8 +3074,9 @@ public class CartTest {
 }
 ```
 <h4> Detection: No </h4>
-<h4> Edit distance: 12 </h4>
+<h4> Edit distance: 9 </h4>
 <h4> Error: Assert/Constructor/Branch </h4>
+<h4> Results: R/FF/F </h4>
 <h4> Amended test: </h4>
     @Test
     public void testMergedDiscounts() {
@@ -3083,8 +3088,8 @@ public class CartTest {
         // Checkout with the code that was renamed in branch B
         cart.checkout("megasaver");
 
-		// Expected total cost is (10*2) - 0.25 * (10 * 2) = 15
-        assertEquals(-15.0, user.balance, 0.01);
+        // Expected total cost is 0.4 * (10 * 2) = 8
+        assertEquals(8.0, user.balance, 0.01);
     }
 </div></pre></div><div class="conversation"><h4>RQ2, Cart PF, P1, T2</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
@@ -3239,8 +3244,9 @@ public class CartTest {
 }
 ```
 <h4> Detection: No </h4>
-<h4> Edit distance: 10 </h4>
+<h4> Edit distance: 8 </h4>
 <h4> Error: Constructor/Branch </h4>
+<h4> Results: R/PF/P </h4>
 <h4> Amended test: </h4>
     @Test
     public void testMegaSaverDiscountConflict() {
@@ -3255,7 +3261,7 @@ public class CartTest {
         cart.checkout("megasaver");
 
         // Assert user balance after checkout
-        assertEquals(user.balance, -7.5d);
+        assertEquals(user.balance, -6.0d);
     }
 </div></pre></div><div class="conversation"><h4>RQ2, Cart PF, P1, T1</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
@@ -3406,18 +3412,8 @@ public class CartTest {
 }
 ```
 <h4> Detection: No </h4>
-<h4> Edit distance: 3 </h4>
+<h4> Edit distance: 0 </h4>
 <h4> Error: Assert/Branch </h4>
-<h4> Amended test: </h4>
-    public void testMergedDiscount() {
-        User user = new User();
-        Cart cart = new Cart(user);
-        Item item = new Item(10, 2);
-
-        cart.add_item(item);
-        cart.checkout("megasaver");
-
-        assertEquals(-15.0, user.balance);
-    }
+<h4> Results: R/FF/F </h4>
 </div></pre></div>
 </body></html>
