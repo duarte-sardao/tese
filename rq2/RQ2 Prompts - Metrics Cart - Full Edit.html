@@ -1,0 +1,3423 @@
+<html><head>
+    <title>ChatGPT Data Export</title>
+    <style>
+      body {
+        margin: 20px;
+      }
+      h4 {
+        font-family: sans-serif;
+        margin: 0;
+      }
+      #root {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .conversation {
+        border: 1px solid black;
+        padding: 20px;
+        background-color: #f3f3f3;
+      }
+      .message {
+        white-space: pre-wrap;
+        margin: 20px 0;
+      }
+      .author {
+        font-weight: bold;
+        margin-bottom: 4px;
+      }
+      .author::first-letter {
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+<div id="root"><div id="root">
+<div class="conversation">
+<h4>RQ2, Cart CM, P2, T3</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
+
+Base version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Diff version A and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..71f48c4 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -27,6 +27,8 @@ public class Cart {
+         return Math.max(0, sum);
+     }
+     public double total_cost(double discount) {
++        if(user.admin)
++            return 0;
+         double sum = sum_items();
+         return sum - sum * discount;
+     }
+
+```
+
+Diff version B and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..1910ae9 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -36,6 +36,8 @@ public class Cart {
+     }
+     public void checkout(String code) {
+         double cost = total_cost(discounts.get(code));
++        if(cost==0)
++            throw new RuntimeException("Cost can't be 0");
+         user.balance -= cost;
+         cartItems.clear();
+     }
+```
+
+Merge version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        if(user.admin)
+            return 0;
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        if(cost==0)
+            throw new RuntimeException("Cost can't be 0");
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Explanation of the semantic conflict: "The merge conflict here arises due to the simultaneous changes made in both versions A and B, which create a semantic conflict in the merged version.
+
+In version A's diff, there's a change made in the `total_cost` method. It introduces a conditional check `if(user.admin)` before calculating the cost. If the user is an admin, it sets the cost to 0. This implies that admins get items for free.
+
+In version B's diff, the `checkout` method is modified to throw a `RuntimeException` if the cost is 0 after calculating it. This suggests that the system shouldn't allow checkout if the cost is 0, indicating some issue with the checkout process if the cost is zero.
+
+Now, in the merged version, both changes are included. So, when an admin user proceeds to checkout (assuming the admin check in version A evaluates to true), the cost will be set to 0. But immediately after, the checkout method checks if the cost is 0 and throws an exception if it is. This leads to a contradictory behavior: the system sets the cost to 0 for admin users but then doesn't allow them to proceed with checkout due to the cost being 0.
+
+Therefore, the semantic conflict arises from the contradictory behaviors introduced by the changes in versions A and B, specifically regarding how the cost is handled for admin users and the checkout process."
+Generate just code with necessary imports. No explanation needed.
+</div></pre><pre class="message"><div class="author">ChatGPT</div><div>```java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class CartTest {
+    
+    @Test
+    void testAdminCheckoutFreeItem() {
+        User adminUser = new User(true, 100); // admin user with initial balance of 100
+        Cart cart = new Cart(adminUser);
+        cart.add_item(new Item("Item1", 10, 2)); // item with value 10 and amount 2
+        assertDoesNotThrow(() -&gt; cart.checkout("loyal")); // admin gets item for free
+        assertEquals(100, adminUser.balance); // balance remains the same
+    }
+    
+    @Test
+    void testAdminCheckoutThrowsException() {
+        User adminUser = new User(true, 100); // admin user with initial balance of 100
+        Cart cart = new Cart(adminUser);
+        cart.add_item(new Item("Item1", 0, 2)); // item with value 0 and amount 2
+        assertThrows(RuntimeException.class, () -&gt; cart.checkout("loyal")); // checkout throws exception
+        assertEquals(100, adminUser.balance); // balance remains the same
+    }
+}
+```
+<h4> Detection: No </h4>
+<h4> Edit distance: 47 </h4>
+<h4> Error: Constructor </h4>
+<h4> Amended test: </h4>
+    @Test
+    void testAdminCheckoutFreeItem() {
+        User adminUser = new User(true); // admin user with initial balance of 100
+        adminUser.balance = 100;
+        Cart cart = new Cart(adminUser);
+        cart.add_item(new Item(10, 2)); // item with value 10 and amount 2
+        assertDoesNotThrow(() -> cart.checkout("loyal")); // admin gets item for free
+        assertEquals(100, adminUser.balance); // balance remains the same
+    }
+</div></pre></div><div class="conversation"><h4>RQ2, Cart CM, P2, T2</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
+
+Base version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Diff version A and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..71f48c4 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -27,6 +27,8 @@ public class Cart {
+         return Math.max(0, sum);
+     }
+     public double total_cost(double discount) {
++        if(user.admin)
++            return 0;
+         double sum = sum_items();
+         return sum - sum * discount;
+     }
+
+```
+
+Diff version B and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..1910ae9 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -36,6 +36,8 @@ public class Cart {
+     }
+     public void checkout(String code) {
+         double cost = total_cost(discounts.get(code));
++        if(cost==0)
++            throw new RuntimeException("Cost can't be 0");
+         user.balance -= cost;
+         cartItems.clear();
+     }
+```
+
+Merge version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        if(user.admin)
+            return 0;
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        if(cost==0)
+            throw new RuntimeException("Cost can't be 0");
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Explanation of the semantic conflict: "The merge conflict here arises due to the simultaneous changes made in both versions A and B, which create a semantic conflict in the merged version.
+
+In version A's diff, there's a change made in the `total_cost` method. It introduces a conditional check `if(user.admin)` before calculating the cost. If the user is an admin, it sets the cost to 0. This implies that admins get items for free.
+
+In version B's diff, the `checkout` method is modified to throw a `RuntimeException` if the cost is 0 after calculating it. This suggests that the system shouldn't allow checkout if the cost is 0, indicating some issue with the checkout process if the cost is zero.
+
+Now, in the merged version, both changes are included. So, when an admin user proceeds to checkout (assuming the admin check in version A evaluates to true), the cost will be set to 0. But immediately after, the checkout method checks if the cost is 0 and throws an exception if it is. This leads to a contradictory behavior: the system sets the cost to 0 for admin users but then doesn't allow them to proceed with checkout due to the cost being 0.
+
+Therefore, the semantic conflict arises from the contradictory behaviors introduced by the changes in versions A and B, specifically regarding how the cost is handled for admin users and the checkout process."
+Generate just code with necessary imports. No explanation needed.
+</div></pre><pre class="message"><div class="author">ChatGPT</div><div>```java
+import org.junit.Test;
+import static org.junit.Assert.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class CartTest {
+
+    @Test(expected = RuntimeException.class)
+    public void testAdminCheckout() {
+        User adminUser = new User();
+        adminUser.setAdmin(true);
+        Cart cart = new Cart(adminUser);
+        cart.add_item(new Item(10, 1));
+        cart.checkout("loyal");
+    }
+}
+<h4> Detection: No </h4>
+<h4> Edit distance: 8 </h4>
+<h4> Error: Other </h4>
+<h4> Amended test: </h4>
+    @Test(expected = RuntimeException.class)
+    public void testAdminCheckout() {
+        User adminUser = new User();
+        adminUser.admin = true;
+        Cart cart = new Cart(adminUser);
+        cart.add_item(new Item(10, 1));
+        cart.checkout("loyal");
+    }
+```</div></pre></div><div class="conversation"><h4>RQ2, Cart CM, P2, T1</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
+
+Base version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Diff version A and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..71f48c4 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -27,6 +27,8 @@ public class Cart {
+         return Math.max(0, sum);
+     }
+     public double total_cost(double discount) {
++        if(user.admin)
++            return 0;
+         double sum = sum_items();
+         return sum - sum * discount;
+     }
+
+```
+
+Diff version B and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..1910ae9 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -36,6 +36,8 @@ public class Cart {
+     }
+     public void checkout(String code) {
+         double cost = total_cost(discounts.get(code));
++        if(cost==0)
++            throw new RuntimeException("Cost can't be 0");
+         user.balance -= cost;
+         cartItems.clear();
+     }
+```
+
+Merge version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        if(user.admin)
+            return 0;
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        if(cost==0)
+            throw new RuntimeException("Cost can't be 0");
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Explanation of the semantic conflict: "The merge conflict here arises due to the simultaneous changes made in both versions A and B, which create a semantic conflict in the merged version.
+
+In version A's diff, there's a change made in the `total_cost` method. It introduces a conditional check `if(user.admin)` before calculating the cost. If the user is an admin, it sets the cost to 0. This implies that admins get items for free.
+
+In version B's diff, the `checkout` method is modified to throw a `RuntimeException` if the cost is 0 after calculating it. This suggests that the system shouldn't allow checkout if the cost is 0, indicating some issue with the checkout process if the cost is zero.
+
+Now, in the merged version, both changes are included. So, when an admin user proceeds to checkout (assuming the admin check in version A evaluates to true), the cost will be set to 0. But immediately after, the checkout method checks if the cost is 0 and throws an exception if it is. This leads to a contradictory behavior: the system sets the cost to 0 for admin users but then doesn't allow them to proceed with checkout due to the cost being 0.
+
+Therefore, the semantic conflict arises from the contradictory behaviors introduced by the changes in versions A and B, specifically regarding how the cost is handled for admin users and the checkout process."
+Generate just code with necessary imports. No explanation needed.
+</div></pre><pre class="message"><div class="author">ChatGPT</div><div>```java
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+public class CartTest {
+
+    @Test(expected = RuntimeException.class)
+    public void adminCheckoutWithZeroCost() {
+        User adminUser = new User(true, 100); // Creating an admin user with initial balance 100
+        Cart cart = new Cart(adminUser);
+        Item item = new Item("Test", 10, 2); // Adding an item to the cart
+        cart.add_item(item);
+        cart.checkout("loyal"); // Using a discount code that should set cost to 0
+    }
+}
+```
+<h4> Detection: No </h4>
+<h4> Edit distance: 13 </h4>
+<h4> Error: Constructor </h4>
+<h4> Amended test: </h4>
+    @Test(expected = RuntimeException.class)
+    public void adminCheckoutWithZeroCost() {
+        User adminUser = new User(true);
+        Cart cart = new Cart(adminUser);
+        Item item = new Item(10, 2); // Adding an item to the cart
+        cart.add_item(item);
+        cart.checkout("loyal"); // Using a discount code that should set cost to 0
+    }
+</div></pre></div><div class="conversation"><h4>RQ2, Cart CM, P1, T3</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
+
+Base version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Diff version A and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..71f48c4 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -27,6 +27,8 @@ public class Cart {
+         return Math.max(0, sum);
+     }
+     public double total_cost(double discount) {
++        if(user.admin)
++            return 0;
+         double sum = sum_items();
+         return sum - sum * discount;
+     }
+
+```
+
+Diff version B and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..1910ae9 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -36,6 +36,8 @@ public class Cart {
+     }
+     public void checkout(String code) {
+         double cost = total_cost(discounts.get(code));
++        if(cost==0)
++            throw new RuntimeException("Cost can't be 0");
+         user.balance -= cost;
+         cartItems.clear();
+     }
+```
+
+Merge version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        if(user.admin)
+            return 0;
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        if(cost==0)
+            throw new RuntimeException("Cost can't be 0");
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Explanation of the semantic conflict: A conflict is introduced because branch A makes an addition in total_cost: If the user is an admin, the value returned is 0. However branch A makes a check in checkout and throws an error is the cost returned by total_cost is 0. Thus, admin's will always throw an error in the merged version, which is not inteded.
+Generate just code with necessary imports. No explanation needed.
+</div></pre><pre class="message"><div class="author">ChatGPT</div><div>```java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class CartTest {
+
+    @Test
+    public void testAdminCheckout() {
+        User adminUser = new User(true, 100); // Admin user with balance 100
+        Cart cart = new Cart(adminUser);
+        cart.add_item(new Item(1, 10)); // Add an item with value 10
+        assertDoesNotThrow(() -&gt; cart.checkout("loyal")); // Should not throw an exception
+    }
+}
+```
+<h4> Detection: No </h4>
+<h4> Edit distance: 5 </h4>
+<h4> Error: Constructor </h4>
+<h4> Amended test: </h4>
+    @Test
+    public void testAdminCheckout() {
+        User adminUser = new User(true); // Admin user with balance 100
+        Cart cart = new Cart(adminUser);
+        cart.add_item(new Item(1, 10)); // Add an item with value 10
+        assertDoesNotThrow(() -> cart.checkout("loyal")); // Should not throw an exception
+    }
+</div></pre></div><div class="conversation"><h4>RQ2, Cart CM, P1, T2</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
+
+Base version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Diff version A and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..71f48c4 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -27,6 +27,8 @@ public class Cart {
+         return Math.max(0, sum);
+     }
+     public double total_cost(double discount) {
++        if(user.admin)
++            return 0;
+         double sum = sum_items();
+         return sum - sum * discount;
+     }
+
+```
+
+Diff version B and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..1910ae9 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -36,6 +36,8 @@ public class Cart {
+     }
+     public void checkout(String code) {
+         double cost = total_cost(discounts.get(code));
++        if(cost==0)
++            throw new RuntimeException("Cost can't be 0");
+         user.balance -= cost;
+         cartItems.clear();
+     }
+```
+
+Merge version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        if(user.admin)
+            return 0;
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        if(cost==0)
+            throw new RuntimeException("Cost can't be 0");
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Explanation of the semantic conflict: A conflict is introduced because branch A makes an addition in total_cost: If the user is an admin, the value returned is 0. However branch A makes a check in checkout and throws an error is the cost returned by total_cost is 0. Thus, admin's will always throw an error in the merged version, which is not inteded.
+Generate just code with necessary imports. No explanation needed.
+</div></pre><pre class="message"><div class="author">ChatGPT</div><div>```java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class CartTest {
+
+    @Test
+    public void testAdminCheckout() {
+        User adminUser = new User(true);
+        Cart cart = new Cart(adminUser);
+        cart.add_item(new Item("Item", 10, 1));
+        assertDoesNotThrow(() -&gt; cart.checkout("loyal"));
+        assertEquals(10, adminUser.balance);
+    }
+
+    @Test
+    public void testNonAdminCheckout() {
+        User nonAdminUser = new User(false);
+        Cart cart = new Cart(nonAdminUser);
+        cart.add_item(new Item("Item", 10, 1));
+        assertThrows(RuntimeException.class, () -&gt; cart.checkout("loyal"));
+        assertEquals(0, nonAdminUser.balance);
+    }
+}
+<h4> Detection: No </h4>
+<h4> Edit distance: 9 </h4>
+<h4> Error: Assert/Constructor </h4>
+<h4> Amended test: </h4>
+    @Test
+    public void testAdminCheckout() {
+        User adminUser = new User(true);
+        Cart cart = new Cart(adminUser);
+        cart.add_item(new Item(10, 1));
+        assertDoesNotThrow(() -&gt; cart.checkout("loyal"));
+        assertEquals(0, adminUser.balance);
+    }
+```</div></pre></div><div class="conversation"><h4>RQ2, Cart CM, P1, T1</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
+
+Base version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Diff version A and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..71f48c4 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -27,6 +27,8 @@ public class Cart {
+         return Math.max(0, sum);
+     }
+     public double total_cost(double discount) {
++        if(user.admin)
++            return 0;
+         double sum = sum_items();
+         return sum - sum * discount;
+     }
+
+```
+
+Diff version B and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..1910ae9 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -36,6 +36,8 @@ public class Cart {
+     }
+     public void checkout(String code) {
+         double cost = total_cost(discounts.get(code));
++        if(cost==0)
++            throw new RuntimeException("Cost can't be 0");
+         user.balance -= cost;
+         cartItems.clear();
+     }
+```
+
+Merge version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        if(user.admin)
+            return 0;
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        if(cost==0)
+            throw new RuntimeException("Cost can't be 0");
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Explanation of the semantic conflict: A conflict is introduced because branch A makes an addition in total_cost: If the user is an admin, the value returned is 0. However branch A makes a check in checkout and throws an error is the cost returned by total_cost is 0. Thus, admin's will always throw an error in the merged version, which is not inteded.
+Generate just code with necessary imports. No explanation needed.
+</div></pre><pre class="message"><div class="author">ChatGPT</div><div>```java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class CartTest {
+    
+    @Test
+    public void testCheckout_AdminWithZeroCost() {
+        User adminUser = new User(true, 100); // Admin user with balance 100
+        Cart cart = new Cart(adminUser);
+        Item item = new Item(10, 2); // Item value 10, amount 2
+        cart.add_item(item);
+        
+        // Assert that checkout with a valid code doesn't throw an error
+        assertDoesNotThrow(() -&gt; cart.checkout("loyal"));
+    }
+}
+```
+<h4> Detection: No </h4>
+<h4> Edit distance: 5</h4>
+<h4> Error: Constructor </h4>
+<h4> Amended test: </h4>
+    @Test
+    public void testCheckout_AdminWithZeroCost() {
+        User adminUser = new User(true);
+        Cart cart = new Cart(adminUser);
+        Item item = new Item(10, 2); // Item value 10, amount 2
+        cart.add_item(item);
+
+        // Assert that checkout with a valid code doesn't throw an error
+        assertDoesNotThrow(() -> cart.checkout("loyal"));
+    }
+</div></pre></div><div class="conversation"><h4>RQ2, Cart PM, P2, T3</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
+
+Base version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Diff version A and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..2846dd0 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -24,7 +24,7 @@ public class Cart {
+         for(Item item: cartItems) {
+             sum += item.value*item.amount;
+         }
+-        return Math.max(0, sum);
++        return sum;
+     }
+     public double total_cost(double discount) {
+         double sum = sum_items();
+```
+
+Diff version B and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..a90d713 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -22,7 +22,10 @@ public class Cart {
+     public double sum_items() {
+         double sum = 0;
+         for(Item item: cartItems) {
+-            sum += item.value*item.amount;
++            if(item.coupon)
++                sum -= item.value*item.amount;
++            else
++                sum += item.value*item.amount;
+         }
+         return Math.max(0, sum);
+     }
+diff --git a/src/main/java/Item.java b/src/main/java/Item.java
+index 76a06c8..7b2db97 100644
+--- a/src/main/java/Item.java
++++ b/src/main/java/Item.java
+@@ -2,6 +2,7 @@ public class Item {
+
+     public double value;
+     public int amount;
++    public boolean coupon;
+
+     public Item(int value) {
+         this.value = value;
+@@ -11,4 +12,14 @@ public class Item {
+         this.value = value;
+         this.amount = amount;
+     }
++    public Item(int value, boolean coupon) {
++        this.value = value;
++        this.coupon = coupon;
++    }
++
++    public Item(int value, int amount, boolean coupon) {
++        this.value = value;
++        this.coupon = coupon;
++        this.amount = amount;
++    }
+ }
+```
+
+Merge version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            if(item.coupon)
+                sum -= item.value*item.amount;
+            else
+                sum += item.value*item.amount;
+        }
+        return sum;
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+Explanation of the semantic conflict: "Based on the provided information, let's analyze the changes in versions A and B compared to the base version, and then inspect the merged version for potential semantic conflicts.
+
+**Changes in Version A:**
+- The `sum_items()` method has been modified to remove the `Math.max(0, sum)` condition, returning the raw sum of item values.
+- No changes have been made to the `total_cost()` method.
+
+**Changes in Version B:**
+- The `sum_items()` method has been significantly modified. It now checks if an item has a coupon (`item.coupon`), and if so, subtracts the value of the item from the sum; otherwise, it adds the value of the item to the sum.
+- No changes have been made to the `total_cost()` method.
+- Additionally, a new constructor for the `Item` class has been added, which accepts a boolean parameter `coupon`.
+
+**Merged Version:**
+- The `sum_items()` method in the merged version combines the changes from both version A and version B. It checks if an item has a coupon, and based on that, either subtracts or adds the item value to the sum.
+- The `total_cost()` method remains unchanged from the base version.
+
+**Assessment:**
+- The semantic conflict arises from the merged `sum_items()` method. Version A and version B have conflicting changes to this method.
+- In version A, the method returns the raw sum of item values without considering whether an item has a coupon or not.
+- In version B, the method checks for coupons and adjusts the sum accordingly.
+- The merged version combines these changes, resulting in a method that considers coupons but does not account for the removal of the `Math.max(0, sum)` condition.
+- This conflict could lead to incorrect calculations of the total cost, especially if negative item values are involved.
+
+**Resolution:**
+- To resolve this conflict, you need to decide on the desired behavior of the `sum_items()` method. Should it consider coupons and potentially allow negative sums, or should it ensure that the sum is non-negative?
+- Once the desired behavior is determined, you can modify the merged version accordingly, ensuring that it aligns with the intended functionality while avoiding inconsistencies and potential errors."
+Generate just code with necessary imports. No explanation needed.
+</div></pre><pre class="message"><div class="author">ChatGPT</div><div>```java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class CartTest {
+
+    @Test
+    public void testSumItemsWithCoupon() {
+        Cart cart = new Cart(new User());
+        Item item = new Item(50, true); // Item with coupon
+        cart.add_item(item);
+        assertEquals(-50, cart.sum_items(), 0.001);
+    }
+
+    @Test
+    public void testSumItemsWithoutCoupon() {
+        Cart cart = new Cart(new User());
+        Item item = new Item(50); // Item without coupon
+        cart.add_item(item);
+        assertEquals(50, cart.sum_items(), 0.001);
+    }
+
+    @Test
+    public void testTotalCostWithCoupon() {
+        Cart cart = new Cart(new User());
+        Item item = new Item(50, true); // Item with coupon
+        cart.add_item(item);
+        cart.checkout("loyal");
+        assertEquals(-45, cart.getUser().getBalance(), 0.001);
+    }
+
+    @Test
+    public void testTotalCostWithoutCoupon() {
+        Cart cart = new Cart(new User());
+        Item item = new Item(50); // Item without coupon
+        cart.add_item(item);
+        cart.checkout("loyal");
+        assertEquals(-45, cart.getUser().getBalance(), 0.001);
+    }
+}
+```
+<h4> Detection: No </h4>
+<h4> Edit distance: 3 </h4>
+<h4> Error: Other </h4>
+<h4> Amended test: </h4>
+    @Test
+    public void testSumItemsWithCoupon() {
+        Cart cart = new Cart(new User());
+        Item item = new Item(50, 1, true); // Item with coupon
+        cart.add_item(item);
+        assertEquals(-50, cart.sum_items(), 0.001);
+    }
+</div></pre></div><div class="conversation"><h4>RQ2, Cart PM, P2, T2</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
+
+Base version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Diff version A and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..2846dd0 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -24,7 +24,7 @@ public class Cart {
+         for(Item item: cartItems) {
+             sum += item.value*item.amount;
+         }
+-        return Math.max(0, sum);
++        return sum;
+     }
+     public double total_cost(double discount) {
+         double sum = sum_items();
+```
+
+Diff version B and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..a90d713 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -22,7 +22,10 @@ public class Cart {
+     public double sum_items() {
+         double sum = 0;
+         for(Item item: cartItems) {
+-            sum += item.value*item.amount;
++            if(item.coupon)
++                sum -= item.value*item.amount;
++            else
++                sum += item.value*item.amount;
+         }
+         return Math.max(0, sum);
+     }
+diff --git a/src/main/java/Item.java b/src/main/java/Item.java
+index 76a06c8..7b2db97 100644
+--- a/src/main/java/Item.java
++++ b/src/main/java/Item.java
+@@ -2,6 +2,7 @@ public class Item {
+
+     public double value;
+     public int amount;
++    public boolean coupon;
+
+     public Item(int value) {
+         this.value = value;
+@@ -11,4 +12,14 @@ public class Item {
+         this.value = value;
+         this.amount = amount;
+     }
++    public Item(int value, boolean coupon) {
++        this.value = value;
++        this.coupon = coupon;
++    }
++
++    public Item(int value, int amount, boolean coupon) {
++        this.value = value;
++        this.coupon = coupon;
++        this.amount = amount;
++    }
+ }
+```
+
+Merge version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            if(item.coupon)
+                sum -= item.value*item.amount;
+            else
+                sum += item.value*item.amount;
+        }
+        return sum;
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+Explanation of the semantic conflict: "Based on the provided information, let's analyze the changes in versions A and B compared to the base version, and then inspect the merged version for potential semantic conflicts.
+
+**Changes in Version A:**
+- The `sum_items()` method has been modified to remove the `Math.max(0, sum)` condition, returning the raw sum of item values.
+- No changes have been made to the `total_cost()` method.
+
+**Changes in Version B:**
+- The `sum_items()` method has been significantly modified. It now checks if an item has a coupon (`item.coupon`), and if so, subtracts the value of the item from the sum; otherwise, it adds the value of the item to the sum.
+- No changes have been made to the `total_cost()` method.
+- Additionally, a new constructor for the `Item` class has been added, which accepts a boolean parameter `coupon`.
+
+**Merged Version:**
+- The `sum_items()` method in the merged version combines the changes from both version A and version B. It checks if an item has a coupon, and based on that, either subtracts or adds the item value to the sum.
+- The `total_cost()` method remains unchanged from the base version.
+
+**Assessment:**
+- The semantic conflict arises from the merged `sum_items()` method. Version A and version B have conflicting changes to this method.
+- In version A, the method returns the raw sum of item values without considering whether an item has a coupon or not.
+- In version B, the method checks for coupons and adjusts the sum accordingly.
+- The merged version combines these changes, resulting in a method that considers coupons but does not account for the removal of the `Math.max(0, sum)` condition.
+- This conflict could lead to incorrect calculations of the total cost, especially if negative item values are involved.
+
+**Resolution:**
+- To resolve this conflict, you need to decide on the desired behavior of the `sum_items()` method. Should it consider coupons and potentially allow negative sums, or should it ensure that the sum is non-negative?
+- Once the desired behavior is determined, you can modify the merged version accordingly, ensuring that it aligns with the intended functionality while avoiding inconsistencies and potential errors."
+Generate just code with necessary imports. No explanation needed.
+</div></pre><pre class="message"><div class="author">ChatGPT</div><div>```java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class CartTest {
+    
+    @Test
+    public void testSumItems_NoCoupon() {
+        Cart cart = new Cart(new User());
+        cart.add_item(new Item(10, 2, false));
+        assertEquals(20, cart.sum_items());
+    }
+
+    @Test
+    public void testSumItems_WithCoupon() {
+        Cart cart = new Cart(new User());
+        cart.add_item(new Item(10, 2, true));
+        assertEquals(-20, cart.sum_items());
+    }
+
+    @Test
+    public void testTotalCost_NoDiscount() {
+        Cart cart = new Cart(new User());
+        cart.add_item(new Item(10, 2, false));
+        assertEquals(20, cart.total_cost(0));
+    }
+
+    @Test
+    public void testTotalCost_WithDiscount() {
+        Cart cart = new Cart(new User());
+        cart.add_item(new Item(10, 2, true));
+        assertEquals(-14, cart.total_cost(0.2));
+    }
+}
+```
+<h4> Detection: Yes </h4>
+<h4> Edit distance: 0 </h4>
+
+</div></pre></div><div class="conversation"><h4>RQ2, Cart PM, P2, T1</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
+
+Base version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Diff version A and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..2846dd0 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -24,7 +24,7 @@ public class Cart {
+         for(Item item: cartItems) {
+             sum += item.value*item.amount;
+         }
+-        return Math.max(0, sum);
++        return sum;
+     }
+     public double total_cost(double discount) {
+         double sum = sum_items();
+```
+
+Diff version B and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..a90d713 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -22,7 +22,10 @@ public class Cart {
+     public double sum_items() {
+         double sum = 0;
+         for(Item item: cartItems) {
+-            sum += item.value*item.amount;
++            if(item.coupon)
++                sum -= item.value*item.amount;
++            else
++                sum += item.value*item.amount;
+         }
+         return Math.max(0, sum);
+     }
+diff --git a/src/main/java/Item.java b/src/main/java/Item.java
+index 76a06c8..7b2db97 100644
+--- a/src/main/java/Item.java
++++ b/src/main/java/Item.java
+@@ -2,6 +2,7 @@ public class Item {
+
+     public double value;
+     public int amount;
++    public boolean coupon;
+
+     public Item(int value) {
+         this.value = value;
+@@ -11,4 +12,14 @@ public class Item {
+         this.value = value;
+         this.amount = amount;
+     }
++    public Item(int value, boolean coupon) {
++        this.value = value;
++        this.coupon = coupon;
++    }
++
++    public Item(int value, int amount, boolean coupon) {
++        this.value = value;
++        this.coupon = coupon;
++        this.amount = amount;
++    }
+ }
+```
+
+Merge version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            if(item.coupon)
+                sum -= item.value*item.amount;
+            else
+                sum += item.value*item.amount;
+        }
+        return sum;
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+Explanation of the semantic conflict: "Based on the provided information, let's analyze the changes in versions A and B compared to the base version, and then inspect the merged version for potential semantic conflicts.
+
+**Changes in Version A:**
+- The `sum_items()` method has been modified to remove the `Math.max(0, sum)` condition, returning the raw sum of item values.
+- No changes have been made to the `total_cost()` method.
+
+**Changes in Version B:**
+- The `sum_items()` method has been significantly modified. It now checks if an item has a coupon (`item.coupon`), and if so, subtracts the value of the item from the sum; otherwise, it adds the value of the item to the sum.
+- No changes have been made to the `total_cost()` method.
+- Additionally, a new constructor for the `Item` class has been added, which accepts a boolean parameter `coupon`.
+
+**Merged Version:**
+- The `sum_items()` method in the merged version combines the changes from both version A and version B. It checks if an item has a coupon, and based on that, either subtracts or adds the item value to the sum.
+- The `total_cost()` method remains unchanged from the base version.
+
+**Assessment:**
+- The semantic conflict arises from the merged `sum_items()` method. Version A and version B have conflicting changes to this method.
+- In version A, the method returns the raw sum of item values without considering whether an item has a coupon or not.
+- In version B, the method checks for coupons and adjusts the sum accordingly.
+- The merged version combines these changes, resulting in a method that considers coupons but does not account for the removal of the `Math.max(0, sum)` condition.
+- This conflict could lead to incorrect calculations of the total cost, especially if negative item values are involved.
+
+**Resolution:**
+- To resolve this conflict, you need to decide on the desired behavior of the `sum_items()` method. Should it consider coupons and potentially allow negative sums, or should it ensure that the sum is non-negative?
+- Once the desired behavior is determined, you can modify the merged version accordingly, ensuring that it aligns with the intended functionality while avoiding inconsistencies and potential errors."
+Generate just code with necessary imports. No explanation needed.
+</div></pre><pre class="message"><div class="author">ChatGPT</div><div>```java
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+public class CartTest {
+
+    @Test
+    public void testSumItems() {
+        Cart cart = new Cart(new User());
+        Item item1 = new Item(10);
+        Item item2 = new Item(20, true); // item with coupon
+        cart.add_item(item1);
+        cart.add_item(item2);
+        
+        // Expected sum without considering coupon: 10 + 20 = 30
+        // Expected sum considering coupon: 10 - 20 = -10
+        assertEquals(-10, cart.sum_items(), 0.001);
+    }
+
+    @Test
+    public void testTotalCost() {
+        Cart cart = new Cart(new User());
+        Item item1 = new Item(10);
+        Item item2 = new Item(20, true); // item with coupon
+        cart.add_item(item1);
+        cart.add_item(item2);
+        
+        // Expected total cost without considering discount: (10 + 20) - (10 + 20) * discount = 30 - 30 * 0.2 = 24
+        // Expected total cost considering discount: (-10) - (-10) * discount = -10 - (-10) * 0.2 = -10 - (-2) = -8
+        assertEquals(-8, cart.total_cost(0.2), 0.001);
+    }
+}
+```
+<h4> Detection: No </h4>
+<h4> Edit distance: 6 </h4>
+<h4> Error: Assert/Other </h4>
+<h4> Amended test: </h4>
+    @Test
+    public void testSumItems() {
+        Cart cart = new Cart(new User());
+        Item item1 = new Item(10, 1);
+        Item item2 = new Item(20, 1, true); // item with coupon
+        cart.add_item(item1);
+        cart.add_item(item2);
+        
+        // Expected sum without considering coupon: 10 + 20 = 30
+        // Expected sum considering coupon: 10 - 20 = -10
+        assertEquals(-10, cart.sum_items(), 0.001);
+    }
+</div></pre></div><div class="conversation"><h4>RQ2, Cart PM, P1, T3</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
+
+Base version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Diff version A and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..2846dd0 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -24,7 +24,7 @@ public class Cart {
+         for(Item item: cartItems) {
+             sum += item.value*item.amount;
+         }
+-        return Math.max(0, sum);
++        return sum;
+     }
+     public double total_cost(double discount) {
+         double sum = sum_items();
+```
+
+Diff version B and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..a90d713 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -22,7 +22,10 @@ public class Cart {
+     public double sum_items() {
+         double sum = 0;
+         for(Item item: cartItems) {
+-            sum += item.value*item.amount;
++            if(item.coupon)
++                sum -= item.value*item.amount;
++            else
++                sum += item.value*item.amount;
+         }
+         return Math.max(0, sum);
+     }
+diff --git a/src/main/java/Item.java b/src/main/java/Item.java
+index 76a06c8..7b2db97 100644
+--- a/src/main/java/Item.java
++++ b/src/main/java/Item.java
+@@ -2,6 +2,7 @@ public class Item {
+
+     public double value;
+     public int amount;
++    public boolean coupon;
+
+     public Item(int value) {
+         this.value = value;
+@@ -11,4 +12,14 @@ public class Item {
+         this.value = value;
+         this.amount = amount;
+     }
++    public Item(int value, boolean coupon) {
++        this.value = value;
++        this.coupon = coupon;
++    }
++
++    public Item(int value, int amount, boolean coupon) {
++        this.value = value;
++        this.coupon = coupon;
++        this.amount = amount;
++    }
+ }
+```
+
+Merge version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            if(item.coupon)
+                sum -= item.value*item.amount;
+            else
+                sum += item.value*item.amount;
+        }
+        return sum;
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+Explanation of the semantic conflict: A semantic conflicts because in branch A, a check ensuring that the sum of item values is 0 or more is removed. Simultaneously, in branch B, coupons are added, a type of item that is subtracted instead of summed. Because of both these changes, in the merge version it is possible to have the return of negative values, which is not intended.
+Generate just code with necessary imports. No explanation needed.
+</div></pre><pre class="message"><div class="author">ChatGPT</div><div>```java
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+
+public class CartTest {
+
+    @Test
+    void testSumItemsWithCoupon() {
+        Cart cart = new Cart(new User());
+        cart.add_item(new Item(20, true));
+        cart.add_item(new Item(30, true));
+        assertEquals(-50, cart.sum_items());
+    }
+
+    @Test
+    void testSumItemsWithoutCoupon() {
+        Cart cart = new Cart(new User());
+        cart.add_item(new Item(20));
+        cart.add_item(new Item(30));
+        assertEquals(50, cart.sum_items());
+    }
+
+    @Test
+    void testTotalCostWithDiscount() {
+        Cart cart = new Cart(new User());
+        cart.add_item(new Item(20, true));
+        cart.add_item(new Item(30, true));
+        assertEquals(-30, cart.total_cost(0.1));
+    }
+
+    @Test
+    void testTotalCostWithoutDiscount() {
+        Cart cart = new Cart(new User());
+        cart.add_item(new Item(20));
+        cart.add_item(new Item(30));
+        assertEquals(50, cart.total_cost(0.1));
+    }
+}
+```
+<h4> Detection: No </h4>
+<h4> Edit distance: 6 </h4>
+<h4> Error: Other </h4>
+<h4> Amended test: </h4>
+    @Test
+    void testSumItemsWithCoupon() {
+        Cart cart = new Cart(new User());
+        cart.add_item(new Item(20, 1, true));
+        cart.add_item(new Item(30, 1, true));
+        assertEquals(-50, cart.sum_items());
+    }
+</div></pre></div><div class="conversation"><h4>RQ2, Cart PM, P1, T2</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
+
+Base version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Diff version A and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..2846dd0 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -24,7 +24,7 @@ public class Cart {
+         for(Item item: cartItems) {
+             sum += item.value*item.amount;
+         }
+-        return Math.max(0, sum);
++        return sum;
+     }
+     public double total_cost(double discount) {
+         double sum = sum_items();
+```
+
+Diff version B and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..a90d713 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -22,7 +22,10 @@ public class Cart {
+     public double sum_items() {
+         double sum = 0;
+         for(Item item: cartItems) {
+-            sum += item.value*item.amount;
++            if(item.coupon)
++                sum -= item.value*item.amount;
++            else
++                sum += item.value*item.amount;
+         }
+         return Math.max(0, sum);
+     }
+diff --git a/src/main/java/Item.java b/src/main/java/Item.java
+index 76a06c8..7b2db97 100644
+--- a/src/main/java/Item.java
++++ b/src/main/java/Item.java
+@@ -2,6 +2,7 @@ public class Item {
+
+     public double value;
+     public int amount;
++    public boolean coupon;
+
+     public Item(int value) {
+         this.value = value;
+@@ -11,4 +12,14 @@ public class Item {
+         this.value = value;
+         this.amount = amount;
+     }
++    public Item(int value, boolean coupon) {
++        this.value = value;
++        this.coupon = coupon;
++    }
++
++    public Item(int value, int amount, boolean coupon) {
++        this.value = value;
++        this.coupon = coupon;
++        this.amount = amount;
++    }
+ }
+```
+
+Merge version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            if(item.coupon)
+                sum -= item.value*item.amount;
+            else
+                sum += item.value*item.amount;
+        }
+        return sum;
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+Explanation of the semantic conflict: A semantic conflicts because in branch A, a check ensuring that the sum of item values is 0 or more is removed. Simultaneously, in branch B, coupons are added, a type of item that is subtracted instead of summed. Because of both these changes, in the merge version it is possible to have the return of negative values, which is not intended.
+Generate just code with necessary imports. No explanation needed.
+</div></pre><pre class="message"><div class="author">ChatGPT</div><div>```java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class CartTest {
+
+    @Test
+    void testSumItemsWithNegativeCoupon() {
+        Cart cart = new Cart(new User());
+        cart.add_item(new Item(10, true));
+        assertEquals(0, cart.sum_items());
+    }
+
+    @Test
+    void testSumItemsWithPositiveCoupon() {
+        Cart cart = new Cart(new User());
+        cart.add_item(new Item(10, false));
+        assertEquals(10, cart.sum_items());
+    }
+
+    @Test
+    void testSumItemsWithMixedItems() {
+        Cart cart = new Cart(new User());
+        cart.add_item(new Item(10, true));
+        cart.add_item(new Item(20, false));
+        assertEquals(20, cart.sum_items());
+    }
+
+    @Test
+    void testTotalCostWithDiscount() {
+        Cart cart = new Cart(new User());
+        cart.add_item(new Item(10, false));
+        cart.checkout("loyal");
+        assertEquals(-8, cart.user.balance);
+    }
+}
+```
+<h4> Detection: No </h4>
+<h4> Edit distance: 3 </h4>
+<h4> Error: Other </h4>
+<h4> Amended test: </h4>
+    @Test
+    void testSumItemsWithNegativeCoupon() {
+        Cart cart = new Cart(new User());
+        cart.add_item(new Item(10, 1, true));
+        assertEquals(0, cart.sum_items());
+    }
+</div></pre></div><div class="conversation"><h4>RQ2, Cart PM, P1, T1</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
+
+Base version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Diff version A and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..2846dd0 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -24,7 +24,7 @@ public class Cart {
+         for(Item item: cartItems) {
+             sum += item.value*item.amount;
+         }
+-        return Math.max(0, sum);
++        return sum;
+     }
+     public double total_cost(double discount) {
+         double sum = sum_items();
+```
+
+Diff version B and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..a90d713 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -22,7 +22,10 @@ public class Cart {
+     public double sum_items() {
+         double sum = 0;
+         for(Item item: cartItems) {
+-            sum += item.value*item.amount;
++            if(item.coupon)
++                sum -= item.value*item.amount;
++            else
++                sum += item.value*item.amount;
+         }
+         return Math.max(0, sum);
+     }
+diff --git a/src/main/java/Item.java b/src/main/java/Item.java
+index 76a06c8..7b2db97 100644
+--- a/src/main/java/Item.java
++++ b/src/main/java/Item.java
+@@ -2,6 +2,7 @@ public class Item {
+
+     public double value;
+     public int amount;
++    public boolean coupon;
+
+     public Item(int value) {
+         this.value = value;
+@@ -11,4 +12,14 @@ public class Item {
+         this.value = value;
+         this.amount = amount;
+     }
++    public Item(int value, boolean coupon) {
++        this.value = value;
++        this.coupon = coupon;
++    }
++
++    public Item(int value, int amount, boolean coupon) {
++        this.value = value;
++        this.coupon = coupon;
++        this.amount = amount;
++    }
+ }
+```
+
+Merge version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            if(item.coupon)
+                sum -= item.value*item.amount;
+            else
+                sum += item.value*item.amount;
+        }
+        return sum;
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+Explanation of the semantic conflict: A semantic conflicts because in branch A, a check ensuring that the sum of item values is 0 or more is removed. Simultaneously, in branch B, coupons are added, a type of item that is subtracted instead of summed. Because of both these changes, in the merge version it is possible to have the return of negative values, which is not intended.
+Generate just code with necessary imports. No explanation needed.
+</div></pre><pre class="message"><div class="author">ChatGPT</div><div>```java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class CartTest {
+
+    @Test
+    public void testNegativeSumWithCoupon() {
+        User user = new User();
+        Cart cart = new Cart(user);
+        Item item1 = new Item(10, true); // Coupon item
+        Item item2 = new Item(20, false); // Regular item
+        cart.add_item(item1);
+        cart.add_item(item2);
+        assertEquals(0, cart.sum_items(), "Sum of items should not be negative");
+    }
+
+    @Test
+    public void testNegativeSumWithoutCoupon() {
+        User user = new User();
+        Cart cart = new Cart(user);
+        Item item = new Item(30); // Regular item
+        cart.add_item(item);
+        assertEquals(0, cart.sum_items(), "Sum of items should not be negative");
+    }
+}
+```
+<h4> Detection: No </h4>
+<h4> Edit distance: 7 </h4>
+<h4> Error: Other </h4>
+<h4> Amended test: </h4>
+    @Test
+    public void testNegativeSumWithCoupon() {
+        User user = new User();
+        Cart cart = new Cart(user);
+        Item item1 = new Item(30, 1, true); // Coupon item
+        Item item2 = new Item(20, 1, false); // Regular item
+        cart.add_item(item1);
+        cart.add_item(item2);
+        assertEquals(0, cart.sum_items(), "Sum of items should not be negative");
+    }
+</div></pre></div><div class="conversation"><h4>RQ2, Cart PF, P2, T3</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
+
+Base version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Diff version A and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index 501b06f..e8e25b8 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -12,6 +12,7 @@ public class Cart {
+         put("superpromo", 0.25d);
+         put("30ff", 0.3d);
+         put("2024", 0.2d);
++        put("megasaver", 0.4d);
+     }});
+```
+
+Diff version B and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..0f8e11a 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -9,7 +9,7 @@ public class Cart {
+
+     private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+         put("loyal", 0.1d);
+-        put("superpromo", 0.25d);
++        put("megasaver", 0.25d);
+         put("30ff", 0.3d);
+         put("2024", 0.2d);
+     }});
+```
+
+Merge version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("megasaver", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+        put("megasaver", 0.4d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Explanation of the semantic conflict: "In the merge commit, there is a semantic conflict. Let's break down the changes to understand the conflict:
+
+1. Version A added a new discount code `"megasaver"` with a discount of 0.4d.
+2. Version B changed the discount for the `"superpromo"` code from 0.25d to 0.4d.
+
+Now, when we look at the merge version, we can see that both changes were attempted to be integrated. However, there's a conflict with the `"megasaver"` discount. In version A, it was set to 0.4d, and in version B, it was set to 0.25d. In the merged version, it's set to 0.4d.
+
+The conflict arises because there are conflicting changes to the same code block (the `discounts` map initialization) in both branches being merged. The conflict is semantic because both changes modify the behavior of the program (discount rates for different codes) and cannot be automatically resolved by the version control system.
+
+To resolve this conflict, a developer would need to manually decide which discount rate should be used for the `"megasaver"` code, or potentially refactor the discount mechanism to handle conflicting rates in a different way."
+Generate just code with necessary imports. No explanation needed.
+</div></pre><pre class="message"><div class="author">ChatGPT</div><div>```java
+import org.junit.jupiter.api.Test;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class CartTest {
+    
+    @Test
+    public void testMergedDiscountConflict() {
+        User user = new User(); // create a user object
+        Cart cart = new Cart(user); // create a cart
+        
+        // Add items to cart
+        cart.add_item(new Item("Item1", 10, 2));
+        cart.add_item(new Item("Item2", 20, 3));
+        
+        // Calculate expected cost without discount conflict
+        double expectedCostWithoutConflict = (10 * 2 + 20 * 3) * (1 - 0.4);
+        
+        // Checkout with "megasaver" code
+        cart.checkout("megasaver");
+        
+        // Verify that the cost matches the expected cost without conflict
+        assertEquals(expectedCostWithoutConflict, user.balance);
+    }
+}
+```
+<h4> Detection: No </h4>
+<h4> Edit distance: 21 </h4>
+<h4> Error: Assert/Constructor/Branch </h4>
+<h4> Amended test: </h4>
+    @Test
+    public void testMergedDiscountConflict() {
+        User user = new User(); // create a user object
+        Cart cart = new Cart(user); // create a cart
+
+        // Add items to cart
+        cart.add_item(new Item(10, 2));
+        cart.add_item(new Item(20, 3));
+
+        // Calculate expected cost without discount conflict
+        double expectedCostWithoutConflict = -(10 * 2 + 20 * 3) * (1 - 0.25);
+
+        // Checkout with "megasaver" code
+        cart.checkout("megasaver");
+
+        // Verify that the cost matches the expected cost without conflict
+        assertEquals(expectedCostWithoutConflict, user.balance);
+    }
+</div></pre></div><div class="conversation"><h4>RQ2, Cart PF, P2, T2</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
+
+Base version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Diff version A and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index 501b06f..e8e25b8 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -12,6 +12,7 @@ public class Cart {
+         put("superpromo", 0.25d);
+         put("30ff", 0.3d);
+         put("2024", 0.2d);
++        put("megasaver", 0.4d);
+     }});
+```
+
+Diff version B and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..0f8e11a 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -9,7 +9,7 @@ public class Cart {
+
+     private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+         put("loyal", 0.1d);
+-        put("superpromo", 0.25d);
++        put("megasaver", 0.25d);
+         put("30ff", 0.3d);
+         put("2024", 0.2d);
+     }});
+```
+
+Merge version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("megasaver", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+        put("megasaver", 0.4d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Explanation of the semantic conflict: "In the merge commit, there is a semantic conflict. Let's break down the changes to understand the conflict:
+
+1. Version A added a new discount code `"megasaver"` with a discount of 0.4d.
+2. Version B changed the discount for the `"superpromo"` code from 0.25d to 0.4d.
+
+Now, when we look at the merge version, we can see that both changes were attempted to be integrated. However, there's a conflict with the `"megasaver"` discount. In version A, it was set to 0.4d, and in version B, it was set to 0.25d. In the merged version, it's set to 0.4d.
+
+The conflict arises because there are conflicting changes to the same code block (the `discounts` map initialization) in both branches being merged. The conflict is semantic because both changes modify the behavior of the program (discount rates for different codes) and cannot be automatically resolved by the version control system.
+
+To resolve this conflict, a developer would need to manually decide which discount rate should be used for the `"megasaver"` code, or potentially refactor the discount mechanism to handle conflicting rates in a different way."
+Generate just code with necessary imports. No explanation needed.
+</div></pre><pre class="message"><div class="author">ChatGPT</div><div>```java
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+
+public class CartTest {
+
+    @Test
+    public void testMergeConflict_MegasaverDiscount() {
+        Cart cart = new Cart(new User());
+        cart.add_item(new Item("Item", 10, 2));
+        cart.checkout("megasaver");
+        assertEquals(16.0, cart.user.balance, 0.01);
+    }
+}
+```
+<h4> Detection: No </h4>
+<h4> Edit distance: 54 </h4>
+<h4> Error: Assert/Constructor/Other </h4>
+<h4> Amended test: </h4>
+    @Test
+    public void testMergeConflict_MegasaverDiscount() {
+        User user = new User();
+        Cart cart = new Cart(user);
+        cart.add_item(new Item(10, 2));
+        cart.checkout("megasaver");
+        assertEquals(-15.0, user.balance, 0.01);
+    }
+</div></pre></div><div class="conversation"><h4>RQ2, Cart PF, P2, T1</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
+
+Base version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Diff version A and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index 501b06f..e8e25b8 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -12,6 +12,7 @@ public class Cart {
+         put("superpromo", 0.25d);
+         put("30ff", 0.3d);
+         put("2024", 0.2d);
++        put("megasaver", 0.4d);
+     }});
+```
+
+Diff version B and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..0f8e11a 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -9,7 +9,7 @@ public class Cart {
+
+     private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+         put("loyal", 0.1d);
+-        put("superpromo", 0.25d);
++        put("megasaver", 0.25d);
+         put("30ff", 0.3d);
+         put("2024", 0.2d);
+     }});
+```
+
+Merge version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("megasaver", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+        put("megasaver", 0.4d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Explanation of the semantic conflict: "In the merge commit, there is a semantic conflict. Let's break down the changes to understand the conflict:
+
+1. Version A added a new discount code `"megasaver"` with a discount of 0.4d.
+2. Version B changed the discount for the `"superpromo"` code from 0.25d to 0.4d.
+
+Now, when we look at the merge version, we can see that both changes were attempted to be integrated. However, there's a conflict with the `"megasaver"` discount. In version A, it was set to 0.4d, and in version B, it was set to 0.25d. In the merged version, it's set to 0.4d.
+
+The conflict arises because there are conflicting changes to the same code block (the `discounts` map initialization) in both branches being merged. The conflict is semantic because both changes modify the behavior of the program (discount rates for different codes) and cannot be automatically resolved by the version control system.
+
+To resolve this conflict, a developer would need to manually decide which discount rate should be used for the `"megasaver"` code, or potentially refactor the discount mechanism to handle conflicting rates in a different way."
+Generate just code with necessary imports. No explanation needed.
+</div></pre><pre class="message"><div class="author">ChatGPT</div><div>```java
+import org.junit.Test;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import static org.junit.Assert.assertEquals;
+
+public class CartTest {
+
+    @Test
+    public void testMergedDiscount() {
+        User user = new User("John", 1000);
+        Cart cart = new Cart(user);
+        cart.add_item(new Item("Item1", 10, 2));
+        cart.add_item(new Item("Item2", 20, 1));
+
+        // In the merged version, "megasaver" discount should be 0.4d
+        cart.checkout("megasaver");
+        assertEquals(974.0, user.balance, 0.001);
+    }
+}
+```
+<h4> Detection: No </h4>
+<h4> Edit distance: 33 </h4>
+<h4> Error: Assert/Constructor/Branch </h4>
+<h4> Amended test: </h4>
+    @Test
+    public void testMergedDiscount() {
+        User user = new User();
+        Cart cart = new Cart(user);
+        cart.add_item(new Item(10, 2));
+        cart.add_item(new Item(20, 1));
+
+        // In the B version, "megasaver" discount should be 0.25d
+        cart.checkout("megasaver");
+        assertEquals(-30.0, user.balance, 0.001);
+    }
+</div></pre></div><div class="conversation"><h4>RQ2, Cart PF, P1, T3</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
+
+Base version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Diff version A and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index 501b06f..e8e25b8 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -12,6 +12,7 @@ public class Cart {
+         put("superpromo", 0.25d);
+         put("30ff", 0.3d);
+         put("2024", 0.2d);
++        put("megasaver", 0.4d);
+     }});
+```
+
+Diff version B and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..0f8e11a 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -9,7 +9,7 @@ public class Cart {
+
+     private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+         put("loyal", 0.1d);
+-        put("superpromo", 0.25d);
++        put("megasaver", 0.25d);
+         put("30ff", 0.3d);
+         put("2024", 0.2d);
+     }});
+```
+
+Merge version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("megasaver", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+        put("megasaver", 0.4d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Explanation of the semantic conflict: In branch A, a discount with code megasaver is added, with value 0.4. In branch B, an existing discount with name superpromo and value 0.25 is renamed to megasaver. In the merge, this 0.25d is made useless, as the 0.4d discount replaces it when the list is created.
+Generate just code with necessary imports. No explanation needed.
+</div></pre><pre class="message"><div class="author">ChatGPT</div><div>```java
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+public class CartTest {
+
+    @Test
+    public void testMergedDiscounts() {
+        User user = new User();
+        Cart cart = new Cart(user);
+
+        cart.add_item(new Item("Item1", 10, 2));
+
+        // Checkout with the code that was renamed in branch B
+        cart.checkout("megasaver");
+
+        // Expected total cost is 0.4 * (10 * 2) = 8
+        assertEquals(8.0, user.balance, 0.01);
+    }
+}
+```
+<h4> Detection: No </h4>
+<h4> Edit distance: 12 </h4>
+<h4> Error: Assert/Constructor/Branch </h4>
+<h4> Amended test: </h4>
+    @Test
+    public void testMergedDiscounts() {
+        User user = new User();
+        Cart cart = new Cart(user);
+
+        cart.add_item(new Item(10, 2));
+
+        // Checkout with the code that was renamed in branch B
+        cart.checkout("megasaver");
+
+		// Expected total cost is (10*2) - 0.25 * (10 * 2) = 15
+        assertEquals(-15.0, user.balance, 0.01);
+    }
+</div></pre></div><div class="conversation"><h4>RQ2, Cart PF, P1, T2</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
+
+Base version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Diff version A and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index 501b06f..e8e25b8 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -12,6 +12,7 @@ public class Cart {
+         put("superpromo", 0.25d);
+         put("30ff", 0.3d);
+         put("2024", 0.2d);
++        put("megasaver", 0.4d);
+     }});
+```
+
+Diff version B and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..0f8e11a 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -9,7 +9,7 @@ public class Cart {
+
+     private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+         put("loyal", 0.1d);
+-        put("superpromo", 0.25d);
++        put("megasaver", 0.25d);
+         put("30ff", 0.3d);
+         put("2024", 0.2d);
+     }});
+```
+
+Merge version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("megasaver", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+        put("megasaver", 0.4d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Explanation of the semantic conflict: In branch A, a discount with code megasaver is added, with value 0.4. In branch B, an existing discount with name superpromo and value 0.25 is renamed to megasaver. In the merge, this 0.25d is made useless, as the 0.4d discount replaces it when the list is created.
+Generate just code with necessary imports. No explanation needed.
+</div></pre><pre class="message"><div class="author">ChatGPT</div><div>```java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class CartTest {
+
+    @Test
+    public void testMegaSaverDiscountConflict() {
+        User user = new User();
+        Cart cart = new Cart(user);
+        Item item = new Item("Test", 10, 1);
+        
+        // Adding item to cart
+        cart.add_item(item);
+        
+        // Checkout with megaSaver discount
+        cart.checkout("megasaver");
+        
+        // Assert user balance after checkout
+        assertEquals(user.balance, -6.0d);
+    }
+}
+```
+<h4> Detection: No </h4>
+<h4> Edit distance: 10 </h4>
+<h4> Error: Constructor/Branch </h4>
+<h4> Amended test: </h4>
+    @Test
+    public void testMegaSaverDiscountConflict() {
+        User user = new User();
+        Cart cart = new Cart(user);
+        Item item = new Item(10, 1);
+
+        // Adding item to cart
+        cart.add_item(item);
+
+        // Checkout with megaSaver discount
+        cart.checkout("megasaver");
+
+        // Assert user balance after checkout
+        assertEquals(user.balance, -7.5d);
+    }
+</div></pre></div><div class="conversation"><h4>RQ2, Cart PF, P1, T1</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
+
+Base version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Diff version A and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index 501b06f..e8e25b8 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -12,6 +12,7 @@ public class Cart {
+         put("superpromo", 0.25d);
+         put("30ff", 0.3d);
+         put("2024", 0.2d);
++        put("megasaver", 0.4d);
+     }});
+```
+
+Diff version B and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..0f8e11a 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -9,7 +9,7 @@ public class Cart {
+
+     private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+         put("loyal", 0.1d);
+-        put("superpromo", 0.25d);
++        put("megasaver", 0.25d);
+         put("30ff", 0.3d);
+         put("2024", 0.2d);
+     }});
+```
+
+Merge version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List&lt;Item&gt; cartItems;
+    private final User user;
+
+    private static final Map&lt;String, Double&gt; discounts = Collections.unmodifiableMap(new HashMap&lt;&gt;() {{
+        put("loyal", 0.1d);
+        put("megasaver", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+        put("megasaver", 0.4d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Explanation of the semantic conflict: In branch A, a discount with code megasaver is added, with value 0.4. In branch B, an existing discount with name superpromo and value 0.25 is renamed to megasaver. In the merge, this 0.25d is made useless, as the 0.4d discount replaces it when the list is created.
+Generate just code with necessary imports. No explanation needed.
+</div></pre><pre class="message"><div class="author">ChatGPT</div><div>```java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class CartTest {
+
+    @Test
+    public void testMergedDiscount() {
+        User user = new User();
+        Cart cart = new Cart(user);
+        Item item = new Item(10, 2);
+        
+        cart.add_item(item);
+        cart.checkout("megasaver");
+        
+        assertEquals(8.0, user.balance); // (10*2) - (10*2*0.4) = 16 - 6.4 = 9.6
+    }
+}
+```
+<h4> Detection: No </h4>
+<h4> Edit distance: 3 </h4>
+<h4> Error: Assert/Branch </h4>
+<h4> Amended test: </h4>
+    public void testMergedDiscount() {
+        User user = new User();
+        Cart cart = new Cart(user);
+        Item item = new Item(10, 2);
+
+        cart.add_item(item);
+        cart.checkout("megasaver");
+
+        assertEquals(-15.0, user.balance);
+    }
+</div></pre></div>
+</body></html>
