@@ -299,12 +299,66 @@ has an edit distance of 112, has it is corrected into:
 This same error of trying to access user from cart can be found in other ChatGPT, but it is ambiguous
 whether this is somehow the result of the prompt or coincidental generations.
 
-talk abt constructor errors (easily fixed, but more complex real world)
-(also cuz errors, the amount issue)
-importance of code that follows norms
+On the topic of compilation errors, it is worth nothing most of these were related to constructors, as the constructors
+for the other classes involved in the Cart conflicts (Item and User) were not included in the prompt. It is interesting
+to observe what the common error is: the introduction of extra parameters. For example, in the code of Cart only the fields
+value and amount of Item are accessed. However, Item was frequently iniatilized with a constructor with 3 parameter: Name,
+Value and Amount. It is fair to assume the Item class would both have a name field and that it would come first in the constructor
+and it is likely the training data had many examples of this. Thus it is worth pointing out that testability of code by LLM's can be
+improved by closely following norms and rule of thumb expectations and corollarily LLMs will struggle to effectively construct tests
+for more unusual pieces of software.
+
+A way to resolve this issue would be to include constructor headers in the original prompt. However one issue is the selection of which
+headers: if instead of just Item and User, the Cart class had 20 other dependencies which bore no relevance in our conflict, we would be 
+providing extra information in the prompt which could cause confusion. A possibly better option is feeding compilation messages back for correction,
+as shown by ChatTester~\cite{kn:chattester}, possibly with the addition of corresponding headers. This corrective approach could also be utilized
+to fix assert errors.
+
+Some other issues with constructors we observed are not so obvious to solve: namely that despite knowing of available construcotrs, there's no guarantee
+the correct one for the situation will be used. We can see the case of Cart (PM): due to changes in the Item class, constructor information came included
+in the diff section of the prompt. This led to the creation of tests using Value,Coupon and Value format.
+\begin{answer}
+    public class CartTest {
+
+    @Test
+    public void testSumItemsWithCoupon() {
+        Cart cart = new Cart(new User());
+        Item item = new Item(50, true); // Item with coupon
+        cart.add_item(item);
+        assertEquals(-50, cart.sum_items(), 0.001);
+    }
+
+    @Test
+    public void testSumItemsWithoutCoupon() {
+        Cart cart = new Cart(new User());
+        Item item = new Item(50); // Item without coupon
+        cart.add_item(item);
+        assertEquals(50, cart.sum_items(), 0.001);
+    }
+
+    @Test
+    public void testTotalCostWithCoupon() {
+        Cart cart = new Cart(new User());
+        Item item = new Item(50, true); // Item with coupon
+        cart.add_item(item);
+        cart.checkout("loyal");
+        assertEquals(-45, cart.getUser().getBalance(), 0.001);
+    }
+
+    @Test
+    public void testTotalCostWithoutCoupon() {
+        Cart cart = new Cart(new User());
+        Item item = new Item(50); // Item without coupon
+        cart.add_item(item);
+        cart.checkout("loyal");
+        assertEquals(-45, cart.getUser().getBalance(), 0.001);
+    }
+}
+\end{answer}
+Notably these constructors don't set the amount field, which is thus 0, rendering the items useless for any value calculations.
+Rectification would require understanding this logic error and thus is liable to be more difficult to achieve.
+
 
 branch errors: the case of PF always testing or trying to test 0.4d. lost but no emergent behaviour
 
 talk abt other type errors
-
-possibility of correction of asserts and constructor?
