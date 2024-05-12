@@ -217,19 +217,87 @@ We see the parallel P/PP/F and F/FF/P in Cart(CM): while the manual explanation 
 It is worth noting the *: this refers to the usage of @expected, a feature no longer supported by Junit. These tests thus required downgrading the version to run.
 
 
+If we observe the results, particularly the erros found, we can see that the main issue present
+is incorrect assertions. While in some cases these are understandable (such as the case of RO,
+where the values to verify are hash and thus hard to know without running the code), most of the time
+they were the result of simple logical or mathematical errors, things that are trivial for a human to get right
+and thus also correct.
+It is hard to identify why exactly it finds it so hard to get the right asserts. If we observe the cart example,
+we find that tests generated for distance() were always correct. These consisted of a simple x + y addition.
+However, tests generated for move() were always wrong; in turn these were just x + distance() and y + distance() additions.
+Given that it shows it can correctly calculate distance() it is hard to fathom why it struggles
+to use it in addition: we can perhaps suggest there is making the association between the method call and the returned value it represents.
 
+It is worth nothing that Cart (CM) stands out: since the conflict result in the throwing of an error, asserts were easily generated as they required no numerical values.
 
--deeper analysis things to observe:
-asserts: bad at math. but some more understandable like hash
-only non-assert is Cart (CM) (there is one case but the assert there is unnecessary to confl)
-this is because it handles an exception, not a specific value
+Another highly succesful case is OAC, with 3 successes that require no edits. This is because
+of the simplicity of the test: one just needs to set a value and verify that it is set:
+\begin{answer}
+    @Test
+    public void testSetProducerNumber() {
+        Event event = new Event();
+        Producer producer = new Producer();
+        event.setProducer(producer);
+        int registrationNumber = 12345;
+        int result = event.setProducerNumber(registrationNumber);
+        assertEquals(registrationNumber, result);
+    }
+\end{answer}
+In one case, we find an interesting error: the codebase contains methods named ```setResgistration'''.
+For the most part they are ignored, as they are not necessary to identify the conflict. In one trial, however,
+the method is called for Producer. However the ```Resgistration''' typo is corrected: ``producer.setRegistrationNumber(123);''.
+Naturally, this stops code from compiling, but it is a noteworthy example of how Large-Language Models, due to their nature as 
+predictive models, can fail in outlier cases, such as an unexpected typo in method namings.
 
+It is noticeable that for the cases with compilation errors, namely the Cart examples, prompts with ChatGPT explanations
+required significant more correction than prompts with manual corrections. An explanation might be that due to their more
+extensive length, ChatGPT explanations prompt the generation of more complex and longer tests. However as can be seen in
+\cref{tab:results:rq2tests}, both examples have comparable amount of test cases and test length does not vary much.
+It is possible these are the results of outliers: the if we for example observe Cart (PM), the results are significantly weighed by
+trial 3, which requires significant correction due to the way it tries to access the user:
+\begin{answer}
+    @Test
+    public void testTotalCostWithCoupon() {
+        Cart cart = new Cart(new User());
+        Item item = new Item(50, true); // Item with coupon
+        cart.add_item(item);
+        cart.checkout("loyal");
+        assertEquals(-45, cart.getUser().getBalance(), 0.001);
+    }
 
-oac success:
-simple intuitive program behavior, so more successes. just checking if value is set
-setresgistration example
+    @Test
+    public void testTotalCostWithoutCoupon() {
+        Cart cart = new Cart(new User());
+        Item item = new Item(50); // Item without coupon
+        cart.add_item(item);
+        cart.checkout("loyal");
+        assertEquals(-45, cart.getUser().getBalance(), 0.001);
+    }
+\end{answer}
+has an edit distance of 112, has it is corrected into:
+\begin{answer}
+    @Test
+    public void testTotalCostWithCoupon() {
+        User user = new User();
+        Cart cart = new Cart(user);
+        Item item = new Item(50, true); // Item with coupon
+        cart.add_item(item);
+        cart.checkout("loyal");
+        assertEquals(-45, user.balance, 0.001);
+    }
 
-go deeper into big diffs (seem unrelated?)
+    @Test
+    public void testTotalCostWithoutCoupon() {
+        User user = new User();
+        Cart cart = new Cart(user);
+        Item item = new Item(50); // Item without coupon
+        cart.add_item(item);
+        cart.checkout("loyal");
+        assertEquals(-45, user.balance, 0.001);
+    }
+\end{answer}
+This same error of trying to access user from cart can be found in other ChatGPT, but it is ambiguous
+whether this is somehow the result of the prompt or coincidental generations.
 
 talk abt constructor errors (easily fixed, but more complex real world)
 (also cuz errors, the amount issue)
