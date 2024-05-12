@@ -358,7 +358,13 @@ in the diff section of the prompt. This led to the creation of tests using Value
 Notably these constructors don't set the amount field, which is thus 0, rendering the items useless for any value calculations.
 Rectification would require understanding this logic error and thus is liable to be more difficult to achieve.
 
+Another error that can't be straighforwardly corrected is the testing for the wrong branches. This applies
+to our parallel field example, where branch A introduces a dictionary entry for the discounts (value 0.4d) and branch B renames a previous one to the same name (value 0.25d). To find the conflict
+we need to find that the entry is branch B ends up being replaced by the entry in A, that comes later in the field. Thus the only way to find the conflict is check whether the name
+applies a 0.25d discount, which confirms the behaviour was lost. Checking for a 0.4d gives no information other than the introduction of branch A remains unaltered.
+Unfortunately, all the tests generated verified the 0.4d behaviour, or at least tried to given the assert errors.
 
-branch errors: the case of PF always testing or trying to test 0.4d. lost but no emergent behaviour
+Other minor errors include missing asserts and invocation of non-existent getters.
 
-talk abt other type errors
+Despite all the problems mentioned previously, the results are generally quite good, as most errors are relatively small and easily fixable with further prompting. Thus we
+can say with some certainty that for these simple cases, where ChatGPT can identify the conflict with some degree of confidence, it can also generate appropriate unit tests.
