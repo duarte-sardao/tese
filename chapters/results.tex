@@ -194,7 +194,7 @@ It is worth examining the results and what they mean, starting by the failing ex
 -P/PP/P: The test always passes, due to the correct testing of a feature not affected by the merge.
 
 -F/FP/P: The test passes in branch B and in merge. This indicates a behaviour was introduced and remained unaltered in the merge, thus it is not a conflict in itself.
-This was common for Point (CM) ChatGPT, as the prompt induced the generation of tests for distance(), which correctly calculated and asserted the euclidian distance of a given point.
+This was common for Point (CM) ChatGPT, as the prompt induced the generation of tests for distance(), which correctly calculated and asserted the euclidean distance of a given point.
 They however failed to do the same when applying the distance to move(), hence the failing tests and non-identification of the conflict.
 
 -C/CX/X or C/XC/X are usually the result of an introduction of a method in branch B or A respectively.

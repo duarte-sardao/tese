@@ -31,10 +31,70 @@ In analyzing the work of Nuno Castanho, we found the predominant types of semant
 These Cart examples would be part of the group of subjects used to answer and evaluate the research questions we defined. These were complemented by a simple Point class, two examples fabricated by Nuno Castanho of type ``Override by Access Change'' and ``Remove Override'', which had achieved good results in exploratory testing, Antlr4 and OkHttp, respectively a simple and a hard to test real-world scenario.
 The collection of subjects and corresponding conflict type can be found in \Cref{tab:subjects}.
 
-\todo{Jose: Para o leitor melhor perceber os resultados (quando estes forem
-apresentados), vai ter de perceber que conflictos temos aqui.  Sugiro uma breve
-descricação de (1) cada programa usado e (2) uma breve descricação do conflito
-presente em cada programa.}
+It is worth examining each subject and it's corresponding conflict, to make understanding the results easier.
+
+\textbf{Point, Conflict Type: Change Method}
+
+Point consists of a simple class for a two dimensional point, with fields X and Y.
+Other than getters and setters, it's most relevant methods are move() and distance().
+Originally move increments both x and y by 1, while distance calculates the euclidean distance to (0,0).
+In branches A and B, move() is altered to increment by distance() while distance() is altered ro calculate
+the manhattan distance. The conflict then arises: move() was altered with the expectation that it would move 
+based on the euclidan distance, but with the merging of the other branch it will move differently.
+
+\textbf{Fabricated}
+
+This fabricated program revolves around events: ticketing, scheduling, installations, etc. The two
+conflicts that make the two subjects relate to different parts of the program.
+
+\textbf{Conflict Type: Remove Override}
+
+The classes involved in the conflict are Instalacao and InstalacaoAssentos, which extends the former.
+Of is the method helpString(), which returns a string with class information. This method is present
+in both classes with different implementations (thus InstalacaoAssentos overrides). In branch A,
+hashString() is introduced in InstalacaoAssentos: it takes helpString() and hashes it. In branch B,
+the helpString() from InstalacaoAssentos is deleted. Thus the conflict arises because in the merge,
+hashString() will be  calling the helpString() from Instalacao and the has values returned will be different.
+
+\textbf{Conflict Type: Overload By Access Change}
+
+The classes involved are Event and Producer, where the former has a ManyToOne relationship with the latter.
+In Producer, there are two methods: setResgistration(Integer) and setResgistration(int). The former sets
+the producer's registrationNumber to the intValue() of the Integer + 10. The latter just sets the given value.
+In branch A, the int version of the method is made private. In branch B, a setProducerNumber(int) function is added
+to Event: it checks if the Producer is null and if not, calls setResgistration with the given value. In B, this will
+call the int version of the method, as it is still public, but after the merge, the Integer version will be used instead,
+hence the conflict.
+
+\textbf{Cart}
+
+Cart consists of a simple class representing a shopping cart, with auxiliary classes for users and items.
+Its fields correspond to a dictionary of discounts, with string associated to doubles, a list of items in the cart
+and the associated user.
+It has the appropriate methods to add items to the cart, calculate the cart value, and checkout with a given discount code,
+subtracting the value from the user's balance.
+
+\textbf{Conflict Type: Parallel Field}
+
+The changes relate to the dictionary of discounts. In branch A, a "megasaver" with discount 0.4 is added to the field initialization.
+In branch B, an existing discount of value 0.25d is renamed to "megasaver". When the changes are integrated, the 0.25d is effectively lost,
+since the 0.4 comes later in the list and replaces it.
+
+\textbf{Conflict Type: Parallel Method}
+
+The changes relate to the sum\_items() method. At the start, it just goes trough the items in the list and sums together. In branch A,
+a check that certified the return is greater or equal to 0 is removed. In branch B, the boolean coupon is added to item and if an item
+is of type coupon, its value is removed rather than added. There is emergent behaviour in the merge, as coupons now allow carts of negative
+value to exist.
+
+\textbf{Conflict Type: Change Method}
+
+The conflict arises due to the handling of checkout. In branch A, a check is added where if a user is of type admin,
+total\_cost() returns 0. In branch B a check is added in checkout(): if total\_cost is 0, a RuntimeException is thrown.
+Naturally these changes conflict in the merge.
+
+
+\todo{antlr, OkHttp}
 
 \section{Large language models}
 
