@@ -1,0 +1,1076 @@
+\section{Selected Examples of RQ2 outputs}
+
+\subsection{Fabricated OAC, Prompt 2, Trial 3}
+
+\begin{prompt}
+  You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+  Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
+  
+  Base version:
+  ```java
+  /**
+   * 
+   */
+  package business.event;
+  
+  
+  
+  import java.time.LocalDate;
+  import java.time.LocalTime;
+  import java.util.ArrayList;
+  import java.util.List;
+  
+  import javax.persistence.CascadeType;
+  import javax.persistence.Column;
+  import javax.persistence.Convert;
+  import javax.persistence.Entity;
+  import javax.persistence.EnumType;
+  import javax.persistence.Enumerated;
+  import javax.persistence.GeneratedValue;
+  import javax.persistence.GenerationType;
+  import javax.persistence.Id;
+  import javax.persistence.ManyToOne;
+  import javax.persistence.NamedQueries;
+  import javax.persistence.NamedQuery;
+  import javax.persistence.OneToMany;
+  
+  import business.util.Triplet;
+  
+  import business.producer.Producer;
+  import business.ticket.Ticket;
+  
+  /**
+   * 
+   * An Event
+   */
+  @Entity
+  @NamedQueries({
+      @NamedQuery(name = Event.FIND_BY_NAME, query = "SELECT e FROM Event e WHERE e.name = :" + Event.STRING_NAME),
+      @NamedQuery(name = Event.DATES_WITH_TICKETS_BY_STATE, query = "SELECT DISTINCT ed FROM SingleTicket t JOIN t.date ed WHERE ed.event.name = :"
+          + Event.STRING_NAME + " AND ed.date > :" + Event.DATE_DATE
+          + " AND t.state=:" + Event.ENUM_TICKET_STATE + " ORDER BY ed.date ASC"),
+      @NamedQuery(name = Event.SEATS_FOR_EVENT_DATE_BY_STATE, query = "SELECT DISTINCT s FROM SingleTicket t JOIN t.date ed JOIN t.seat s WHERE ed.event.name = :"
+          + Event.STRING_NAME + " AND ed.date = :" + Event.DATE_DATE
+          + " AND t.state=:" + Event.ENUM_TICKET_STATE + " ORDER BY s.rowLetters ASC, s.seatNumber ASC"),
+      @NamedQuery(name= Event._TICKETS, query= "SELECT e.tickets FROM Event e WHERE e.name = :" + Event.STRING_NAME),
+      })
+  
+  public class Event {
+  
+    // Named query name constants
+    public static final String FIND_BY_NAME = "Event.findByName";
+    public static final String DATES_WITH_TICKETS_BY_STATE = "Event.datesWithTicketsByState";
+    public static final String SEATS_FOR_EVENT_DATE_BY_STATE = "Event.seatsForEventDateByState";
+    public static final String STRING_NAME = "name";
+    public static final String DATE_DATE = "date";
+    public static final String _TICKETS = "tickets";
+    public static final String ENUM_TICKET_STATE = "ticket_state";
+  
+    /**
+     * 
+     */
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+  
+    /**
+     * Event name
+     */
+    @Column(nullable = false, unique = true, name="Name")
+    private String name;
+  
+    /**
+     * the starting date when the tickets of the Event are available
+     */
+    @Convert(converter = LocalDateAttributeConverter.class)
+    private LocalDate ticketStartSellingDate;
+  
+    /**
+     * the type of the Event
+     */
+    @Enumerated(EnumType.STRING)
+    private String type;
+  
+    /**
+     * the dates of the Event
+     */
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EventDate> dates;
+  
+    /**
+     * the tickets of the Event
+     */
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Ticket> tickets;
+  
+    /**
+     * the venue where the Event will occur 
+     */
+    @ManyToOne
+    private EventVenue venue;
+  
+    /**
+     * the producer responsible for the Event
+     */
+    @ManyToOne
+    private Producer producer;
+  
+  
+    public Event() {
+      this.dates = new ArrayList<>();
+      this.tickets = new ArrayList<>();
+    }
+    
+    /**
+     * Constructor of the Event
+     * @param producer producer of the event
+     * @param eventType type of the Event
+     * @param eventName name of the Event
+     * @param eventDates dates of the Event
+     */
+    public Event(Producer producer, String eventType, String eventName, List<Triplet<LocalDate, LocalTime, LocalTime>> eventDates) {
+  
+  
+      this.producer = producer;
+      this.type = eventType;
+      this.dates = new ArrayList<>();
+      this.name = eventName;
+      this.tickets = new ArrayList<>();
+      for (Triplet<LocalDate, LocalTime, LocalTime> triple : eventDates) {
+        dates.add(new EventDate(triple.getValue0(),triple.getValue1(),triple.getValue2(),this));
+      }
+    }
+    
+    
+    // Getters and Setters
+    
+    public int getId() {
+      return id;
+    }
+    
+    /**
+     * gets the starting date of the tickets
+     * @return the starting date of the tickets
+     */
+    public LocalDate getStartSellingDate() {
+      return ticketStartSellingDate;
+    }
+  
+    /**
+     * sets the starting date of the tickets
+     * @param startSellingDate
+     */
+    public void setStartSellingDate(LocalDate startSellingDate) {
+      this.ticketStartSellingDate = startSellingDate;
+    }
+    
+    /**
+     * gets the venue of the Event
+     * @return the venue of the Event
+     */
+    public EventVenue getVenue() {
+      return venue;
+    }
+    /**
+     * sets the venue of the Event
+     * @param venue of the event
+     */
+    public void setVenue(EventVenue venue) {
+      this.venue = venue;
+    }
+    /**
+     * gets the name of the Event
+     * @return the name of the Event
+     */
+    public String getName() {
+      return name;
+    }
+    /**
+     * gets the type of the Event
+     * @return the type of the Event
+     */
+    public String getType() {
+      return type;
+    }
+    /**
+     * get the tickets of the Event
+     * @return the tickets
+     */
+    public List<Ticket> getTickets() {
+      return tickets;
+    }
+    /**
+     * gets the producer responsible of the Event
+     * @return the producer of the Event
+     */
+    public Producer getProducer() {
+      return producer;
+    }
+  
+    public void setProducer(Producer p){
+      producer = p;
+    }
+    
+    /**
+     * sets the tickets of the Event
+     * @param tickets
+     */
+    public void setTickets(List<Ticket> tickets) {
+      this.tickets = tickets;
+    }
+    
+    /**
+     * sets the name of the Event
+     * @param name of the Event
+     */
+    public void setName(String name) {
+      this.name = name;
+    }
+  
+    /**
+     * @return list of EventDate sorted by EventDate.date
+     */
+    public List<EventDate> getDates() {
+      dates.sort(EventDate.ED_ASC);
+      return dates;
+    }
+  }
+  ```
+  
+  Diff version A and the base:
+  ```diff
+  @@ -95,7 +95,7 @@ public class Producer {
+           *
+           * @param resgistrationNumber
+           */
+  -       public void setResgistrationNumber(int resgistrationNumber) {
+  +       private void setResgistrationNumber(int resgistrationNumber) {
+                  this.registrationNumber = resgistrationNumber;
+          }
+          /**
+  ```
+  
+  Diff version B and the base:
+  ```diff
+  @@ -199,6 +199,14 @@ public class Event {
+          public void setProducer(Producer p){
+                  producer = p;
+          }
+  +
+  +       public int setProducerNumber(int n){
+  +               if(producer != null){
+  +                       producer.setResgistrationNumber(n);
+  +                       return producer.getRegistrationNumber();
+  +               }
+  +               return -1;
+  +       }
+  
+          /**
+           * sets the tickets of the Event
+  ```
+  
+  Merge version:
+  ```java
+  /**
+   * 
+   */
+  package business.event;
+  
+  
+  
+  import java.time.LocalDate;
+  import java.time.LocalTime;
+  import java.util.ArrayList;
+  import java.util.List;
+  
+  import javax.persistence.CascadeType;
+  import javax.persistence.Column;
+  import javax.persistence.Convert;
+  import javax.persistence.Entity;
+  import javax.persistence.EnumType;
+  import javax.persistence.Enumerated;
+  import javax.persistence.GeneratedValue;
+  import javax.persistence.GenerationType;
+  import javax.persistence.Id;
+  import javax.persistence.ManyToOne;
+  import javax.persistence.NamedQueries;
+  import javax.persistence.NamedQuery;
+  import javax.persistence.OneToMany;
+  
+  import business.util.Triplet;
+  
+  import business.producer.Producer;
+  import business.ticket.Ticket;
+  
+  /**
+   * 
+   * An Event
+   */
+  @Entity
+  @NamedQueries({
+      @NamedQuery(name = Event.FIND_BY_NAME, query = "SELECT e FROM Event e WHERE e.name = :" + Event.STRING_NAME),
+      @NamedQuery(name = Event.DATES_WITH_TICKETS_BY_STATE, query = "SELECT DISTINCT ed FROM SingleTicket t JOIN t.date ed WHERE ed.event.name = :"
+          + Event.STRING_NAME + " AND ed.date > :" + Event.DATE_DATE
+          + " AND t.state=:" + Event.ENUM_TICKET_STATE + " ORDER BY ed.date ASC"),
+      @NamedQuery(name = Event.SEATS_FOR_EVENT_DATE_BY_STATE, query = "SELECT DISTINCT s FROM SingleTicket t JOIN t.date ed JOIN t.seat s WHERE ed.event.name = :"
+          + Event.STRING_NAME + " AND ed.date = :" + Event.DATE_DATE
+          + " AND t.state=:" + Event.ENUM_TICKET_STATE + " ORDER BY s.rowLetters ASC, s.seatNumber ASC"),
+      @NamedQuery(name= Event._TICKETS, query= "SELECT e.tickets FROM Event e WHERE e.name = :" + Event.STRING_NAME),
+      })
+  
+  public class Event {
+  
+    // Named query name constants
+    public static final String FIND_BY_NAME = "Event.findByName";
+    public static final String DATES_WITH_TICKETS_BY_STATE = "Event.datesWithTicketsByState";
+    public static final String SEATS_FOR_EVENT_DATE_BY_STATE = "Event.seatsForEventDateByState";
+    public static final String STRING_NAME = "name";
+    public static final String DATE_DATE = "date";
+    public static final String _TICKETS = "tickets";
+    public static final String ENUM_TICKET_STATE = "ticket_state";
+  
+    /**
+     * 
+     */
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+  
+    /**
+     * Event name
+     */
+    @Column(nullable = false, unique = true, name="Name")
+    private String name;
+  
+    /**
+     * the starting date when the tickets of the Event are available
+     */
+    @Convert(converter = LocalDateAttributeConverter.class)
+    private LocalDate ticketStartSellingDate;
+  
+    /**
+     * the type of the Event
+     */
+    @Enumerated(EnumType.STRING)
+    private String type;
+  
+    /**
+     * the dates of the Event
+     */
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EventDate> dates;
+  
+    /**
+     * the tickets of the Event
+     */
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Ticket> tickets;
+  
+    /**
+     * the venue where the Event will occur 
+     */
+    @ManyToOne
+    private EventVenue venue;
+  
+    /**
+     * the producer responsible for the Event
+     */
+    @ManyToOne
+    private Producer producer;
+  
+  
+    public Event() {
+      this.dates = new ArrayList<>();
+      this.tickets = new ArrayList<>();
+    }
+    
+    /**
+     * Constructor of the Event
+     * @param producer producer of the event
+     * @param eventType type of the Event
+     * @param eventName name of the Event
+     * @param eventDates dates of the Event
+     */
+    public Event(Producer producer, String eventType, String eventName, List<Triplet<LocalDate, LocalTime, LocalTime>> eventDates) {
+  
+  
+      this.producer = producer;
+      this.type = eventType;
+      this.dates = new ArrayList<>();
+      this.name = eventName;
+      this.tickets = new ArrayList<>();
+      for (Triplet<LocalDate, LocalTime, LocalTime> triple : eventDates) {
+        dates.add(new EventDate(triple.getValue0(),triple.getValue1(),triple.getValue2(),this));
+      }
+    }
+    
+    
+    // Getters and Setters
+    
+    public int getId() {
+      return id;
+    }
+    
+    /**
+     * gets the starting date of the tickets
+     * @return the starting date of the tickets
+     */
+    public LocalDate getStartSellingDate() {
+      return ticketStartSellingDate;
+    }
+  
+    /**
+     * sets the starting date of the tickets
+     * @param startSellingDate
+     */
+    public void setStartSellingDate(LocalDate startSellingDate) {
+      this.ticketStartSellingDate = startSellingDate;
+    }
+    
+    /**
+     * gets the venue of the Event
+     * @return the venue of the Event
+     */
+    public EventVenue getVenue() {
+      return venue;
+    }
+    /**
+     * sets the venue of the Event
+     * @param venue of the event
+     */
+    public void setVenue(EventVenue venue) {
+      this.venue = venue;
+    }
+    /**
+     * gets the name of the Event
+     * @return the name of the Event
+     */
+    public String getName() {
+      return name;
+    }
+    /**
+     * gets the type of the Event
+     * @return the type of the Event
+     */
+    public String getType() {
+      return type;
+    }
+    /**
+     * get the tickets of the Event
+     * @return the tickets
+     */
+    public List<Ticket> getTickets() {
+      return tickets;
+    }
+    /**
+     * gets the producer responsible of the Event
+     * @return the producer of the Event
+     */
+    public Producer getProducer() {
+      return producer;
+    }
+  
+    public void setProducer(Producer p){
+      producer = p;
+    }
+  
+    public int setProducerNumber(int n){
+      if(producer != null){
+        producer.setResgistrationNumber(n);
+        return producer.getRegistrationNumber();
+      }
+      return -1;
+    }
+    
+    /**
+     * sets the tickets of the Event
+     * @param tickets
+     */
+    public void setTickets(List<Ticket> tickets) {
+      this.tickets = tickets;
+    }
+    
+    /**
+     * sets the name of the Event
+     * @param name of the Event
+     */
+    public void setName(String name) {
+      this.name = name;
+    }
+  
+    /**
+     * @return list of EventDate sorted by EventDate.date
+     */
+    public List<EventDate> getDates() {
+      dates.sort(EventDate.ED_ASC);
+      return dates;
+    }
+  }
+  ```
+  
+  Explanation of the semantic conflict: "In the provided scenario, let's analyze the changes made in versions A and B and then see if there's a semantic conflict in the merge commit.
+  
+  ### Version A Changes:
+  1. The method `setResgistrationNumber(int resgistrationNumber)` in the `Producer` class was changed to `private`.
+  
+  ### Version B Changes:
+  1. A new method `setProducerNumber(int n)` was added to the `Event` class, which sets the registration number of the producer.
+     - This method internally calls `producer.setResgistrationNumber(n)`.
+  
+  ### Merge Commit:
+  The merge commit contains changes from both versions A and B. It includes the changes in the `Producer` class from version A and the changes in the `Event` class from version B.
+  
+  ### Semantic Conflict Assessment:
+  1. The change in version A made `setResgistrationNumber(int resgistrationNumber)` private in the `Producer` class.
+  2. The change in version B introduced a new method `setProducerNumber(int n)` in the `Event` class, which attempts to set the registration number of the producer.
+     - This new method internally tries to access `producer.setResgistrationNumber(n)`, which is now private due to the change in version A.
+  
+  ### Conclusion:
+  There is a semantic conflict in the merge commit. The conflict arises because the `setProducerNumber(int n)` method in the `Event` class tries to access a method (`setResgistrationNumber(int resgistrationNumber)`) in the `Producer` class that has been made private in version A. As a result, this merge may lead to compilation errors or unexpected behavior in the application, as the method access is not allowed due to its visibility being changed to private. To resolve this conflict, you may need to modify either the visibility of the method in the `Producer` class or refactor the code in the `Event` class to not rely on this method directly."
+  
+  Generate just code with necessary imports. No explanation needed.
+\end{prompt}
+
+\begin{answer}
+```java
+import business.event.Event;
+import business.producer.Producer;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+public class EventTest {
+
+    @Test
+    public void testSetProducerNumber() {
+        Event event = new Event();
+        Producer producer = new Producer();
+        event.setProducer(producer);
+        int registrationNumber = 12345;
+        int result = event.setProducerNumber(registrationNumber);
+        assertEquals(registrationNumber, result);
+    }
+}
+```
+\end{answer}
+
+\subsection{Point, Prompt 2, Trial 1}
+
+\begin{prompt}
+  You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+  Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
+  
+  Base version:
+  ```java
+  public class Point {
+      private double x;
+      private double y;
+  
+      public Point(double x, double y) {
+          this.x = x;
+          this.y = y;
+      }
+  
+      public double getX() {
+          return x;
+      }
+  
+      public double getY() {
+          return y;
+      }
+  
+       public void move() {
+           this.x += 1;
+           this.y += 1;
+       }
+  
+      public double distance() {
+          return Math.sqrt(Math.pow(getX(), 2)+ Math.pow(getY(), 2));
+      }
+  
+      public String toString() {
+          return "(" + getX() + ", " + getY() + ")";
+      }
+  }
+  ```
+  
+  Diff version A and the base:
+  ```diff
+  @@ -16,8 +16,9 @@ public class Point {
+       }
+  
+        public void move() {
+  -         this.x += 1;
+  -         this.y += 1;
+  +         double dist = distance();
+  +         this.x += dist;
+  +         this.y += dist;
+        }
+  
+       public double distance() {
+  ```
+  
+  Diff version B and the base:
+  ```diff
+  @@ -21,7 +21,7 @@ public class Point {
+        }
+  
+       public double distance() {
+  -        return Math.sqrt(Math.pow(getX(), 2)+ Math.pow(getY(), 2));
+  +        return Math.abs(getX())+Math.abs(getY());
+       }
+  
+       public String toString() {
+  ```
+  
+  Merge version:
+  ```java
+  public class Point {
+      private double x;
+      private double y;
+  
+      public Point(double x, double y) {
+          this.x = x;
+          this.y = y;
+      }
+  
+      public double getX() {
+          return x;
+      }
+  
+      public double getY() {
+          return y;
+      }
+  
+       public void move() {
+           double dist = distance();
+           this.x += dist;
+           this.y += dist;
+       }
+  
+      public double distance() {
+          return Math.abs(getX())+Math.abs(getY());
+      }
+  
+      public String toString() {
+          return "(" + getX() + ", " + getY() + ")";
+      }
+  }
+  ```
+  
+  Explanation of the semantic conflict: "To assess whether there is a semantic conflict in the merge commit, let's analyze the changes introduced in versions A and B compared to the base version, and then compare them with the merged version.
+  
+  ### Changes introduced in Version A:
+  - The `move()` method has been modified to calculate the distance using the `distance()` method and then update the `x` and `y` coordinates accordingly.
+  - This change effectively moves the point by the distance it currently is from the origin.
+  
+  ### Changes introduced in Version B:
+  - The `distance()` method has been modified to calculate the Manhattan distance instead of the Euclidean distance.
+  - The Manhattan distance is calculated by taking the absolute value of the x and y differences.
+  
+  ### Analysis of Merged Version:
+  - The `move()` method from Version A has been kept in the merged version, which calculates the distance using the Euclidean distance.
+  - The `distance()` method from Version B has been kept, which calculates the Manhattan distance.
+  
+  ### Potential Semantic Conflict:
+  - The potential conflict arises from the inconsistency between how distance is calculated in the `move()` method and the `distance()` method in the merged version.
+  - While the `move()` method assumes Euclidean distance for movement, the `distance()` method calculates the Manhattan distance.
+  - This inconsistency could lead to unexpected behavior, as the `move()` method might not accurately reflect the intended behavior of the `distance()` method.
+  
+  ### Conclusion:
+  - There is a semantic conflict in the merge commit because the merged version contains methods with conflicting assumptions about how distance should be calculated.
+  - Resolving this conflict would require ensuring consistency in the distance calculation method used throughout the class, either sticking with Euclidean distance or Manhattan distance for both `move()` and `distance()` methods."
+  
+  Generate just code with necessary imports. No explanation needed.
+\end{prompt}
+
+\begin{answer}
+```java
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+public class PointTest {
+
+    @Test
+    public void testMove() {
+        Point point = new Point(3, 4);
+        point.move();
+        assertEquals(7.0, point.getX(), 0.001);
+        assertEquals(9.0, point.getY(), 0.001);
+    }
+
+    @Test
+    public void testDistance() {
+        Point point = new Point(3, 4);
+        assertEquals(7.0, point.distance(), 0.001);
+    }
+}
+```
+\end{answer}
+
+\subsection{Cart PF, Prompt 1, Trial 2}
+
+\begin{prompt}
+  You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+  Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
+  
+  Base version:
+  ```java
+  import java.util.Collections;
+  import java.util.HashMap;
+  import java.util.List;
+  import java.util.Map;
+  
+  public class Cart {
+      private List<Item> cartItems;
+      private final User user;
+  
+      private static final Map<String, Double> discounts = Collections.unmodifiableMap(new HashMap<>() {{
+          put("loyal", 0.1d);
+          put("superpromo", 0.25d);
+          put("30ff", 0.3d);
+          put("2024", 0.2d);
+      }});
+  
+  
+      public Cart(User user) {
+          this.user = user;
+      }
+  
+      public double sum_items() {
+          double sum = 0;
+          for(Item item: cartItems) {
+              sum += item.value*item.amount;
+          }
+          return Math.max(0, sum);
+      }
+      public double total_cost(double discount) {
+          double sum = sum_items();
+          return sum - sum * discount;
+      }
+  
+      public void add_item(Item item) {
+          cartItems.add(item);
+      }
+      public void checkout(String code) {
+          double cost = total_cost(discounts.get(code));
+          user.balance -= cost;
+          cartItems.clear();
+      }
+  }
+  ```
+  
+  Diff version A and the base:
+  ```diff
+  diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+  index 501b06f..e8e25b8 100644
+  --- a/src/main/java/Cart.java
+  +++ b/src/main/java/Cart.java
+  @@ -12,6 +12,7 @@ public class Cart {
+           put("superpromo", 0.25d);
+           put("30ff", 0.3d);
+           put("2024", 0.2d);
+  +        put("megasaver", 0.4d);
+       }});
+  ```
+  
+  Diff version B and the base:
+  ```diff
+  diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+  index fbdd81f..0f8e11a 100644
+  --- a/src/main/java/Cart.java
+  +++ b/src/main/java/Cart.java
+  @@ -9,7 +9,7 @@ public class Cart {
+  
+       private static final Map<String, Double> discounts = Collections.unmodifiableMap(new HashMap<>() {{
+           put("loyal", 0.1d);
+  -        put("superpromo", 0.25d);
+  +        put("megasaver", 0.25d);
+           put("30ff", 0.3d);
+           put("2024", 0.2d);
+       }});
+  ```
+  
+  Merge version:
+  ```java
+  import java.util.Collections;
+  import java.util.HashMap;
+  import java.util.List;
+  import java.util.Map;
+  
+  public class Cart {
+      private List<Item> cartItems;
+      private final User user;
+  
+      private static final Map<String, Double> discounts = Collections.unmodifiableMap(new HashMap<>() {{
+          put("loyal", 0.1d);
+          put("megasaver", 0.25d);
+          put("30ff", 0.3d);
+          put("2024", 0.2d);
+          put("megasaver", 0.4d);
+      }});
+  
+  
+      public Cart(User user) {
+          this.user = user;
+      }
+  
+      public double sum_items() {
+          double sum = 0;
+          for(Item item: cartItems) {
+              sum += item.value*item.amount;
+          }
+          return Math.max(0, sum);
+      }
+      public double total_cost(double discount) {
+          double sum = sum_items();
+          return sum - sum * discount;
+      }
+  
+      public void add_item(Item item) {
+          cartItems.add(item);
+      }
+      public void checkout(String code) {
+          double cost = total_cost(discounts.get(code));
+          user.balance -= cost;
+          cartItems.clear();
+      }
+  }
+  ```
+  
+  Explanation of the semantic conflict: In branch A, a discount with code megasaver is added, with value 0.4. In branch B, an existing discount with name superpromo and value 0.25 is renamed to megasaver. In the merge, this 0.25d is made useless, as the 0.4d discount replaces it when the list is created.
+  Generate just code with necessary imports. No explanation needed.
+\end{prompt}
+
+\begin{answer}
+```java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class CartTest {
+
+    @Test
+    public void testMegaSaverDiscountConflict() {
+        User user = new User();
+        Cart cart = new Cart(user);
+        Item item = new Item("Test", 10, 1);
+        
+        // Adding item to cart
+        cart.add_item(item);
+        
+        // Checkout with megaSaver discount
+        cart.checkout("megasaver");
+        
+        // Assert user balance after checkout
+        assertEquals(user.balance, -6.0d);
+    }
+}
+```
+\end{answer}
+
+\subsection{Fabricated RO, Trial 1}
+
+\begin{prompt}
+You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
+
+Base version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List<Item> cartItems;
+    private final User user;
+
+    private static final Map<String, Double> discounts = Collections.unmodifiableMap(new HashMap<>() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+
+Diff version A and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..2846dd0 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -24,7 +24,7 @@ public class Cart {
+          for(Item item: cartItems) {
+              sum += item.value*item.amount;
+          }
+-        return Math.max(0, sum);
++        return sum;
+      }
+      public double total_cost(double discount) {
+          double sum = sum_items();
+```
+
+Diff version B and the base:
+```diff
+diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
+index fbdd81f..a90d713 100644
+--- a/src/main/java/Cart.java
++++ b/src/main/java/Cart.java
+@@ -22,7 +22,10 @@ public class Cart {
+      public double sum_items() {
+          double sum = 0;
+          for(Item item: cartItems) {
+-            sum += item.value*item.amount;
++            if(item.coupon)
++                sum -= item.value*item.amount;
++            else
++                sum += item.value*item.amount;
+          }
+          return Math.max(0, sum);
+      }
+diff --git a/src/main/java/Item.java b/src/main/java/Item.java
+index 76a06c8..7b2db97 100644
+--- a/src/main/java/Item.java
++++ b/src/main/java/Item.java
+@@ -2,6 +2,7 @@ public class Item {
+
+      public double value;
+      public int amount;
++    public boolean coupon;
+
+      public Item(int value) {
+          this.value = value;
+@@ -11,4 +12,14 @@ public class Item {
+          this.value = value;
+          this.amount = amount;
+      }
++    public Item(int value, boolean coupon) {
++        this.value = value;
++        this.coupon = coupon;
++    }
++
++    public Item(int value, int amount, boolean coupon) {
++        this.value = value;
++        this.coupon = coupon;
++        this.amount = amount;
++    }
+  }
+```
+
+Merge version:
+```java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List<Item> cartItems;
+    private final User user;
+
+    private static final Map<String, Double> discounts = Collections.unmodifiableMap(new HashMap<>() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            if(item.coupon)
+                sum -= item.value*item.amount;
+            else
+                sum += item.value*item.amount;
+        }
+        return sum;
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+```
+Explanation of the semantic conflict: A semantic conflicts because in branch A, a check ensuring that the sum of item values is 0 or more is removed. Simultaneously, in branch B, coupons are added, a type of item that is subtracted instead of summed. Because of both these changes, in the merge version it is possible to have the return of negative values, which is not intended.
+Generate just code with necessary imports. No explanation needed.
+\end{prompt}
+
+\begin{answer}
+```java
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+
+public class CartTest {
+
+  @Test
+  void testSumItemsWithCoupon() {
+      Cart cart = new Cart(new User());
+      cart.add_item(new Item(20, true));
+      cart.add_item(new Item(30, true));
+      assertEquals(-50, cart.sum_items());
+  }
+
+  @Test
+  void testSumItemsWithoutCoupon() {
+      Cart cart = new Cart(new User());
+      cart.add_item(new Item(20));
+      cart.add_item(new Item(30));
+      assertEquals(50, cart.sum_items());
+  }
+
+  @Test
+  void testTotalCostWithDiscount() {
+      Cart cart = new Cart(new User());
+      cart.add_item(new Item(20, true));
+      cart.add_item(new Item(30, true));
+      assertEquals(-30, cart.total_cost(0.1));
+  }
+
+  @Test
+  void testTotalCostWithoutDiscount() {
+      Cart cart = new Cart(new User());
+      cart.add_item(new Item(20));
+      cart.add_item(new Item(30));
+      assertEquals(50, cart.total_cost(0.1));
+  }
+}
+``` 
+\end{answer}
