@@ -155,37 +155,38 @@ From this we can observe:
     \end{tabular}
     \caption{Results by conflict and explanation type.\label{tab:results:rq2}}
 \end{table}
-
 \begin{table}[t]
     \centering
-    \begin{tabular}{@{\extracolsep{\fill}} lrrr} \toprule
-                             & Trial 1 & Trial 2 & Trial 3 \\
-    \midrule
-    Point (CM) Manual        & F/FF/F & F/FF/F & F/FF/F \\
-    Point (CM) ChatGPT       & F/FF/F & F/FF/F & F/FF/F \\
-                             & F/FP/P & F/FP/P & F/FP/P \\
-    Fabricated (OAC) Manual  & C/CP/F & C/CP/F & C/CF/F \\
-    Fabricated (OAC) ChatGPT & C/CF/F & C/CP/F & C/CP/F \\
-    Fabricated (RO) Manual   & C/FC/F & C/PC/P & C/PC/P \\
-    Fabricated (RO) ChatGPT  & C/FC/F & C/PC/P & C/PC/P \\
-    Cart (CM) Manual         & P/PP/F & F/FF/F & P/PP/F \\
-                             &  & F/FF/F &  \\
-    Cart (CM) ChatGPT        & F/FF/P* & F/FF/P* & F/PF/F \\
-                             &  &  & F/FP/P \\
-    Cart (PF) Manual         & R/FF/F & R/PF/P & R/FF/F \\
-    Cart (PF) ChatGPT        & R/FF/F & R/FF/F & R/FF/F \\
-    Cart (PM) Manual         & C/CP/P & C/CP/P & C/CF/F \\
-                             & P/PP/P & C/CF/F & F/FF/F \\
-                             &  & C/CF/F & C/CF/F \\
-                             &  & C/CF/F & F/FF/F \\
-    Cart (PM) ChatGPT        & C/CF/F & C/CP/P & C/CF/F \\
-                             & C/CF/F & C/CF/P & F/FF/F \\
-                             &  & C/CP/P & C/CF/F \\
-                             &  & C/CF/F & F/FF/F \\
-    \midrule
+    \begin{tabular}{@{\extracolsep{\fill}} llcccccccccccc} \toprule
+    Prompt                     &      & \multicolumn{4}{c}{Trial 1} & \multicolumn{4}{c}{Trial 2} & \multicolumn{4}{c}{Trial 3} \\ 
+                               &      & b & A & B & M & b & A & B & M & b & A & B & M \\ \midrule
+    Point (CM) Manual          &      &   &   &   &   &   &   &   &   &   &   &   &   \\
+    Point (CM) ChatGPT         &      &   &   &   &   &   &   &   &   &   &   &   &   \\
+                               &      &   &   &   &   &   &   &   &   &   &   &   &   \\
+    Fabricated (OAC) Manual    &      &   &   &   &   &   &   &   &   &   &   &   &   \\
+    Fabricated (OAC) ChatGPT   &      &   &   &   &   &   &   &   &   &   &   &   &   \\
+    Fabricated (RO) Manual     &      &   &   &   &   &   &   &   &   &   &   &   &   \\
+    Fabricated (RO) ChatGPT    &      &   &   &   &   &   &   &   &   &   &   &   &   \\
+    Cart (CM) Manual           &      &   &   &   &   &   &   &   &   &   &   &   &   \\
+                               &      &   &   &   &   &   &   &   &   &   &   &   &   \\
+    Cart (CM) ChatGPT          &      &   &   &   &   &   &   &   &   &   &   &   &   \\
+                               &      &   &   &   &   &   &   &   &   &   &   &   &   \\
+    Cart (PF) Manual           &      &   &   &   &   &   &   &   &   &   &   &   &   \\
+    Cart (PF) ChatGPT          &      &   &   &   &   &   &   &   &   &   &   &   &   \\
+    Cart (PM) Manual           &      &   &   &   &   &   &   &   &   &   &   &   &   \\
+                               &      &   &   &   &   &   &   &   &   &   &   &   &   \\
+                               &      &   &   &   &   &   &   &   &   &   &   &   &   \\
+                               &      &   &   &   &   &   &   &   &   &   &   &   &   \\
+    Cart (PM) ChatGPT          &      &   &   &   &   &   &   &   &   &   &   &   &   \\
+                               &      &   &   &   &   &   &   &   &   &   &   &   &   \\
+                               &      &   &   &   &   &   &   &   &   &   &   &   &   \\
+                               &      &   &   &   &   &   &   &   &   &   &   &   &   \\
+    \bottomrule
     \end{tabular}
-    \caption{Test running results in Base/AB/Merge \label{tab:results:rq2tests}}
+    \caption{Test running results in base A B Merge \label{tab:results:rq2tests}}
 \end{table}
+
+
 
 Analysis of \Cref{tab:results:rq2tests} allows us to identify which cases identify the conflict, and which did not.
 It is worth examining the results and what they mean, starting by the failing examples:
