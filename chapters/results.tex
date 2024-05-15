@@ -155,36 +155,41 @@ From this we can observe:
     \end{tabular}
     \caption{Results by conflict and explanation type.\label{tab:results:rq2}}
 \end{table}
+
 \begin{table}[t]
     \centering
-    \begin{tabular}{@{\extracolsep{\fill}} llcccccccccccc} \toprule
-    Prompt                     &      & \multicolumn{4}{c}{Trial 1} & \multicolumn{4}{c}{Trial 2} & \multicolumn{4}{c}{Trial 3} \\ 
-                               &      & b & A & B & M & b & A & B & M & b & A & B & M \\ \midrule
-    Point (CM) Manual          &      &   &   &   &   &   &   &   &   &   &   &   &   \\
-    Point (CM) ChatGPT         &      &   &   &   &   &   &   &   &   &   &   &   &   \\
-                               &      &   &   &   &   &   &   &   &   &   &   &   &   \\
-    Fabricated (OAC) Manual    &      &   &   &   &   &   &   &   &   &   &   &   &   \\
-    Fabricated (OAC) ChatGPT   &      &   &   &   &   &   &   &   &   &   &   &   &   \\
-    Fabricated (RO) Manual     &      &   &   &   &   &   &   &   &   &   &   &   &   \\
-    Fabricated (RO) ChatGPT    &      &   &   &   &   &   &   &   &   &   &   &   &   \\
-    Cart (CM) Manual           &      &   &   &   &   &   &   &   &   &   &   &   &   \\
-                               &      &   &   &   &   &   &   &   &   &   &   &   &   \\
-    Cart (CM) ChatGPT          &      &   &   &   &   &   &   &   &   &   &   &   &   \\
-                               &      &   &   &   &   &   &   &   &   &   &   &   &   \\
-    Cart (PF) Manual           &      &   &   &   &   &   &   &   &   &   &   &   &   \\
-    Cart (PF) ChatGPT          &      &   &   &   &   &   &   &   &   &   &   &   &   \\
-    Cart (PM) Manual           &      &   &   &   &   &   &   &   &   &   &   &   &   \\
-                               &      &   &   &   &   &   &   &   &   &   &   &   &   \\
-                               &      &   &   &   &   &   &   &   &   &   &   &   &   \\
-                               &      &   &   &   &   &   &   &   &   &   &   &   &   \\
-    Cart (PM) ChatGPT          &      &   &   &   &   &   &   &   &   &   &   &   &   \\
-                               &      &   &   &   &   &   &   &   &   &   &   &   &   \\
-                               &      &   &   &   &   &   &   &   &   &   &   &   &   \\
-                               &      &   &   &   &   &   &   &   &   &   &   &   &   \\
-    \bottomrule
+    \begin{tabular}{@{\extracolsep{\fill}} llcccccccccccc} 
+        \toprule
+        Prompt & & \multicolumn{12}{c}{Trial} \\ 
+        \cmidrule(lr){3-14}
+        & & \multicolumn{4}{c}{1} & \multicolumn{4}{c}{2} & \multicolumn{4}{c}{3} \\ 
+                            & & b & A & B & M & b & A & B & M & b & A & B & M \\ 
+\midrule
+Point (CM) Manual           & & & & & & & & & & & & & \\ 
+Point (CM) ChatGPT          & & & & & & & & & & & & & \\ 
+                            & & & & & & & & & & & & & \\ 
+Fabricated (OAC) Manual     & & & & & & & & & & & & & \\ 
+Fabricated (OAC) ChatGPT    & & & & & & & & & & & & & \\ 
+Fabricated (RO) Manual      & & & & & & & & & & & & & \\ 
+Fabricated (RO) ChatGPT     & & & & & & & & & & & & & \\ 
+Cart (CM) Manual            & & & & & & & & & & & & & \\ 
+                            & & & & & & & & & & & & & \\ 
+Cart (CM) ChatGPT           & & & & & & & & & & & & & \\ 
+                            & & & & & & & & & & & & & \\ 
+Cart (PF) Manual            & & & & & & & & & & & & & \\ 
+Cart (PF) ChatGPT           & & & & & & & & & & & & & \\ 
+Cart (PM) Manual            & & & & & & & & & & & & & \\ 
+                            & & & & & & & & & & & & & \\ 
+                            & & & & & & & & & & & & & \\ 
+Cart (PM) ChatGPT           & & & & & & & & & & & & & \\ 
+                            & & & & & & & & & & & & & \\ 
+                            & & & & & & & & & & & & & \\ 
+                            & & & & & & & & & & & & & \\ 
+        \bottomrule
     \end{tabular}
     \caption{Test running results in base A B Merge \label{tab:results:rq2tests}}
 \end{table}
+
 
 
 
