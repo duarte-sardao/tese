@@ -203,29 +203,25 @@ public class CartTest {
     }
 }
 ```
-<h4> Detection: No </h4>
-<h4> Edit distance: 82 </h4>
+<h4> Detection: Yes </h4>
+<h4> Edit distance: 215 </h4>
 <h4> Error: Constructor </h4>
-<h4> Results: F/PF/F . F/FP/P </h4>
+<h4> Results: F/FF/P . F/FP/P </h4>
 <h4> Amended test: </h4>
     @Test
     void testAdminCheckoutFreeItem() {
         User adminUser = new User(true); // admin user with initial balance of 100
-		adminUser.balance = 100;
         Cart cart = new Cart(adminUser);
         cart.add_item(new Item(10, 2)); // item with value 10 and amount 2
-        assertDoesNotThrow(() -> cart.checkout("loyal")); // admin gets item for free
-        assertEquals(100, adminUser.balance); // balance remains the same
+        assertThrows(RuntimeException.class, () -> cart.checkout("loyal")); // admin gets item for free
     }
 
     @Test
     void testAdminCheckoutThrowsException() {
         User adminUser = new User(true); // admin user with initial balance of 100
-		adminUser.balance = 100;
         Cart cart = new Cart(adminUser);
         cart.add_item(new Item(0, 2)); // item with value 0 and amount 2
         assertThrows(RuntimeException.class, () -> cart.checkout("loyal")); // checkout throws exception
-        assertEquals(100, adminUser.balance); // balance remains the same
     }
 </div></pre></div><div class="conversation"><h4>RQ2, Cart CM, P2, T2</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
@@ -388,7 +384,7 @@ public class CartTest {
         cart.checkout("loyal");
     }
 }
-<h4> Detection: No </h4>
+<h4> Detection: Yes </h4>
 <h4> Edit distance: 8 </h4>
 <h4> Error: Other </h4>
 <h4> Results: F/FF/P </h4>
@@ -561,7 +557,7 @@ public class CartTest {
     }
 }
 ```
-<h4> Detection: No </h4>
+<h4> Detection: Yes </h4>
 <h4> Edit distance: 13 </h4>
 <h4> Error: Constructor </h4>
 <h4> Results: F/FF/P </h4>
@@ -721,21 +717,21 @@ public class CartTest {
         User adminUser = new User(true, 100); // Admin user with balance 100
         Cart cart = new Cart(adminUser);
         cart.add_item(new Item(1, 10)); // Add an item with value 10
-        assertDoesNotThrow(() -&gt; cart.checkout("loyal")); // Should not throw an exception
+        assertDoesNotThrow(() ->; cart.checkout("loyal")); // Should not throw an exception
     }
 }
 ```
-<h4> Detection: No </h4>
-<h4> Edit distance: 5 </h4>
+<h4> Detection: Yes </h4>
+<h4> Edit distance: 33 </h4>
 <h4> Error: Constructor </h4>
-<h4> Results: P/PP/F </h4>
+<h4> Results: F/FF/P </h4>
 <h4> Amended test: </h4>
     @Test
     public void testAdminCheckout() {
-        User adminUser = new User(true); // Admin user with balance 100
+        User adminUser = new User(true);
         Cart cart = new Cart(adminUser);
         cart.add_item(new Item(1, 10)); // Add an item with value 10
-        assertDoesNotThrow(() -> cart.checkout("loyal")); // Should not throw an exception
+        assertThrows(RuntimeException.class, () ->; cart.checkout("loyal"));
     }
 </div></pre></div><div class="conversation"><h4>RQ2, Cart CM, P1, T2</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
@@ -884,7 +880,7 @@ public class CartTest {
         User adminUser = new User(true);
         Cart cart = new Cart(adminUser);
         cart.add_item(new Item("Item", 10, 1));
-        assertDoesNotThrow(() -&gt; cart.checkout("loyal"));
+        assertDoesNotThrow(() ->; cart.checkout("loyal"));
         assertEquals(10, adminUser.balance);
     }
 
@@ -893,22 +889,21 @@ public class CartTest {
         User nonAdminUser = new User(false);
         Cart cart = new Cart(nonAdminUser);
         cart.add_item(new Item("Item", 10, 1));
-        assertThrows(RuntimeException.class, () -&gt; cart.checkout("loyal"));
+        assertThrows(RuntimeException.class, () ->; cart.checkout("loyal"));
         assertEquals(0, nonAdminUser.balance);
     }
 }
-<h4> Detection: No </h4>
-<h4> Edit distance: 16 </h4>
+<h4> Detection: Yes </h4>
+<h4> Edit distance: 168 </h4>
 <h4> Error: Assert/Constructor </h4>
-<h4> Results: F/FF/F . F/FF/F </h4>
+<h4> Results: F/FF/P . P/PP/P </h4>
 <h4> Amended test: </h4>
     @Test
     public void testAdminCheckout() {
         User adminUser = new User(true);
         Cart cart = new Cart(adminUser);
         cart.add_item(new Item(10, 1));
-        assertDoesNotThrow(() -> cart.checkout("loyal"));
-        assertEquals(10, adminUser.balance);
+        assertThrows(RuntimeException.class, () -> cart.checkout("loyal"));
     }
 
     @Test
@@ -916,8 +911,7 @@ public class CartTest {
         User nonAdminUser = new User(false);
         Cart cart = new Cart(nonAdminUser);
         cart.add_item(new Item(10, 1));
-        assertThrows(RuntimeException.class, () -> cart.checkout("loyal"));
-        assertEquals(0, nonAdminUser.balance);
+		assertDoesNotThrow(() -> cart.checkout("loyal"));
     }
 ```</div></pre></div><div class="conversation"><h4>RQ2, Cart CM, P1, T1</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
@@ -1069,14 +1063,14 @@ public class CartTest {
         cart.add_item(item);
         
         // Assert that checkout with a valid code doesn't throw an error
-        assertDoesNotThrow(() -&gt; cart.checkout("loyal"));
+        assertDoesNotThrow(() ->; cart.checkout("loyal"));
     }
 }
 ```
-<h4> Detection: No </h4>
-<h4> Edit distance: 5</h4>
+<h4> Detection: Yes </h4>
+<h4> Edit distance: 72</h4>
 <h4> Error: Constructor </h4>
-<h4> Results: P/PP/F </h4>
+<h4> Results: F/FF/P </h4>
 <h4> Amended test: </h4>
     @Test
     public void testCheckout_AdminWithZeroCost() {
@@ -1086,7 +1080,7 @@ public class CartTest {
         cart.add_item(item);
 
         // Assert that checkout with a valid code doesn't throw an error
-        assertDoesNotThrow(() -> cart.checkout("loyal"));
+        assertThrows(RuntimeException.class, () -> cart.checkout("loyal"));
     }
 </div></pre></div><div class="conversation"><h4>RQ2, Cart PM, P2, T3</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
@@ -1317,10 +1311,26 @@ public class CartTest {
 }
 ```
 <h4> Detection: No </h4>
-<h4> Edit distance: 112 </h4>
+<h4> Edit distance: 121 </h4>
 <h4> Error: Other </h4>
-<h4> Results: C/CF/F . F/FF/F . C/CF/F . F/FF/F </h4>
+<h4> Results: C/CP/P . P/PP/P . C/CP/P . P/PP/P </h4>
 <h4> Amended test: </h4>
+    @Test
+    public void testSumItemsWithCoupon() {
+        Cart cart = new Cart(new User());
+        Item item = new Item(50, true); // Item with coupon
+        cart.add_item(item);
+        assertEquals(0, cart.sum_items(), 0.001);
+    }
+
+    @Test
+    public void testSumItemsWithoutCoupon() {
+        Cart cart = new Cart(new User());
+        Item item = new Item(50); // Item without coupon
+        cart.add_item(item);
+        assertEquals(0, cart.sum_items(), 0.001);
+    }
+
     @Test
     public void testTotalCostWithCoupon() {
         User user = new User();
@@ -1328,7 +1338,7 @@ public class CartTest {
         Item item = new Item(50, true); // Item with coupon
         cart.add_item(item);
         cart.checkout("loyal");
-        assertEquals(-45, user.balance, 0.001);
+        assertEquals(0, user.balance, 0.001);
     }
 
     @Test
@@ -1338,7 +1348,7 @@ public class CartTest {
         Item item = new Item(50); // Item without coupon
         cart.add_item(item);
         cart.checkout("loyal");
-        assertEquals(-45, user.balance, 0.001);
+        assertEquals(0, user.balance, 0.001);
     }
 </div></pre></div><div class="conversation"><h4>RQ2, Cart PM, P2, T2</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
@@ -1563,8 +1573,15 @@ public class CartTest {
 }
 ```
 <h4> Detection: Yes </h4>
-<h4> Edit distance: 0 </h4>
-<h4> Results: C/CP/P . C/CF/P . C/CP/P . C/CF/F </h4>
+<h4> Edit distance: 1 </h4>
+<h4> Results: C/CP/P . C/CF/P . C/CP/P . C/CF/P </h4>
+<h4> Amended test: </h4>
+    @Test
+    public void testTotalCost_WithDiscount() {
+        Cart cart = new Cart(new User());
+        cart.add_item(new Item(10, 2, true));
+        assertEquals(-16, cart.total_cost(0.2));
+    }
 
 </div></pre></div><div class="conversation"><h4>RQ2, Cart PM, P2, T1</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
@@ -1787,9 +1804,35 @@ public class CartTest {
 }
 ```
 <h4> Detection: No </h4>
-<h4> Edit distance: 0 </h4>
+<h4> Edit distance: 4 </h4>
 <h4> Error: Assert/Other </h4>
-<h4> Results: C/CF/F . C/CF/F </h4> 
+<h4> Results: C/CP/P . C/CP/P </h4> 
+<h4> Amended test: </h4>
+    @Test
+    public void testSumItems() {
+        Cart cart = new Cart(new User());
+        Item item1 = new Item(10);
+        Item item2 = new Item(20, true); // item with coupon
+        cart.add_item(item1);
+        cart.add_item(item2);
+        
+        // Expected sum without considering coupon: 10 + 20 = 30
+        // Expected sum considering coupon: 10 - 20 = -10
+        assertEquals(0, cart.sum_items(), 0.001);
+    }
+
+    @Test
+    public void testTotalCost() {
+        Cart cart = new Cart(new User());
+        Item item1 = new Item(10);
+        Item item2 = new Item(20, true); // item with coupon
+        cart.add_item(item1);
+        cart.add_item(item2);
+        
+        // Expected total cost without considering discount: (10 + 20) - (10 + 20) * discount = 30 - 30 * 0.2 = 24
+        // Expected total cost considering discount: (-10) - (-10) * discount = -10 - (-10) * 0.2 = -10 - (-2) = -8
+        assertEquals(0, cart.total_cost(0.2), 0.001);
+    }
 </div></pre></div><div class="conversation"><h4>RQ2, Cart PM, P1, T3</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
 
@@ -1993,9 +2036,41 @@ public class CartTest {
 }
 ```
 <h4> Detection: No </h4>
-<h4> Edit distance: 0</h4>
+<h4> Edit distance: 6</h4>
 <h4> Error: Other </h4>
-<h4> Results: C/CF/F . F/FF/F . C/CF/F . F/FF/F </h4>
+<h4> Results: C/CP/P . P/PP/P . C/CP/P . P/PP/P </h4>
+<h4> Amended test: </h4>
+    @Test
+    void testSumItemsWithCoupon() {
+        Cart cart = new Cart(new User());
+        cart.add_item(new Item(20, true));
+        cart.add_item(new Item(30, true));
+        assertEquals(0, cart.sum_items());
+    }
+
+    @Test
+    void testSumItemsWithoutCoupon() {
+        Cart cart = new Cart(new User());
+        cart.add_item(new Item(20));
+        cart.add_item(new Item(30));
+        assertEquals(0, cart.sum_items());
+    }
+
+    @Test
+    void testTotalCostWithDiscount() {
+        Cart cart = new Cart(new User());
+        cart.add_item(new Item(20, true));
+        cart.add_item(new Item(30, true));
+        assertEquals(0, cart.total_cost(0.1));
+    }
+
+    @Test
+    void testTotalCostWithoutDiscount() {
+        Cart cart = new Cart(new User());
+        cart.add_item(new Item(20));
+        cart.add_item(new Item(30));
+        assertEquals(0, cart.total_cost(0.1));
+    }
 </div></pre></div><div class="conversation"><h4>RQ2, Cart PM, P1, T2</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
 
@@ -2197,17 +2272,32 @@ public class CartTest {
 }
 ```
 <h4> Detection: No </h4>
-<h4> Edit distance: 44 </h4>
+<h4> Edit distance: 48 </h4>
 <h4> Error: Other </h4>
-<h4> Results: C/CP/P . C/CF/F . C/CF/F . C/CF/F </h4>
+<h4> Results: C/CP/P . C/CP/P . C/CP/P . C/CP/P </h4>
 <h4> Amended test: </h4>
+    @Test
+    void testSumItemsWithPositiveCoupon() {
+        Cart cart = new Cart(new User());
+        cart.add_item(new Item(10, false));
+        assertEquals(0, cart.sum_items());
+    }
+
+    @Test
+    void testSumItemsWithMixedItems() {
+        Cart cart = new Cart(new User());
+        cart.add_item(new Item(10, true));
+        cart.add_item(new Item(20, false));
+        assertEquals(0, cart.sum_items());
+    }
+	
     @Test
     void testTotalCostWithDiscount() {
         User user = new User();
         Cart cart = new Cart(user);
         cart.add_item(new Item(10, false));
         cart.checkout("loyal");
-        assertEquals(-8, user.balance);
+        assertEquals(0, user.balance);
     }
 </div></pre></div><div class="conversation"><h4>RQ2, Cart PM, P1, T1</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
