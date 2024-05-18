@@ -140,18 +140,18 @@ From this we can observe:
     \begin{tabular}{@{\extracolsep{\fill}} lrrr} \toprule
                              & Successes (of 3) & Average Edit Distance & Errors \\
     \midrule
-    Point (CM) Manual        & 0 & 0 & Assert \\
-    Point (CM) ChatGPT       & 0 & 0 & Assert \\
-    Fabricated (OAC) Manual  & 1 & 1 & Assert/Other \\
-    Fabricated (OAC) ChatGPT & 2 & 0 & Assert \\
-    Fabricated (RO) Manual   & 0 & 0 & Assert/Other \\
-    Fabricated (RO) ChatGPT  & 0 & 0 & Assert/Other \\
-    Cart (CM) Manual         & 0 & 9 & Assert/Constructor \\
-    Cart (CM) ChatGPT        & 0 & 34 & Constructor/Other \\
-    Cart (PF) Manual         & 0 & 6 & Assert/Constructor/Branch \\
-    Cart (PF) ChatGPT        & 0 & 33 & Assert/Constructor/Branch \\
-    Cart (PM) Manual         & 0 & 15 & Assert/Other \\
-    Cart (PM) ChatGPT        & 1 & 37 & Assert/Other \\
+    Point (CM) Manual        & 3 & 4 & Assert \\
+    Point (CM) ChatGPT       & 3 & 4 & Assert \\
+    Fabricated (OAC) Manual  & 3 & 2 & Assert/Branch/Other \\
+    Fabricated (OAC) ChatGPT & 3 & 28 & Assert/Branch \\
+    Fabricated (RO) Manual   & 1 & 3 & Assert/Miss \\
+    Fabricated (RO) ChatGPT  & 1 & 3 & Assert/Miss \\
+    Cart (CM) Manual         & 3 & 91 & Assert/Constructor \\
+    Cart (CM) ChatGPT        & 3 & 79 & Constructor/Other \\
+    Cart (PF) Manual         & 0 & 0 &  \\
+    Cart (PF) ChatGPT        & 0 & 0 &  \\
+    Cart (PM) Manual         & 0 & 18 & Other \\
+    Cart (PM) ChatGPT        & 1 & 42 & Assert/Other \\
     \midrule
     \end{tabular}
     \caption{Results by conflict and explanation type.\label{tab:results:rq2}}
@@ -166,26 +166,27 @@ From this we can observe:
         & & \multicolumn{4}{c}{1} & \multicolumn{4}{c}{2} & \multicolumn{4}{c}{3} \\ 
                             & & b & A & B & M & b & A & B & M & b & A & B & M \\ 
 \midrule
-Point (CM) Manual           & & & & & & & & & & & & & \\ 
-Point (CM) ChatGPT          & & & & & & & & & & & & & \\ 
-                            & & & & & & & & & & & & & \\ 
-Fabricated (OAC) Manual     & & & & & & & & & & & & & \\ 
-Fabricated (OAC) ChatGPT    & & & & & & & & & & & & & \\ 
-Fabricated (RO) Manual      & & & & & & & & & & & & & \\ 
-Fabricated (RO) ChatGPT     & & & & & & & & & & & & & \\ 
-Cart (CM) Manual            & & & & & & & & & & & & & \\ 
-                            & & & & & & & & & & & & & \\ 
-Cart (CM) ChatGPT           & & & & & & & & & & & & & \\ 
-                            & & & & & & & & & & & & & \\ 
-Cart (PF) Manual            & & & & & & & & & & & & & \\ 
-Cart (PF) ChatGPT           & & & & & & & & & & & & & \\ 
-Cart (PM) Manual            & & & & & & & & & & & & & \\ 
-                            & & & & & & & & & & & & & \\ 
-                            & & & & & & & & & & & & & \\ 
-Cart (PM) ChatGPT           & & & & & & & & & & & & & \\ 
-                            & & & & & & & & & & & & & \\ 
-                            & & & & & & & & & & & & & \\ 
-                            & & & & & & & & & & & & & \\ 
+Point (CM) Manual           & & F & F & F & P & F & F & F & P & F & F & F & P \\ 
+Point (CM) ChatGPT          & & F & F & F & P & F & F & F & P & F & F & F & P \\ 
+                            & & F & F & P & P & F & F & P & P & F & F & P & P \\ 
+Fabricated (OAC) Manual     & & C & C & F & P & C & C & F & P & C & C & F & P \\ 
+Fabricated (OAC) ChatGPT    & & C & C & F & P & C & C & F & P & C & C & F & P \\ 
+Fabricated (RO) Manual      & & C & F & C & P & C & P & C & P & C & P & C & P \\ 
+Fabricated (RO) ChatGPT     & & C & F & C & P & C & P & C & P & C & P & C & P \\
+Cart (CM) Manual            & & F & F & F & P & F & F & F & P & F & F & F & P \\ 
+                            & &   &   &   &   & P & P & P & P &   &   &   &   \\ 
+Cart (CM) ChatGPT           & & F & F & F & P & F & F & F & P & F & F & F & P \\ %italicize first two
+                            & &   &   &   &   &   &   &   &   & F & F & P & P \\ 
+Cart (PF) Manual            & &  &  &  &  &  &  &  &  &  &  &  &  \\ 
+Cart (PF) ChatGPT           & &  &  &  &  &  &  &  &  &  &  &  &  \\ 
+Cart (PM) Manual            & & C & C & P & P & C & C & P & P & C & C & P & P \\ 
+                            & & P & P & P & P & C & C & P & P & P & P & P & P \\ 
+                            & &   &   &   &   & C & C & P & P & C & C & P & P \\ 
+                            & &   &   &   &   & C & C & P & P & P & P & P & P \\ 
+Cart (PM) ChatGPT           & & C & C & P & P & C & C & P & P & C & C & P & P \\
+                            & & C & C & P & P & C & C & F & P & P & P & P & P \\
+                            & &   &   &   &   & C & C & P & P & C & C & P & P \\
+                            & &   &   &   &   & C & C & F & P & P & P & P & P \\
         \bottomrule
     \end{tabular}
     \caption{Test running results in base A B Merge \label{tab:results:rq2tests}}
