@@ -76,9 +76,11 @@ subtracting the value from the user's balance.
 
 \textbf{Conflict Type: Parallel Field}
 
-\todo{The changes relate to the dictionary of discounts. In branch A, a "megasaver" with discount 0.4 is added to the field initialization.
-In branch B, an existing discount of value 0.25d is renamed to "megasaver". When the changes are integrated, the 0.25d is effectively lost,
-since the 0.4 comes later in the list and replaces it.}
+The base of this conflict has some alterations compared to the other Cart versions: a more full dictionary of discounts,
+a method to get the key set and a boolean method (checkForDiscountRenewal) that returns true or false whether the key set is less or equal than 6.
+The changes correspond to the removal of a discount in line 1 of the field, in branch A, and the removal of a discount in the last line, on branch B.
+These merge correctly but emergent behaviour arises: the key set in merge is different from both the one in A and B.
+The boolean method further makes this evident.
 
 \textbf{Conflict Type: Parallel Method}
 

@@ -15,12 +15,12 @@ Point (CM)       & 3.0 & 1.0 & 0.7 & 1.0 & 0.7 \\
 Fabricated (RO)  & 3.0 & 1.0 & 1.0 & 2.0 & 0.7 \\
 Fabricated (OAC) & 2.3 & 1.0 & 1.0 & 3.0 & 0.7 \\
 Cart (CM)        & 3.0 & 1.0 & 2.0 & 3.0 & 2.7 \\
-Cart (PF)        & 1.0 & 1.0 & 2.0 & 3.0 & 1.7 \\
+Cart (PF)        & 2.3 & 1.0 & 0.0 & 0.0 & 0.0 \\
 Cart (PM)        & 2.0 & 1.0 & 1.3 & 1.0 & 0.3 \\
 Antlr (PF)       & 1.7 & 1.0 & 0.0 & 0.0 & 0.0 \\
 OkHttp (PM)      & 3.0 & 1.0 & 0.7 & 0.0 & 0.0 \\
 \midrule
-\textit{Average}  & 2.4 & 1.0 & 1.1 & 1.6 & 0.8 \\
+\textit{Average}  & 2.5 & 1.0 & 0.8 & 1.25 & 0.6 \\
 \bottomrule
 \end{tabular}
 \caption{Average values per subject and metric.\label{tab:results:rq1}}
@@ -33,9 +33,9 @@ OkHttp (PM)      & 3.0 & 1.0 & 0.7 & 0.0 & 0.0 \\
 
   \item \textbf{In none of the subject did the tool mistake the kind of conflict under discussion} ($B=1.0$). This might be because the prompt did not assert the existence of a conflict, allowing negative responses, whereas other prompts, which asked to find a conflict that did exist, lead the model to find any explanation, which often consisted of describing a textual conflict.
 
-  \item \textbf{Answers tend to identify a conflict}, but with uncertainty, e.g., with words such as ``possible'', and ``might'' ($C=1.1$). In other cases, the cases where no conflict was found outweighed the cases where one was found with uncertainty.
+  \item \textbf{Conflict assertion remains uncertain}. ($C=0.8$) In many cases, particularly those of PF type, no conflict as identified. In many other cases it was found but with uncertainty, e.g., with words such as ``possible'', and ``might''.
 
-  \item \textbf{On average, it can identify what originates conflicts} ($D=1.6$).  Despite the range given, values given to the metric was either 0 or 3. This indicates to us in nearly half the cases, the model failed to produce any accurate description, but when it did, it was generally very accurate.
+  \item \textbf{On average, it can identify what originates conflicts} ($D=1.25$).  Despite the range given, values given to the metric was either 0 or 3. This indicates to us in nearly half the cases, the model failed to produce any accurate description, but when it did, it was generally very accurate.
 
   \item \textbf{ChatGPT struggles with accurately describing the results of semantic conflicts} ($E=0.8$), i.e., how the behaviour is specifically altered and how the outputs change. Indeed, even when the origin of the conflict is found, an accurate description of the results does not necessarily follow, with the topic being vague or not touched upon.
 \end{itemize}
@@ -64,18 +64,18 @@ If the intended behavior was to preserve the default `hostnameVerifier` as defin
 \end{lstlisting}
 In this case, the changes made in only one branch are described as a conflict.
 
-Another case of wrong information given by ChatGPT regarded the changes made, both in Cart(PF):
+Another case of wrong information given by ChatGPT regarded the changes made, both in Cart(PF), which 
+correctly describes the removal but incorrectly counts:
 \begin{lstlisting}
-1. Version A added a new discount code `"megasaver"` with a discount of 0.4d.
-2. Version B changed the discount for the `"superpromo"` code from 0.25d to 0.4d.
-------------------------------------------------------------------------
-2. **Diff Version A**:
-   - Adds a new discount code "megasaver" with a discount value of 0.4d to the `discounts` map.
-
-3. **Diff Version B**:
-   - Modifies the discount value for the "superpromo" code to 0.25d.
+    1. **Diff Version A**:
+    - It removes two discount codes, `"superpromo"` and `"winner"`.
+    - This version retains 6 discount codes.
+ 
+ 2. **Diff Version B**:
+    - It removes one discount code, `"winner"`.
+    - This version also retains 6 discount codes.
 \end{lstlisting}
-As well as Antlr:
+As well as Antlr, which fails to accurately describe the changes made:
 \begin{lstlisting}
 1. **Diff A vs Base:**
     - In version A, the `reduce` keyword was replaced with `return` in the `python2Keywords` array.
@@ -91,8 +91,8 @@ As well as Antlr:
     - Replacement of `"delattr"` with `"del"` in the `python2Keywords` array.
     - No conflicting changes with other methods or properties.
 \end{lstlisting}
-However this did not worsen its ability to identify the conflict in the case of Cart, where the description of the conflict as in line with the changes made.
-We observed both of these are ``Parallel Field'' semantic conflicts so it is possible the fact that the changes are being made to fields may have some relation to its inability to express them correctly. Further credence to this involves Cart (PM), where edits to the field of an auxiliary class also were misdescribed.
+We observed both of these are ``Parallel Field'' semantic conflicts so it is possible the fact that the changes are being made to fields may have some relation to its inability to express them correctly. 
+Further credence to this involves Cart (PM), where edits to the field of an auxiliary class also were misdescribed.
 
 As the most complex example, OkHttp generated the least conclusive answers. In particular it tended to offer advice on how identify and diagnose semantic conflicts and make good merges. This is a behaviour that was also observed with other complex, real-world conflicts, during the period of ad-hoc testing.
 \begin{lstlisting}
@@ -108,8 +108,14 @@ Looking at the changes introduced in versions A and B, there does not seem to be
 However, when merging both changes, we need to ensure that the introduced hostname verifier (`OkHostnameVerifier`) is consistent with the overall configuration of the `OkHttpClient`. Specifically, we need to verify whether `OkHostnameVerifier` is compatible with the behavior and expectations of the existing codebase.
 \end{lstlisting}
 
-Evaluating the results as a whole, it is worth imagining in which way the types of conflicts affect the model's capabilities. As observed earlier, it seem that Parallel Field conflicts induce errors in branch change description. However, it does not follow that this results in a failure of detection and description, as Cart (PF) shows above average results (although Antlr, also PF, fails to detect any conflicts at all). 
-It is difficult to assess to what extent the type of conflict affects detection ability. If we observe PM and CM, Cart (PM) and Point (CM) are comparable, while Cart (CM) has near perfect scores and OkHttp (PM) very low ones.
+Evaluating the results as a whole, it is worth imagining in which way the types of conflicts affect the model's capabilities. 
+As observed earlier, it seem that Parallel Field conflicts induce errors in branch change description. They also fail to identify the conflict but this seems unrelated to failures of both description:
+both cases with succesful and failing descriptions failed to produce conflict identification. Indeed, this was the case, we would expect some description of a conflict, with the same imprecisions, whereas
+for our PF cases no conflict was even considered to exist. Our hypothesis is that the conflict is far too simple to be detected: in both cases some type of collection is altered, either with insertions or removals.
+The merging of these alterations leads to emergent behaviour: the sets and lists returned are different, with different sizes, when compared to both branches.
+However while the behaviour is emergent, it is both expected and likely desirable, hence why it is probably not being seen as conflict.
+
+It is difficult to assess to what extent other types of conflicts affect detection ability. If we observe PM and CM, Cart (PM) and Point (CM) are comparable, while Cart (CM) has near perfect scores and OkHttp (PM) very low ones.
 It seems by far that the complexity of the conflict is the determining factor and this complexity can be noted as the complexity of the whole class under test (with OkHttp being the clear outlier), but also in the intricacies of the conflict.
 We observe Cart (CM) is fairly straighforward: if the user is an admin, checkout throws and exception. Indeed, even without any of the merge info, it would be fairly trivial to identify this is unintended, whereas
 Point and Cart (PM) require the identification of the original behaviour and how it has changed.
@@ -118,7 +124,8 @@ It is also worth pointing out that despite good results for metric D in Remove O
 
 Overall, we can say ChatGPT can indeed identify and explain whether there is a semantic conflict in a merge. This comes with many caveats however, firstly being that identification does not necessarily lead to a proper explanation. This is not a particularly pressing issue, as a tool that identifies conflicts and then alerts humans, who can themselves describe and fix the issue would already be a great boon for efficient software development.
 
-The bigger caveat is the situations in which it identifies the conflicts: simple fabricated scenarios, whose changes are simple to identify and immediately clearly related. In real world scenarios, where its not immediately obvious what functions the changes serve and how they relate to each other. To resolve this, it might necessary to work out how to efficiently feed the LLM so it can gain an accurate understanding of the whole system without losing focus on the specific task at hand.
+The bigger caveat is the situations in which it identifies the conflicts: simple fabricated scenarios with significant alterations to behaviour. When the emergent behaviour is small and expected, such as those of PF, the LLM does not view it as a conflict, indicating a bias to clearly unexpected and unintended behaviour. On the other side, if the class is of significant complexity, it becomes harder for the LLM to extract valuable information.
+\todo{Add another complex subject? Given that Antlr doesn't necessarily fail due to complexity, only evidence for this point is OkHttp}
 
 \section{RQ2}\label{sec:results:rq2}
 
@@ -149,7 +156,6 @@ From this we can observe:
     Cart (CM) Manual         & 3 & 91 & Assert/Constructor \\
     Cart (CM) ChatGPT        & 3 & 79 & Constructor/Other \\
     Cart (PF) Manual         & 0 & 0 &  \\
-    Cart (PF) ChatGPT        & 0 & 0 &  \\
     Cart (PM) Manual         & 0 & 18 & Other \\
     Cart (PM) ChatGPT        & 1 & 42 & Assert/Other \\
     \midrule
@@ -178,7 +184,6 @@ Cart (CM) Manual            & & F & F & F & P & F & F & F & P & F & F & F & P \\
 Cart (CM) ChatGPT           & & F & F & F & P & F & F & F & P & F & F & F & P \\ %italicize first two
                             & &   &   &   &   &   &   &   &   & F & F & P & P \\ 
 Cart (PF) Manual            & &  &  &  &  &  &  &  &  &  &  &  &  \\ 
-Cart (PF) ChatGPT           & &  &  &  &  &  &  &  &  &  &  &  &  \\ 
 Cart (PM) Manual            & & C & C & P & P & C & C & P & P & C & C & P & P \\ 
                             & & P & P & P & P & C & C & P & P & P & P & P & P \\ 
                             & &   &   &   &   & C & C & P & P & C & C & P & P \\ 

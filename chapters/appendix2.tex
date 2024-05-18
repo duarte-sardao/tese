@@ -719,32 +719,39 @@ public final class OkHttpClient {
   If the intended behavior was to preserve the default `hostnameVerifier` as defined in Version A, then this would be considered a semantic conflict, as the behavior of the merged version may differ from the behavior of either Version A or Version B individually.
 \end{answer}
 
-\subsection{Cart PF, Trial 3}
+\subsection{Cart PF, Trial 1}
 
 \begin{prompt}
   You are a software developer that has to assess whether there is a semantic conflict in a merge commit.  Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, assess whether there is a semantic conflict and explain it.
 
   Base version:
   ```java
-  import java.util.Collections;
-  import java.util.HashMap;
-  import java.util.List;
-  import java.util.Map;
-  
   public class Cart {
       private List<Item> cartItems;
       private final User user;
   
       private static final Map<String, Double> discounts = Collections.unmodifiableMap(new HashMap<>() {{
-          put("loyal", 0.1d);
-          put("superpromo", 0.25d);
-          put("30ff", 0.3d);
-          put("2024", 0.2d);
+          put("loyal", 0.1d); put("superpromo", 0.25d);
+          put("30ff", 0.3d); put("2023", 0.3d);
+          put("throwback", 0.15d); put("2024", 0.2d);
+          put("fun", 0.05d); put("winner", 0.15d);
       }});
+  
+      public Set<String> getDiscountCodes() {
+          return discounts.keySet();
+      }
+  
+      public boolean checkForDiscountRenewal() {
+          if(getDiscountCodes().size() <= 6)
+              return true;
+          else
+              return false;
+      }
   
   
       public Cart(User user) {
           this.user = user;
+          cartItems = new ArrayList<>();
       }
   
       public double sum_items() {
@@ -773,56 +780,63 @@ public final class OkHttpClient {
   Diff version A and the base:
   ```diff
   diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
-  index 501b06f..e8e25b8 100644
+  index cd65102..02b3420 100644
   --- a/src/main/java/Cart.java
   +++ b/src/main/java/Cart.java
-  @@ -12,6 +12,7 @@ public class Cart {
-           put("superpromo", 0.25d);
-           put("30ff", 0.3d);
-           put("2024", 0.2d);
-  +        put("megasaver", 0.4d);
-       }});
+  @@ -5,7 +5,7 @@ public class Cart {
+       private final User user;
+  
+       private static final Map<String, Double> discounts = Collections.unmodifiableMap(new HashMap<>() {{
+  -        put("loyal", 0.1d); put("superpromo", 0.25d);
+  +        put("loyal", 0.1d);
+           put("30ff", 0.3d); put("2023", 0.3d);
+           put("throwback", 0.15d); put("2024", 0.2d);
+           put("fun", 0.05d); put("winner", 0.15d);
   ```
   
   Diff version B and the base:
   ```diff
   diff --git a/src/main/java/Cart.java b/src/main/java/Cart.java
-  index fbdd81f..0f8e11a 100644
+  index cd65102..509c220 100644
   --- a/src/main/java/Cart.java
   +++ b/src/main/java/Cart.java
-  @@ -9,7 +9,7 @@ public class Cart {
-  
-       private static final Map<String, Double> discounts = Collections.unmodifiableMap(new HashMap<>() {{
-           put("loyal", 0.1d);
-  -        put("superpromo", 0.25d);
-  +        put("megasaver", 0.25d);
-           put("30ff", 0.3d);
-           put("2024", 0.2d);
+  @@ -8,7 +8,7 @@ public class Cart {
+           put("loyal", 0.1d); put("superpromo", 0.25d);
+           put("30ff", 0.3d); put("2023", 0.3d);
+           put("throwback", 0.15d); put("2024", 0.2d);
+  -        put("fun", 0.05d); put("winner", 0.15d);
+  +        put("fun", 0.05d);
        }});
   ```
   
   Merge version:
   ```java
-  import java.util.Collections;
-  import java.util.HashMap;
-  import java.util.List;
-  import java.util.Map;
-  
   public class Cart {
       private List<Item> cartItems;
       private final User user;
   
       private static final Map<String, Double> discounts = Collections.unmodifiableMap(new HashMap<>() {{
           put("loyal", 0.1d);
-          put("megasaver", 0.25d);
-          put("30ff", 0.3d);
-          put("2024", 0.2d);
-          put("megasaver", 0.4d);
+          put("30ff", 0.3d); put("2023", 0.3d);
+          put("throwback", 0.15d); put("2024", 0.2d);
+          put("fun", 0.05d);
       }});
+  
+      public Set<String> getDiscountCodes() {
+          return discounts.keySet();
+      }
+  
+      public boolean checkForDiscountRenewal() {
+          if(getDiscountCodes().size() <= 6)
+              return true;
+          else
+              return false;
+      }
   
   
       public Cart(User user) {
           this.user = user;
+          cartItems = new ArrayList<>();
       }
   
       public double sum_items() {
@@ -850,33 +864,24 @@ public final class OkHttpClient {
 \end{prompt}
 
 \begin{answer}
-  In the given scenario, let's analyze the merge commit to determine whether there is a semantic conflict and explain it.
+  In this scenario, we're given the base version of a Java class `Cart`, along with two versions of changes (`A` and `B`) made to it, and finally, the merged version resulting from the merge of these two changes.
 
-  1. **Base Version**:
-     - It defines a `Cart` class with methods for managing a shopping cart.
-     - It includes a `discounts` map with predefined discount codes and their corresponding discount values.
+  Let's analyze the changes:
   
-  2. **Diff Version A**:
-     - Adds a new discount code "megasaver" with a discount value of 0.4d to the `discounts` map.
+  1. **Diff Version A**:
+     - It removes two discount codes, `"superpromo"` and `"winner"`.
+     - This version retains 6 discount codes.
   
-  3. **Diff Version B**:
-     - Modifies the discount value for the "superpromo" code to 0.25d.
+  2. **Diff Version B**:
+     - It removes one discount code, `"winner"`.
+     - This version also retains 6 discount codes.
   
-  4. **Merge Version**:
-     - Combines the changes from both versions.
-     - Includes the changes from Version A, adding the "megasaver" discount code with a value of 0.4d.
-     - Includes the changes from Version B, modifying the "superpromo" discount value to 0.25d.
+  Now, let's look at the **Merge Version**:
+     - It retains the changes from both diffs, removing discount codes `"superpromo"` and `"winner"`.
   
-  Now, let's analyze if there is a semantic conflict:
+  Based on these changes, there isn't a semantic conflict in this merge. The changes from both versions `A` and `B` are independent and do not affect the same lines of code or properties. They both remove different discount codes, and the merge incorporates both of these changes correctly, resulting in a version that has those two discount codes removed.
   
-  - Both Version A and Version B modify the `discounts` map, but they affect different keys: "megasaver" in Version A and "superpromo" in Version B.
-  - In the merge version, both changes are included. However, there's a conflict because both Version A and Version B attempt to define the discount for the "megasaver" code, but with different values.
-  
-  **Semantic Conflict Explanation**:
-  - The semantic conflict arises because the same key "megasaver" is being assigned different discount values in the two branches that are being merged. This means there's ambiguity about which value should be used for the "megasaver" discount code.
-  - Resolving this conflict would require manual intervention to decide which discount value should be kept for the "megasaver" code, or to merge the changes in a way that preserves both values if that's feasible based on the application's logic.
-  
-  In summary, the semantic conflict arises due to conflicting changes to the same map key in different branches, and it needs to be resolved to ensure consistent behavior in the merged code.
+  So, the merge is successful and preserves the intended changes from both versions without causing any conflicts in the functionality of the class.
 \end{answer}
 
 \subsection{Antlr, Trial 1}
