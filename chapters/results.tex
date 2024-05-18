@@ -150,12 +150,12 @@ From this we can observe:
     Point (CM) Manual        & 3 & 4 & Assert \\
     Point (CM) ChatGPT       & 3 & 4 & Assert \\
     Fabricated (OAC) Manual  & 3 & 2 & Assert/Branch/Other \\
-    Fabricated (OAC) ChatGPT & 3 & 28 & Assert/Branch \\
+    Fabricated (OAC) ChatGPT & 3 & 4 & Assert/Branch \\
     Fabricated (RO) Manual   & 1 & 3 & Assert/Miss \\
     Fabricated (RO) ChatGPT  & 1 & 3 & Assert/Miss \\
-    Cart (CM) Manual         & 3 & 91 & Assert/Constructor \\
-    Cart (CM) ChatGPT        & 3 & 79 & Constructor/Other \\
-    Cart (PF) Manual         & 0 & 0 &  \\
+    Cart (CM) Manual         & 3 & 68 & Assert/Constructor \\
+    Cart (CM) ChatGPT        & 3 & 34 & Constructor/Other \\
+    Cart (PF) Manual         & 3 & 2 & Assert \\
     Cart (PM) Manual         & 0 & 18 & Other \\
     Cart (PM) ChatGPT        & 1 & 42 & Assert/Other \\
     \midrule
@@ -183,7 +183,8 @@ Cart (CM) Manual            & & F & F & F & P & F & F & F & P & F & F & F & P \\
                             & &   &   &   &   & P & P & P & P &   &   &   &   \\ 
 Cart (CM) ChatGPT           & & F & F & F & P & F & F & F & P & F & F & F & P \\ %italicize first two
                             & &   &   &   &   &   &   &   &   & F & F & P & P \\ 
-Cart (PF) Manual            & &  &  &  &  &  &  &  &  &  &  &  &  \\ 
+Cart (PF) Manual            & & F & F & F & P & F & F & F & P & F & F & F & P \\ 
+                            & & F & F & F & P & F & F & F & P & F & F & F & P \\ 
 Cart (PM) Manual            & & C & C & P & P & C & C & P & P & C & C & P & P \\ 
                             & & P & P & P & P & C & C & P & P & P & P & P & P \\ 
                             & &   &   &   &   & C & C & P & P & C & C & P & P \\ 
@@ -198,7 +199,7 @@ Cart (PM) ChatGPT           & & C & C & P & P & C & C & P & P & C & C & P & P \\
 \end{table}
 
 
-
+\todo{explain multiple asserts}
 
 Analysis of \Cref{tab:results:rq2tests} allows us to identify which cases identify the conflict, and which did not.
 It is worth examining the results and what they mean, starting by the failing examples:

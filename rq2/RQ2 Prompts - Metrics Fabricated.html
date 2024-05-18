@@ -2237,7 +2237,7 @@ public class EventTest {
 }
 ```
 <h4> Detection: Yes </h4>
-<h4> Edit distance: 78 </h4>
+<h4> Edit distance: 6 </h4>
 <h4> Error: Branch </h4>
 <h4> Results: C/CF/P </h4>
 <h4> Amended test: </h4>
@@ -2253,6 +2253,7 @@ public class EventTest {
         
         // Assert that registration number is set and retrieved correctly
         assertEquals(registrationNumber+10, result);
+		assertEquals(registrationNumber+10, producer.getRegistrationNumber());
     }
 </div></pre></div><div class="conversation"><h4>RQ2, AC, P2, T1</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.

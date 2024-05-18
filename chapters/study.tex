@@ -335,8 +335,7 @@ Research Question 2 sought to evaluate chatGPT's test generation ability. Specif
 For example, taking the Point, if ChatGPT generates a unit test that tests the move() method, we would identify the conflict by generating a test that passes in merge but fails in branch A and branch B, corresponding to the definition of emergent behaviour~citet{kn:nuno}.
 In this case it would show us the altered behaviour of move() due to the conflict.
 
-To evaluate the tests, corrections are made. These involve the smallest possible corrections to make the code compile and pass in merge. In the case of asserts, the corrections involve
-either altering the value if only one assert is present, or removing failing asserts when more than one is present. From this we calculate the edit distance, the average edit distance across the 3 trials.
+To evaluate the tests, corrections are made. These involve the smallest possible corrections to make the code compile and pass in merge, by correcting failing asserts.
 
 We evaluate by observing whether a functional unit test is generated and if not, the edit distance to a functioning version of one test. For failing tests, we also note which error led to the failure of compilation or test. The liste types are:
 \begin{itemize}
