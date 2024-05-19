@@ -95,8 +95,13 @@ The conflict arises due to the handling of checkout. In branch A, a check is add
 total\_cost() returns 0. In branch B a check is added in checkout(): if total\_cost is 0, a RuntimeException is thrown.
 Naturally these changes conflict in the merge.
 
+\textbf{Antlr, Conflict Type: Parallel Field}
 
-\todo{antlr, OkHttp}
+Antlr is much like Cart Parallel, but with additions instead of removals: it contains a String array called python2Keywords, which is returned as a set by
+getBadWords(). In branch A, the string "del" is added and in branch B, the string "return" is added. Thus in the merged version we will have a emergent version
+of the BadWords set, with different length and contents compared to both previous versions.
+
+\todo{OkHttp}
 
 \section{Large language models}
 
