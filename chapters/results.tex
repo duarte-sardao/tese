@@ -125,7 +125,11 @@ It is also worth pointing out that despite good results for metric D in Remove O
 Overall, we can say ChatGPT can indeed identify and explain whether there is a semantic conflict in a merge. This comes with many caveats however, firstly being that identification does not necessarily lead to a proper explanation. This is not a particularly pressing issue, as a tool that identifies conflicts and then alerts humans, who can themselves describe and fix the issue would already be a great boon for efficient software development.
 
 The bigger caveat is the situations in which it identifies the conflicts: simple fabricated scenarios with significant alterations to behaviour. When the emergent behaviour is small and expected, such as those of PF, the LLM does not view it as a conflict, indicating a bias to clearly unexpected and unintended behaviour. On the other side, if the class is of significant complexity, it becomes harder for the LLM to extract valuable information.
-\todo{Add another complex subject? Given that Antlr doesn't necessarily fail due to complexity, only evidence for this point is OkHttp}
+We see these issues combined in OkHttp as the conflict is straighforward: parallel changes result in an object that is different from both branches, thus emergent. Simultaneously, the class is significantly more complex than the other subjects. Thus while in the PF examples, the possibility of a conflict is flat out dismissed,
+two of the answers for OkHttp accept the possibility, arguing that more study needs to be done on transports and the hostname verifier respectively.
+
+Further work should thus tackle this: on one hand exploring how to provide a better understanding of semantic conflicts, specifically that emergent behaviour is the result of semantic conflict, even if it does not introduce an apparent bug, software vault or unexpected behaviour.
+On the other hand, real-world scenario with complex dependencies, large classes with varied functions, inheritance and other features complicates detection and more complex prompts, data extraction and presentation are likely required.
 
 \section{RQ2}\label{sec:results:rq2}
 

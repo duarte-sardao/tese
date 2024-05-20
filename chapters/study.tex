@@ -101,7 +101,14 @@ Antlr is much like Cart Parallel, but with additions instead of removals: it con
 getBadWords(). In branch A, the string "del" is added and in branch B, the string "return" is added. Thus in the merged version we will have a emergent version
 of the BadWords set, with different length and contents compared to both previous versions.
 
-\todo{OkHttp}
+\textbf{OkHttp, Conflict Type: Parallel Method}
+
+OkHttp provides an HTTP client. The class OkHttpClient configures and creates HTTP connections. This process involves
+the copyWithDefaults() method, which creates a shallow copy, using system defaults for fields which are not set. Both branches
+alter this method, one by changing how failedRoutes are handled and adding a field for transports, while the other replaces
+the default hostname verifier with a custom implementation, OkHostnameVerifier(). As a result, the copy returned on merge will
+be different from both branches, and this difference will trickle down into the initialization of HttpURLConnectionImpl, which
+as the copy as an argument.
 
 \section{Large language models}
 
