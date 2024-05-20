@@ -81,7 +81,7 @@ While adapted to avoid common pitfalls, the tests generate still suffered from b
 
 \subsection{Real-World Merge Conflicts}
 
-Prompting in real-world examples, or more complex fabricated examples, has produced far worse results. Several refinements were made to the prompts, most significantly: the usage of "git diff" to highlight the specific changes in branch A and branch B, the explanation of the conflict present and the specification of the target method where the conflict is evident. These modifications were largely unsuccessful and did not lead to identification of any conflicts.
+Prompting in real-world examples, or more complex fabricated examples, has produced far worse results. Several refinements were made to the prompts, most significantly: the usage of "git diff" to highlight the specific changes in branch A and branch B, the explanation of the conflict present and the specification of the target method where the conflict is evident. These modifications were largely unsuccessful and did not lead to identification of any significant amount conflicts.
 
 We also had to reckon with size limits for messages. Thus, when necessary, we started with an explanatory prompt and then fed the information step by step. However, it remained crucial to remind the LLM of the goal in the last message.
 
@@ -89,12 +89,13 @@ We also had to reckon with size limits for messages. Thus, when necessary, we st
 We have done a merge on a piece of software and introduced a semantic conflict of types: "Update two different dependencies of a method or update one method and concurrently update one of its dependencies" and "Concurrent changes to the same method". I will now show the base commit, the diff in branch A, the diff in branch B, and the final merge version in 4 separate messages. At the end I want you to explain why and where the semantic conflict is present.
 \end{quote}
 
-Common issues are confusion between textual and semantic merges, which can be mitigated by clear explanation of what a semantic merge is; hallucinations of features not present in the code or hallucinations of changes where changes were not made; lack of focus on the methods where conflict is evident, despite reiterations; loss of focus when prompt has to be split into several messages. When the tools do understand what a semantic conflict is and what changes have been made to the code, the best description they can give is to point out them out followed by the suggestion that there may be a conflict there, usually passing on the responsibility of identifying and resolving it to the human user, as seen in \Cref{fig:cantfind}.
+Common issues are confusion between textual and semantic merges, which can be mitigated by clear explanation of what a semantic merge is; hallucinations of features not present in the code or hallucinations of changes where changes were not made; lack of focus on the methods where conflict is evident, despite reiterations; loss of focus when prompt has to be split into several messages. 
+Rare close successes occured, particularly in cases where the conflict was asserted to be there in the prompt and could simply be described by explaining the changes made, such as parallel changes to collections initialization, as seen in \Cref{fig:cantfind}.
 
 \begin{figure}
     \centering
     \includegraphics[width=1\linewidth]{figures/almostsemantic.jpg}
-    \caption{While nothing said is incorrect, ChatGPT remains unable to identify the conflict proper}
+    \caption{ChatGPT describes the parallel changes as the origin of the conflict, but falls short of describing the emergent behaviour (in this case as simple as the different value returned by size())}
     \label{fig:cantfind}
 \end{figure}
 
@@ -124,7 +125,7 @@ However, it was particularly necessary to frequently refocus and concentrate the
 Explain why and where the semantic conflict is present, taking into account all the information provided in the last 2 messages. As mentioned before, focus on dominates(State| State). Make sure to mention information from the call diagram, if it is relevant to understanding the conflict.
 \end{quote}
 
-In the end, we were able to get the LLm to both recognize the merge information and the call diagram focused on the affected declaration and obtain a correct description of both the meaning of the diagram and the changes made in the merge. This however did not entail any improved description of the conflict, for all the cases tested.
+In the end, we were able to get the LLM to both recognize the merge information and the call diagram focused on the affected declaration and obtain a correct description of both the meaning of the diagram and the changes made in the merge. This however did not entail any improved description of the conflict, for all the cases tested.
 
 Underscoring these experiments with real world test cases is an overlying issue: to properly identify a semantic conflict, we may have to analyze and take into account a large amount of data across several components of the software, while at the same time focusing on the specific components that were changed. While this is natural to a human, there is no clear way to select which information to feed and which to not in the LLM prompt: while a wider breadth of information may be necessary to identify the conflict, it is extremely likely to just induce further confusion and lead ChatGPT to focus on the wrong thing, or confuse different parts of code or even lose track of the task at hand as mentioned before.
 
