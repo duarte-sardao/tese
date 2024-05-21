@@ -138,13 +138,17 @@ These list the passing tests, after edits, the average edit distance to tests th
 and the errors present that stop the conflict from being detected.
 
 \Cref{tab:results:rq2tests} gives the values for the tests, after compilation errors are fixed in merge.
-These come in the format Base/AB/Merge. C stands for compilation failures, R for runtime errors, F for failing test and P for passing tests.
+These come in the format Base A B Merge. C stands for compilation failures, R for runtime errors, F for failing test and P for passing tests.
 In some cases there are several listing per trial, due to the existence of several unit tests.
+The first two results for Cart (CM) ChatGPT are italicized: these utilized deprecated features of Junit, and required rolling back to an earlier
+version to run.
+
+OkHttp is omitted from the results, as the prompt caused it to only generate imports. It is unknown why.
 
 From this we can observe:
 -The main obstacle to the detection of the conflict was incorrect asserts, present in nearly every case.
--In non-compiling tests, those generated with explanations given by ChatGPT require more correction.
--Tests are generally compilable or very close to succesful compilation, with constructor errors being the main issue.
+-In non-compiling tests, those generated with explanations given by ChatGPT tend to require more correction.
+-Tests are generally compilable or very close to succesful compilation, with constructor and other errors, such as usage of non-existent getters as the main issues.
 
 \begin{table}[t]
     \centering
@@ -162,7 +166,7 @@ From this we can observe:
     Cart (PF) Manual         & 3 & 2 & Assert \\
     Cart (PM) Manual         & 0 & 18 & Other \\
     Cart (PM) ChatGPT        & 1 & 42 & Assert/Other \\
-    Antlr (PF) Manual        & 1 & 1 & Assert \\
+    Antlr (PF) Manual        & 3 & 1 & Assert \\
     \midrule
     \end{tabular}
     \caption{Results by conflict and explanation type.\label{tab:results:rq2}}
@@ -186,7 +190,7 @@ Fabricated (RO) Manual      & & C & F & C & P & C & P & C & P & C & P & C & P \\
 Fabricated (RO) ChatGPT     & & C & F & C & P & C & P & C & P & C & P & C & P \\
 Cart (CM) Manual            & & F & F & F & P & F & F & F & P & F & F & F & P \\ 
                             & &   &   &   &   & P & P & P & P &   &   &   &   \\ 
-Cart (CM) ChatGPT           & & F & F & F & P & F & F & F & P & F & F & F & P \\ %italicize first two
+Cart (CM) ChatGPT           & & \textit{F} & \textit{F} & \textit{F} & \textit{P} & \textit{F} & \textit{F} & \textit{F} & \textit{P} & F & F & F & P \\ %italicize first two
                             & &   &   &   &   &   &   &   &   & F & F & P & P \\ 
 Cart (PF) Manual            & & F & F & F & P & F & F & F & P & F & F & F & P \\ 
                             & & F & F & F & P & F & F & F & P & F & F & F & P \\ 
@@ -205,39 +209,29 @@ Antlr (PF) Manual           & & F & F & F & P & F & F & F & P & F & F & F & P \\
 \end{table}
 
 
-\todo{explain multiple asserts}
-
 Analysis of \Cref{tab:results:rq2tests} allows us to identify which cases identify the conflict, and which did not.
 It is worth examining the results and what they mean, starting by the failing examples:
 
--F/FF/F: The test always fails, due to assertions that do not match the system behaviour in any state.
--P/PP/P: The test always passes, due to the correct testing of a feature not affected by the merge.
+-PPPP: The test always passes, due to the correct testing of a feature not affected by the merge.
 
--F/FP/P: The test passes in branch B and in merge. This indicates a behaviour was introduced and remained unaltered in the merge, thus it is not a conflict in itself.
+-FFPP and CCPP: The test passes in branch B and in merge. This indicates a behaviour was introduced and remained unaltered in the merge, thus it is not a conflict in itself.
 This was common for Point (CM) ChatGPT, as the prompt induced the generation of tests for distance(), which correctly calculated and asserted the euclidean distance of a given point.
-They however failed to do the same when applying the distance to move(), hence the failing tests and non-identification of the conflict.
+They however failed to do the same when applying the distance to move(), thus those required correction.
 
--C/CX/X or C/XC/X are usually the result of an introduction of a method in branch B or A respectively.
-From these we observe the failing examples: C/CF/F or C/FC/F and C/CP/P or C/PC/P, which suffer from the same issues as F/FF/F and P/PP/P.
+-CPCP: The same as the previous example, but the change introduced is in branch A.
 
--R/XX/X came as the result of dictionary access, where the given key was only not present in the base commit.
-Here we see R/FF/F, due to incorrect assertions and R/PF/P, which tests for the wrong branch.
+The examples that show a semantic conflict is present require failure in all brances except merge, or compilation failure in base and one of the branches and failure on the other.
 
+These are:
 
-The examples that show a semantic conflict is present are:
+-FFFP
+-CCFP
+-CFCP
 
--P/PP/F: The conflict is made evident due to lost behaviour. In this case, a behaviour is always passing, except in merge where it now fails.
+These all show that behaviour is emergent: something which was never true in any of the previous branches becomes true. The behaviour being asserted is thus the 
+emergent behaviour that occurs in merge.
 
--F/PF/F: Same as the previous, lost behaviour shows the conflict. In this case, the behaviour was only ever present in branch A, and lost on merge.
-
--C/CP/F: The same pattern, but due to method introduction, only B and merge are tested.
-
--F/FF/P: The corollary of the the previous examples, this makes the conflict evident by showing emergent behaviour: in a merge something now happens that previously didn't happen before.
-We see the parallel P/PP/F and F/FF/P in Cart(CM): while the manual explanation prompted it to check for a succesful checkout, ChatGPT's explanation prompted it to check for a failing one.
-It is worth noting the *: this refers to the usage of @expected, a feature no longer supported by Junit. These tests thus required downgrading the version to run.
-
-
-If we observe the results, particularly the erros found, we can see that the main issue present
+If we observe the results, particularly the errors found, we can see that the main issue present
 is incorrect assertions. While in some cases these are understandable (such as the case of RO,
 where the values to verify are hash and thus hard to know without running the code), most of the time
 they were the result of simple logical or mathematical errors, things that are trivial for a human to get right
@@ -248,35 +242,37 @@ However, tests generated for move() were always wrong; in turn these were just x
 Given that it shows it can correctly calculate distance() it is hard to fathom why it struggles
 to use it in addition: we can perhaps suggest there is making the association between the method call and the returned value it represents.
 
-It is worth nothing that Cart (CM) stands out: since the conflict result in the throwing of an error, asserts were easily generated as they required no numerical values.
-
-Another highly succesful case is OAC, with 3 successes that require no edits. This is because
-of the simplicity of the test: one just needs to set a value and verify that it is set:
-\begin{answer}
-    @Test
-    public void testSetProducerNumber() {
-        Event event = new Event();
-        Producer producer = new Producer();
-        event.setProducer(producer);
-        int registrationNumber = 12345;
-        int result = event.setProducerNumber(registrationNumber);
-        assertEquals(registrationNumber, result);
-    }
-\end{answer}
+Ocasional compilation errors occurred due to the generation of methods that are not present in the code, such as getUser().
 In one case, we find an interesting error: the codebase contains methods named ```setResgistration'''.
 For the most part they are ignored, as they are not necessary to identify the conflict. In one trial, however,
 the method is called for Producer. However the ```Resgistration''' typo is corrected: ``producer.setRegistrationNumber(123);''.
 Naturally, this stops code from compiling, but it is a noteworthy example of how Large-Language Models, due to their nature as 
 predictive models, can fail in outlier cases, such as an unexpected typo in method namings.
 
-It is noticeable that for the cases with compilation errors, namely the Cart examples, prompts with ChatGPT explanations
+It is noticeable that for the cases with many compilation errors, namely the Cart examples, prompts with ChatGPT explanations
 required significant more correction than prompts with manual corrections. An explanation might be that due to their more
 extensive length, ChatGPT explanations prompt the generation of more complex and longer tests. However as can be seen in
 \cref{tab:results:rq2tests}, both examples have comparable amount of test cases and test length does not vary much.
-It is possible these are the results of outliers: the if we for example observe Cart (PM), the results are significantly weighed by
+It is possible these are the results of outliers: that if we for example observe Cart (PM), the results are significantly weighed by
 trial 3, which requires significant correction due to the way it tries to access the user:
 \begin{answer}
     @Test
+    public void testSumItemsWithCoupon() {
+        Cart cart = new Cart(new User());
+        Item item = new Item(50, true); // Item with coupon
+        cart.add_item(item);
+        assertEquals(-50, cart.sum_items(), 0.001);
+    }
+
+    @Test
+    public void testSumItemsWithoutCoupon() {
+        Cart cart = new Cart(new User());
+        Item item = new Item(50); // Item without coupon
+        cart.add_item(item);
+        assertEquals(50, cart.sum_items(), 0.001);
+    }
+
+    @Test
     public void testTotalCostWithCoupon() {
         Cart cart = new Cart(new User());
         Item item = new Item(50, true); // Item with coupon
@@ -294,16 +290,32 @@ trial 3, which requires significant correction due to the way it tries to access
         assertEquals(-45, cart.getUser().getBalance(), 0.001);
     }
 \end{answer}
-has an edit distance of 112, has it is corrected into:
+has an edit distance of 121, has correction requires extracting the user for access:
 \begin{answer}
     @Test
+    public void testSumItemsWithCoupon() {
+        Cart cart = new Cart(new User());
+        Item item = new Item(50, true); // Item with coupon
+        cart.add_item(item);
+        assertEquals(0, cart.sum_items(), 0.001);
+    }
+
+    @Test
+    public void testSumItemsWithoutCoupon() {
+        Cart cart = new Cart(new User());
+        Item item = new Item(50); // Item without coupon
+        cart.add_item(item);
+        assertEquals(0, cart.sum_items(), 0.001);
+    }
+
+    @Test
     public void testTotalCostWithCoupon() {
         User user = new User();
         Cart cart = new Cart(user);
         Item item = new Item(50, true); // Item with coupon
         cart.add_item(item);
         cart.checkout("loyal");
-        assertEquals(-45, user.balance, 0.001);
+        assertEquals(0, user.balance, 0.001);
     }
 
     @Test
@@ -313,13 +325,13 @@ has an edit distance of 112, has it is corrected into:
         Item item = new Item(50); // Item without coupon
         cart.add_item(item);
         cart.checkout("loyal");
-        assertEquals(-45, user.balance, 0.001);
+        assertEquals(0, user.balance, 0.001);
     }
 \end{answer}
-This same error of trying to access user from cart can be found in other ChatGPT, but it is ambiguous
+This same error of trying to access user from cart can be found in other ChatGPT results, but it is ambiguous
 whether this is somehow the result of the prompt or coincidental generations.
 
-On the topic of compilation errors, it is worth nothing most of these were related to constructors, as the constructors
+On the topic of compilation errors, it is worth nothing often, for Cart(CM) these were related to constructors, as the constructors
 for the other classes involved in the Cart conflicts (Item and User) were not included in the prompt. It is interesting
 to observe what the common error is: the introduction of extra parameters. For example, in the code of Cart only the fields
 value and amount of Item are accessed. However, Item was frequently iniatilized with a constructor with 3 parameter: Name,
@@ -332,11 +344,11 @@ A way to resolve this issue would be to include constructor headers in the origi
 headers: if instead of just Item and User, the Cart class had 20 other dependencies which bore no relevance in our conflict, we would be 
 providing extra information in the prompt which could cause confusion. A possibly better option is feeding compilation messages back for correction,
 as shown by ChatTester~\cite{kn:chattester}, possibly with the addition of corresponding headers. This corrective approach could also be utilized
-to fix assert errors.
+to fix assert errors. In effect, it would be an automated way to do the manual corrections we carried out.
 
 Some other issues with constructors we observed are not so obvious to solve: namely that despite knowing of available construcotrs, there's no guarantee
 the correct one for the situation will be used. We can see the case of Cart (PM): due to changes in the Item class, constructor information came included
-in the diff section of the prompt. This led to the creation of tests using Value,Coupon and Value format.
+in the diff section of the prompt. This led to the creation of tests using (Value, Coupon) and (Value) format.
 \begin{answer}
     public class CartTest {
 
@@ -376,15 +388,22 @@ in the diff section of the prompt. This led to the creation of tests using Value
 }
 \end{answer}
 Notably these constructors don't set the amount field, which is thus 0, rendering the items useless for any value calculations.
-Rectification would require understanding this logic error and thus is liable to be more difficult to achieve.
+Rectification would require understanding this logic error and thus is liable to be more difficult to achieve. It is for these representations
+we have so few successes for Cart (PM): while we corrected the asserts to get passing tests in merge (in this case, setting them to 0, as no
+value is subtracted), these corrections don't aid in identifying the conflict.
 
-Another error that can't be straighforwardly corrected is the testing for the wrong branches. This applies
-to our parallel field example, where branch A introduces a dictionary entry for the discounts (value 0.4d) and branch B renames a previous one to the same name (value 0.25d). To find the conflict
-we need to find that the entry is branch B ends up being replaced by the entry in A, that comes later in the field. Thus the only way to find the conflict is check whether the name
-applies a 0.25d discount, which confirms the behaviour was lost. Checking for a 0.4d gives no information other than the introduction of branch A remains unaltered.
-Unfortunately, all the tests generated verified the 0.4d behaviour, or at least tried to given the assert errors.
+The other case where the conflict is rarely identified despite our corrections is RO, as it often generated asserts which always passed:
+\begin{answer}
+    @Test
+    public void testHashString() {
+        InstalacaoAssentos instalacao = new InstalacaoAssentos();
+        assertNotNull(instalacao.hashString());
+    }
+\end{answer}
+Within the parameters of our work and a corrective system that works off compilation and test errors, this is the most problematic case: as the test works perfectly in merge,
+there is nothing prompting us for repair and repair would require more than simply changing a value, but to actually change the type of assert itself.
 
-Other minor errors include missing asserts and invocation of non-existent getters.
-
-Despite all the problems mentioned previously, the results are generally quite good, as most errors are relatively small and easily fixable with further prompting. Thus we
-can say with some certainty that for these simple cases, where ChatGPT can identify the conflict with some degree of confidence, it can also generate appropriate unit tests.
+Despite all the problems mentioned previously, the results are generally quite good, as most errors are relatively small and easily fixable with further prompting or manual edits as we did.
+Thus we can say with some certainty that for these simple cases, most of which where ChatGPT can identify the conflict with some degree of confidence, it can also generate appropriate unit tests.
+It is unfortunate that test generation for OkHttp failed so badly was to not even generate tests, as that class was far more intricate and could give evidence to issues such as dealing with
+private methods. But it has to be understood that these sort of issues are a possibility given the volatility of LLMs.
