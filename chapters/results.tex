@@ -174,35 +174,35 @@ From this we can observe:
 
 \begin{table}[t]
     \centering
-    \begin{tabular}{@{\extracolsep{\fill}} llcccccccccccc} 
+    \begin{tabular}{@{\extracolsep{\fill}} llcccccccccccccc} 
         \toprule
-        Prompt & & \multicolumn{12}{c}{Trial} \\ 
-        \cmidrule(lr){3-14}
-        & & \multicolumn{4}{c}{1} & \multicolumn{4}{c}{2} & \multicolumn{4}{c}{3} \\ 
-                            & & b & A & B & M & b & A & B & M & b & A & B & M \\ 
+        Prompt & & \multicolumn{14}{c}{Trial} \\ 
+        \cmidrule(lr){3-16}
+        & & \multicolumn{4}{c}{1} & \multicolumn{6}{c}{2} & \multicolumn{4}{c}{3} \\ 
+                            & & b & A & B & M & & b & A & B & M & & b & A & B & M \\ 
 \midrule
-Point (CM) Manual           & & F & F & F & P & F & F & F & P & F & F & F & P \\ 
-Point (CM) ChatGPT          & & F & F & F & P & F & F & F & P & F & F & F & P \\ 
-                            & & F & F & P & P & F & F & P & P & F & F & P & P \\ 
-Fabricated (OAC) Manual     & & C & C & F & P & C & C & F & P & C & C & F & P \\ 
-Fabricated (OAC) ChatGPT    & & C & C & F & P & C & C & F & P & C & C & F & P \\ 
-Fabricated (RO) Manual      & & C & F & C & P & C & P & C & P & C & P & C & P \\ 
-Fabricated (RO) ChatGPT     & & C & F & C & P & C & P & C & P & C & P & C & P \\
-Cart (CM) Manual            & & F & F & F & P & F & F & F & P & F & F & F & P \\ 
-                            & &   &   &   &   & P & P & P & P &   &   &   &   \\ 
-Cart (CM) ChatGPT           & & \textit{F} & \textit{F} & \textit{F} & \textit{P} & \textit{F} & \textit{F} & \textit{F} & \textit{P} & F & F & F & P \\ %italicize first two
-                            & &   &   &   &   &   &   &   &   & F & F & P & P \\ 
-Cart (PF) Manual            & & F & F & F & P & F & F & F & P & F & F & F & P \\ 
-                            & & F & F & F & P & F & F & F & P & F & F & F & P \\ 
-Cart (PM) Manual            & & C & C & P & P & C & C & P & P & C & C & P & P \\ 
-                            & & P & P & P & P & C & C & P & P & P & P & P & P \\ 
-                            & &   &   &   &   & C & C & P & P & C & C & P & P \\ 
-                            & &   &   &   &   & C & C & P & P & P & P & P & P \\ 
-Cart (PM) ChatGPT           & & C & C & P & P & C & C & P & P & C & C & P & P \\
-                            & & C & C & P & P & C & C & F & P & P & P & P & P \\
-                            & &   &   &   &   & C & C & P & P & C & C & P & P \\
-                            & &   &   &   &   & C & C & F & P & P & P & P & P \\
-Antlr (PF) Manual           & & F & F & F & P & F & F & F & P & F & F & F & P \\ 
+Point (CM) Manual           & & F & F & F & P & & F & F & F & P & & F & F & F & P \\ 
+Point (CM) ChatGPT          & & F & F & F & P & & F & F & F & P & & F & F & F & P \\ 
+                            & & F & F & P & P & & F & F & P & P & & F & F & P & P \\ 
+Fabricated (OAC) Manual     & & C & C & F & P & & C & C & F & P & & C & C & F & P \\ 
+Fabricated (OAC) ChatGPT    & & C & C & F & P & & C & C & F & P & & C & C & F & P \\ 
+Fabricated (RO) Manual      & & C & F & C & P & & C & P & C & P & & C & P & C & P \\ 
+Fabricated (RO) ChatGPT     & & C & F & C & P & & C & P & C & P & & C & P & C & P \\
+Cart (CM) Manual            & & F & F & F & P & & F & F & F & P & & F & F & F & P \\ 
+                            & &   &   &   &   & & P & P & P & P & &   &   &   &   \\ 
+Cart (CM) ChatGPT           & & \textit{F} & \textit{F} & \textit{F} & \textit{P} & & \textit{F} & \textit{F} & \textit{F} & \textit{P} & & F & F & F & P \\ %italicize first two
+                            & &   &   &   &   & &   &   &   &   & & F & F & P & P \\ 
+Cart (PF) Manual            & & F & F & F & P & & F & F & F & P & & F & F & F & P \\ 
+                            & & F & F & F & P & & F & F & F & P & & F & F & F & P \\ 
+Cart (PM) Manual            & & C & C & P & P & & C & C & P & P & & C & C & P & P \\ 
+                            & & P & P & P & P & & C & C & P & P & & P & P & P & P \\ 
+                            & &   &   &   &   & & C & C & P & P & & C & C & P & P \\ 
+                            & &   &   &   &   & & C & C & P & P & & P & P & P & P \\ 
+Cart (PM) ChatGPT           & & C & C & P & P & & C & C & P & P & & C & C & P & P \\
+                            & & C & C & P & P & & C & C & F & P & & P & P & P & P \\
+                            & &   &   &   &   & & C & C & P & P & & C & C & P & P \\
+                            & &   &   &   &   & & C & C & F & P & & P & P & P & P \\
+Antlr (PF) Manual           & & F & F & F & P & & F & F & F & P & & F & F & F & P \\ 
         \bottomrule
     \end{tabular}
     \caption{Test running results in base A B Merge \label{tab:results:rq2tests}}
