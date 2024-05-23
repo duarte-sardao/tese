@@ -19,8 +19,9 @@ Cart (PF)        & 2.3 & 1.0 & 0.0 & 0.0 & 0.0 \\
 Cart (PM)        & 2.0 & 1.0 & 1.3 & 1.0 & 0.3 \\
 Antlr (PF)       & 1.7 & 1.0 & 0.0 & 0.0 & 0.0 \\
 OkHttp (PM)      & 3.0 & 1.0 & 0.7 & 0.0 & 0.0 \\
+Retrofit (PM/CM) & 1.0 & 1.0 & 1.0 & 0.0 & 0.0 \\
 \midrule
-\textit{Average}  & 2.5 & 1.0 & 0.8 & 1.25 & 0.6 \\
+\textit{Average}  & 2.4 & 1.0 & 0.9 & 1.1 & 0.6 \\
 \bottomrule
 \end{tabular}
 \caption{Average values per subject and metric.\label{tab:results:rq1}}
@@ -33,15 +34,14 @@ OkHttp (PM)      & 3.0 & 1.0 & 0.7 & 0.0 & 0.0 \\
 
   \item \textbf{In none of the subject did the tool mistake the kind of conflict under discussion} ($B=1.0$). This might be because the prompt did not assert the existence of a conflict, allowing negative responses, whereas other prompts, which asked to find a conflict that did exist, lead the model to find any explanation, which often consisted of describing a textual conflict.
 
-  \item \textbf{Conflict assertion remains uncertain}. ($C=0.8$) In many cases, particularly those of PF type, no conflict as identified. In many other cases it was found but with uncertainty, e.g., with words such as ``possible'', and ``might''.
+  \item \textbf{Conflict assertion remains uncertain}. ($C=0.9$) In many cases, particularly those of PF type, no conflict as identified. In many other cases it was found but with uncertainty, e.g., with words such as ``possible'', and ``might''.
 
-  \item \textbf{On average, it can identify what originates conflicts} ($D=1.25$).  Despite the range given, values given to the metric was either 0 or 3. This indicates to us in nearly half the cases, the model failed to produce any accurate description, but when it did, it was generally very accurate.
+  \item \textbf{On average, it can identify what originates conflicts} ($D=1.1$).  Despite the range given, values given to the metric were either 0 or 3. This indicates to us in nearly half the cases, the model failed to produce any accurate description, but when it did, it was generally very accurate.
 
   \item \textbf{ChatGPT struggles with accurately describing the results of semantic conflicts} ($E=0.8$), i.e., how the behaviour is specifically altered and how the outputs change. Indeed, even when the origin of the conflict is found, an accurate description of the results does not necessarily follow, with the topic being vague or not touched upon.
 \end{itemize}
 
-The complete prompts, with results and evaluated metrics, can be found in the attachments \todo{Which one? Do not forget to cref it here}.
-\todo{how to ref? can ref html files or to put in body of text?}
+The complete prompts, with results and evaluated metrics, can be found in the attachments.
 An important observation to make is the variability of results, which highlights the importance of running three trials for our evaluation.
 For example, the point class had high variation: two of the results failed to identify any conflict at all, but one of the three not only identified, but quite accurately describe its origin and results.
 
@@ -51,7 +51,7 @@ Better results were observed when doing more manual, ad-hoc experiments, as we c
 As we proceeded testing the ``Cart'' scenario, we observed a reversal of a trend of very low results for the E metric, particularly for CM and PM.
 Indeed for these examples, not only did the LLM identify the origins of the conflict, but exactly the result of this, such as:
 ``Now, in the merged version, both changes are included. So, when an admin user proceeds to checkout (assuming the admin check in version A evaluates to true), the cost will be set to 0. But immediately after, the checkout method checks if the cost is 0 and throws an exception if it is. This leads to a contradictory behavior: the system sets the cost to 0 for admin users but then doesn't allow them to proceed with checkout due to the cost being 0.''
-It is possible this is due to the very straighforward logic of the CM example in particular. /todo{include this next bit?} What is surprising is that due to some minor changes in the Cart class, we re-ran these tests and originally these values were much lower. Why there was such an improvement is unknown but it is evidence of the variability of these tools.
+It is possible this is due to the very straighforward logic of the CM example in particular. What is surprising is that due to some minor changes in the Cart class, we re-ran these tests and originally these values were much lower. Why there was such an improvement is unknown but it is evidence of the variability of these tools.
 
 In a scenario where detection failed we see an example of the LLM providing a grossly wrong explanation: ``If the user is an admin and a discount code that results in a cost of 0 is applied, the exception will never be thrown because the `checkout` method will not be called.''. As regards the conflict itself, this was only completely wrong assertion of its kind: in general where answers failed they were either vague or omitted, not present. The only other major example of a factually incorrect answer came with OkHttp:
 \begin{lstlisting}
@@ -93,8 +93,19 @@ As well as Antlr, which fails to accurately describe the changes made:
 \end{lstlisting}
 We observed both of these are ``Parallel Field'' semantic conflicts so it is possible the fact that the changes are being made to fields may have some relation to its inability to express them correctly. 
 Further credence to this involves Cart (PM), where edits to the field of an auxiliary class also were misdescribed.
+In contrast stands Retrofit: while ChatGPT reliably failed to correctly describe the changes, no edits were made to fields. From observation, we can say these errors may be due
+to the fact that the changes are similar and repeated across two complex methods, for branch B. We still see major misdescriptions for branch A, which is relatively simple, with a simple addition of an append to a string.
+We see examples of aspects of branch B being assigned to it, and then those same aspects not acknowledged for branch B.
+\begin{lstlisting}
+    1. In `buildRelativeUrl()`:
+    - Version A adds a null check for path parameters and throws an `IllegalArgumentException` if any of them are null. This ensures that path parameters are not null, which could lead to unexpected behavior or errors.
+    - Version B also adds a null check for path parameters but handles it differently. Instead of throwing an exception, it continues execution. This could lead to inconsistencies if the application logic relies on path parameters being non-null.
+ 
+ 2. In `buildBody()`:
+    - Both versions A and B have added null checks for the body parameter in the `SIMPLE` case. This ensures that the body is not null before proceeding with further processing. However, the behavior is consistent between the two versions. 
+\end{lstlisting}
 
-As the most complex example, OkHttp generated the least conclusive answers. In particular it tended to offer advice on how identify and diagnose semantic conflicts and make good merges. This is a behaviour that was also observed with other complex, real-world conflicts, during the period of ad-hoc testing.
+Like with Antlr and Retrofit, OkHttp generated no conclusive answers. In particular it tended to offer advice on how identify and diagnose semantic conflicts and make good merges. This is a behaviour that was also observed with other complex, real-world conflicts, during the period of ad-hoc testing.
 \begin{lstlisting}
 ### Potential Semantic Conflict:
 While there is no direct semantic conflict, there could be conflicts in the usage and interpretation of the `transports` field and its associated methods. For instance:

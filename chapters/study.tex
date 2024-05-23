@@ -21,6 +21,7 @@ Cart (PF)        & No  & Parallel Field \\
 Cart (PM)        & No  & Parallel Method \\
 Antlr            & Yes & Parallel Field \\
 OkHttp           & Yes & Parallel Method \\
+Retrofit         & Yes & Parallel Method / Change Method \\
 \bottomrule
 \end{tabular}
 \caption{Subjects used in the empirical study.\label{tab:subjects}}
@@ -109,6 +110,15 @@ alter this method, one by changing how failedRoutes are handled and adding a fie
 the default hostname verifier with a custom implementation, OkHostnameVerifier(). As a result, the copy returned on merge will
 be different from both branches, and this difference will trickle down into the initialization of HttpURLConnectionImpl, which
 as the copy as an argument.
+
+\textbf{Retrofit, Conflict Type: Parallel and Change Method}
+
+Another HTTP client. Relevant to the conflict is the class RequestBuilder, which builds HTTP requests from Java method invocations. The methods altered
+in the conflict are build(), which returns a Request, as well as buildRelativeUrl(), which the former calls.
+Branch A only alters how request queries are handled, by adding the appropriate ? to the url when one is present.
+Branch B adds several checks for Null arguments for request query arguments, path parameters, form fields and multipart parts, throwing an exception or ignoring them
+as adequate.
+Both of these chances are integrated and as a result, the behaviour of Request construction is different in the merge.
 
 \section{Large language models}
 

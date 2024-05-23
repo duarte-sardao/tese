@@ -33,6 +33,1634 @@
   </head>
   <body>
 <div id="root">
+<div class="conversation"><h4>RQ2, Retrofit, P1, T3</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
+
+Base version:
+```java
+/*
+ * Copyright (C) 2012 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package retrofit;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+import retrofit.client.Header;
+import retrofit.client.Request;
+import retrofit.converter.Converter;
+import retrofit.mime.FormUrlEncodedTypedOutput;
+import retrofit.mime.MultipartTypedOutput;
+import retrofit.mime.TypedOutput;
+
+/** Builds HTTP requests from Java method invocations. */
+final class RequestBuilder {
+  private final Converter converter;
+
+  private RestMethodInfo methodInfo;
+  private Object[] args;
+  private String apiUrl;
+  private List&lt;retrofit.client.Header&gt; headers;
+
+  RequestBuilder(Converter converter) {
+    this.converter = converter;
+  }
+
+  /** Supply cached method metadata info. */
+  RequestBuilder methodInfo(RestMethodInfo methodDetails) {
+    this.methodInfo = methodDetails;
+    return this;
+  }
+
+  /** Base API url. */
+  RequestBuilder apiUrl(String apiUrl) {
+    this.apiUrl = apiUrl;
+    return this;
+  }
+
+  /** Arguments from method invocation. */
+  RequestBuilder args(Object[] args) {
+    this.args = args;
+    return this;
+  }
+
+  /** A list of custom headers. */
+  RequestBuilder headers(List&lt;retrofit.client.Header&gt; headers) {
+    this.headers = headers;
+    return this;
+  }
+
+  /**
+   * Construct a {@link Request} from the supplied information. You &lt;strong&gt;must&lt;/strong&gt; call
+   * {@link #methodInfo}, {@link #apiUrl}, {@link #args}, and {@link #headers} before invoking this
+   * method.
+   */
+  Request build() throws UnsupportedEncodingException {
+    String apiUrl = this.apiUrl;
+
+    StringBuilder url = new StringBuilder(apiUrl);
+    if (apiUrl.endsWith("/")) {
+      // We require relative paths to start with '/'. Prevent a double-slash.
+      url.deleteCharAt(url.length() - 1);
+    }
+
+    // Append the method relative URL.
+    url.append(buildRelativeUrl());
+
+    // Append query parameters, if needed.
+    if (methodInfo.hasQueryParams) {
+      boolean first = true;
+      String requestQuery = methodInfo.requestQuery;
+      if (requestQuery != null) {
+        url.append(requestQuery);
+        first = false;
+      }
+      String[] requestQueryName = methodInfo.requestQueryName;
+      for (int i = 0; i &lt; requestQueryName.length; i++) {
+        String query = requestQueryName[i];
+        if (query != null) {
+          String value = URLEncoder.encode(String.valueOf(args[i]), "UTF-8");
+          url.append(first ? '?' : '&amp;').append(query).append('=').append(value);
+          first = false;
+        }
+      }
+    }
+
+    List&lt;retrofit.client.Header&gt; headers = new ArrayList&lt;retrofit.client.Header&gt;();
+    if (this.headers != null) {
+      headers.addAll(this.headers);
+    }
+    List&lt;Header&gt; methodHeaders = methodInfo.headers;
+    if (methodHeaders != null) {
+      headers.addAll(methodHeaders);
+    }
+    // RFC 2616: Header names are case-insensitive.
+    String[] requestParamHeader = methodInfo.requestParamHeader;
+    if (requestParamHeader != null) {
+      for (int i = 0; i &lt; requestParamHeader.length; i++) {
+        String name = requestParamHeader[i];
+        if (name == null) continue;
+        Object arg = args[i];
+        if (arg != null) {
+          headers.add(new retrofit.client.Header(name, String.valueOf(arg)));
+        }
+      }
+    }
+
+    return new Request(methodInfo.requestMethod, url.toString(), headers, buildBody());
+  }
+
+  /** Create the final relative URL by performing parameter replacement. */
+  private String buildRelativeUrl() throws UnsupportedEncodingException {
+    String replacedPath = methodInfo.requestUrl;
+    String[] requestUrlParam = methodInfo.requestUrlParam;
+    for (int i = 0; i &lt; requestUrlParam.length; i++) {
+      String param = requestUrlParam[i];
+      if (param != null) {
+        String value = URLEncoder.encode(String.valueOf(args[i]), "UTF-8");
+        replacedPath = replacedPath.replace("{" + param + "}", value);
+      }
+    }
+    return replacedPath;
+  }
+
+  /** Create the request body using the method info and invocation arguments. */
+  private TypedOutput buildBody() {
+    switch (methodInfo.requestType) {
+      case SIMPLE: {
+        int bodyIndex = methodInfo.bodyIndex;
+        if (bodyIndex == RestMethodInfo.NO_BODY) {
+          return null;
+        }
+        Object body = args[bodyIndex];
+        if (body instanceof TypedOutput) {
+          return (TypedOutput) body;
+        } else {
+          return converter.toBody(body);
+        }
+      }
+
+      case FORM_URL_ENCODED: {
+        FormUrlEncodedTypedOutput body = new FormUrlEncodedTypedOutput();
+        String[] requestFormFields = methodInfo.requestFormFields;
+        for (int i = 0; i &lt; requestFormFields.length; i++) {
+          String name = requestFormFields[i];
+          if (name != null) {
+            body.addField(name, String.valueOf(args[i]));
+          }
+        }
+        return body;
+      }
+
+      case MULTIPART: {
+        MultipartTypedOutput body = new MultipartTypedOutput();
+        String[] requestMultipartPart = methodInfo.requestMultipartPart;
+        for (int i = 0; i &lt; requestMultipartPart.length; i++) {
+          String name = requestMultipartPart[i];
+          if (name != null) {
+            Object value = args[i];
+            if (value instanceof TypedOutput) {
+              body.addPart(name, (TypedOutput) value);
+            } else {
+              body.addPart(name, converter.toBody(value));
+            }
+          }
+        }
+        return body;
+      }
+
+      default:
+        throw new IllegalArgumentException("Unknown request type " + methodInfo.requestType);
+    }
+  }
+}
+```
+
+Diff version A and the base:
+```diff
+--- a/retrofit/src/main/java/retrofit/RequestBuilder.java
++++ b/retrofit/src/main/java/retrofit/RequestBuilder.java
+@@ -85,7 +85,7 @@ final class RequestBuilder {
+       boolean first = true;
+       String requestQuery = methodInfo.requestQuery;
+       if (requestQuery != null) {
+-        url.append(requestQuery);
++        url.append('?').append(requestQuery);
+         first = false;
+       }
+       String[] requestQueryName = methodInfo.requestQueryName;
+```
+
+Diff version B and the base:
+```diff
+--- a/retrofit/src/main/java/retrofit/RequestBuilder.java
++++ b/retrofit/src/main/java/retrofit/RequestBuilder.java
+@@ -92,9 +92,12 @@ final class RequestBuilder {
+       for (int i = 0; i &lt; requestQueryName.length; i++) {
+         String query = requestQueryName[i];
+         if (query != null) {
+-          String value = URLEncoder.encode(String.valueOf(args[i]), "UTF-8");
+-          url.append(first ? '?' : '&amp;').append(query).append('=').append(value);
+-          first = false;
++          Object arg = args[i];
++          if (arg != null) { // Null values are skipped.
++            String value = URLEncoder.encode(String.valueOf(arg), "UTF-8");
++            url.append(first ? '?' : '&amp;').append(query).append('=').append(value);
++            first = false;
++          }
+         }
+       }
+     }
+@@ -130,7 +133,11 @@ final class RequestBuilder {
+     for (int i = 0; i &lt; requestUrlParam.length; i++) {
+       String param = requestUrlParam[i];
+       if (param != null) {
+-        String value = URLEncoder.encode(String.valueOf(args[i]), "UTF-8");
++        Object arg = args[i];
++        if (arg == null) {
++          throw new IllegalArgumentException("Path parameters must not be null: " + param + ".");
++        }
++        String value = URLEncoder.encode(String.valueOf(arg), "UTF-8");
+         replacedPath = replacedPath.replace("{" + param + "}", value);
+       }
+     }
+@@ -146,6 +153,9 @@ final class RequestBuilder {
+           return null;
+         }
+         Object body = args[bodyIndex];
++        if (body == null) {
++          throw new IllegalArgumentException("Body must not be null.");
++        }
+         if (body instanceof TypedOutput) {
+           return (TypedOutput) body;
+         } else {
+@@ -159,7 +169,10 @@ final class RequestBuilder {
+         for (int i = 0; i &lt; requestFormFields.length; i++) {
+           String name = requestFormFields[i];
+           if (name != null) {
+-            body.addField(name, String.valueOf(args[i]));
++            Object value = args[i];
++            if (value != null) { // Null values are skipped.
++              body.addField(name, String.valueOf(value));
++            }
+           }
+         }
+         return body;
+@@ -172,6 +185,9 @@ final class RequestBuilder {
+           String name = requestMultipartPart[i];
+           if (name != null) {
+             Object value = args[i];
++            if (value == null) {
++              throw new IllegalArgumentException("Multipart part must not be null: " + name + ".");
++            }
+             if (value instanceof TypedOutput) {
+               body.addPart(name, (TypedOutput) value);
+             } else {
+```
+
+Merge version:
+```java
+/*
+ * Copyright (C) 2012 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package retrofit;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+import retrofit.client.Header;
+import retrofit.client.Request;
+import retrofit.converter.Converter;
+import retrofit.mime.FormUrlEncodedTypedOutput;
+import retrofit.mime.MultipartTypedOutput;
+import retrofit.mime.TypedOutput;
+
+/** Builds HTTP requests from Java method invocations. */
+final class RequestBuilder {
+  private final Converter converter;
+
+  private RestMethodInfo methodInfo;
+  private Object[] args;
+  private String apiUrl;
+  private List&lt;retrofit.client.Header&gt; headers;
+
+  RequestBuilder(Converter converter) {
+    this.converter = converter;
+  }
+
+  /** Supply cached method metadata info. */
+  RequestBuilder methodInfo(RestMethodInfo methodDetails) {
+    this.methodInfo = methodDetails;
+    return this;
+  }
+
+  /** Base API url. */
+  RequestBuilder apiUrl(String apiUrl) {
+    this.apiUrl = apiUrl;
+    return this;
+  }
+
+  /** Arguments from method invocation. */
+  RequestBuilder args(Object[] args) {
+    this.args = args;
+    return this;
+  }
+
+  /** A list of custom headers. */
+  RequestBuilder headers(List&lt;retrofit.client.Header&gt; headers) {
+    this.headers = headers;
+    return this;
+  }
+
+  /**
+   * Construct a {@link Request} from the supplied information. You &lt;strong&gt;must&lt;/strong&gt; call
+   * {@link #methodInfo}, {@link #apiUrl}, {@link #args}, and {@link #headers} before invoking this
+   * method.
+   */
+  Request build() throws UnsupportedEncodingException {
+    String apiUrl = this.apiUrl;
+
+    StringBuilder url = new StringBuilder(apiUrl);
+    if (apiUrl.endsWith("/")) {
+      // We require relative paths to start with '/'. Prevent a double-slash.
+      url.deleteCharAt(url.length() - 1);
+    }
+
+    // Append the method relative URL.
+    url.append(buildRelativeUrl());
+
+    // Append query parameters, if needed.
+    if (methodInfo.hasQueryParams) {
+      boolean first = true;
+      String requestQuery = methodInfo.requestQuery;
+      if (requestQuery != null) {
+        url.append('?').append(requestQuery);
+        first = false;
+      }
+      String[] requestQueryName = methodInfo.requestQueryName;
+      for (int i = 0; i &lt; requestQueryName.length; i++) {
+        String query = requestQueryName[i];
+        if (query != null) {
+          Object arg = args[i];
+          if (arg != null) { // Null values are skipped.
+            String value = URLEncoder.encode(String.valueOf(arg), "UTF-8");
+            url.append(first ? '?' : '&amp;').append(query).append('=').append(value);
+            first = false;
+          }
+        }
+      }
+    }
+
+    List&lt;retrofit.client.Header&gt; headers = new ArrayList&lt;retrofit.client.Header&gt;();
+    if (this.headers != null) {
+      headers.addAll(this.headers);
+    }
+    List&lt;Header&gt; methodHeaders = methodInfo.headers;
+    if (methodHeaders != null) {
+      headers.addAll(methodHeaders);
+    }
+    // RFC 2616: Header names are case-insensitive.
+    String[] requestParamHeader = methodInfo.requestParamHeader;
+    if (requestParamHeader != null) {
+      for (int i = 0; i &lt; requestParamHeader.length; i++) {
+        String name = requestParamHeader[i];
+        if (name == null) continue;
+        Object arg = args[i];
+        if (arg != null) {
+          headers.add(new retrofit.client.Header(name, String.valueOf(arg)));
+        }
+      }
+    }
+
+    return new Request(methodInfo.requestMethod, url.toString(), headers, buildBody());
+  }
+
+  /** Create the final relative URL by performing parameter replacement. */
+  private String buildRelativeUrl() throws UnsupportedEncodingException {
+    String replacedPath = methodInfo.requestUrl;
+    String[] requestUrlParam = methodInfo.requestUrlParam;
+    for (int i = 0; i &lt; requestUrlParam.length; i++) {
+      String param = requestUrlParam[i];
+      if (param != null) {
+        Object arg = args[i];
+        if (arg == null) {
+          throw new IllegalArgumentException("Path parameters must not be null: " + param + ".");
+        }
+        String value = URLEncoder.encode(String.valueOf(arg), "UTF-8");
+        replacedPath = replacedPath.replace("{" + param + "}", value);
+      }
+    }
+    return replacedPath;
+  }
+
+  /** Create the request body using the method info and invocation arguments. */
+  private TypedOutput buildBody() {
+    switch (methodInfo.requestType) {
+      case SIMPLE: {
+        int bodyIndex = methodInfo.bodyIndex;
+        if (bodyIndex == RestMethodInfo.NO_BODY) {
+          return null;
+        }
+        Object body = args[bodyIndex];
+        if (body == null) {
+          throw new IllegalArgumentException("Body must not be null.");
+        }
+        if (body instanceof TypedOutput) {
+          return (TypedOutput) body;
+        } else {
+          return converter.toBody(body);
+        }
+      }
+
+      case FORM_URL_ENCODED: {
+        FormUrlEncodedTypedOutput body = new FormUrlEncodedTypedOutput();
+        String[] requestFormFields = methodInfo.requestFormFields;
+        for (int i = 0; i &lt; requestFormFields.length; i++) {
+          String name = requestFormFields[i];
+          if (name != null) {
+            Object value = args[i];
+            if (value != null) { // Null values are skipped.
+              body.addField(name, String.valueOf(value));
+            }
+          }
+        }
+        return body;
+      }
+
+      case MULTIPART: {
+        MultipartTypedOutput body = new MultipartTypedOutput();
+        String[] requestMultipartPart = methodInfo.requestMultipartPart;
+        for (int i = 0; i &lt; requestMultipartPart.length; i++) {
+          String name = requestMultipartPart[i];
+          if (name != null) {
+            Object value = args[i];
+            if (value == null) {
+              throw new IllegalArgumentException("Multipart part must not be null: " + name + ".");
+            }
+            if (value instanceof TypedOutput) {
+              body.addPart(name, (TypedOutput) value);
+            } else {
+              body.addPart(name, converter.toBody(value));
+            }
+          }
+        }
+        return body;
+      }
+
+      default:
+        throw new IllegalArgumentException("Unknown request type " + methodInfo.requestType);
+    }
+  }
+}
+```
+
+Explanation of the semantic conflict: The merge involves the method build() and the changes made to it and to buildRelativeUrl().
+Branch A only alters how request queries are handled, by adding the appropriate ? to the url when one is present.
+Branch B adds several checks for Null arguments for request query arguments, path parameters, form fields and multipart parts, throwing an exception or ignoring them
+as adequate.
+Both of these chances are integrated and as a result, the behaviour of Request construction is different in the merge.
+Generate just code with necessary imports. No explanation needed.</div></pre><pre class="message"><div class="author">ChatGPT</div><div>```java
+import static org.junit.Assert.*;
+import org.junit.Test;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+import retrofit.client.Header;
+import retrofit.client.Request;
+import retrofit.converter.Converter;
+import retrofit.mime.FormUrlEncodedTypedOutput;
+import retrofit.mime.MultipartTypedOutput;
+import retrofit.mime.TypedOutput;
+
+public class RequestBuilderTest {
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testBuildRelativeUrl_NullPathParam() throws UnsupportedEncodingException {
+    RequestBuilder builder = new RequestBuilder(mock(Converter.class));
+    builder.methodInfo(mock(RestMethodInfo.class))
+           .apiUrl("http://example.com")
+           .args(new Object[] {null})
+           .build();
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testBuildBody_NullBody() {
+    RequestBuilder builder = new RequestBuilder(mock(Converter.class));
+    builder.methodInfo(mock(RestMethodInfo.class))
+           .apiUrl("http://example.com")
+           .args(new Object[] {null})
+           .build();
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testBuildBody_NullFormUrlEncodedField() {
+    RequestBuilder builder = new RequestBuilder(mock(Converter.class));
+    builder.methodInfo(mock(RestMethodInfo.class))
+           .apiUrl("http://example.com")
+           .args(new Object[] {null})
+           .build();
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testBuildBody_NullMultipartPart() {
+    RequestBuilder builder = new RequestBuilder(mock(Converter.class));
+    builder.methodInfo(mock(RestMethodInfo.class))
+           .apiUrl("http://example.com")
+           .args(new Object[] {null})
+           .build();
+  }
+}
+```</div></pre></div>
+<div class="conversation"><h4>RQ2, Retrofit, P1, T2</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
+
+Base version:
+```java
+/*
+ * Copyright (C) 2012 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package retrofit;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+import retrofit.client.Header;
+import retrofit.client.Request;
+import retrofit.converter.Converter;
+import retrofit.mime.FormUrlEncodedTypedOutput;
+import retrofit.mime.MultipartTypedOutput;
+import retrofit.mime.TypedOutput;
+
+/** Builds HTTP requests from Java method invocations. */
+final class RequestBuilder {
+  private final Converter converter;
+
+  private RestMethodInfo methodInfo;
+  private Object[] args;
+  private String apiUrl;
+  private List&lt;retrofit.client.Header&gt; headers;
+
+  RequestBuilder(Converter converter) {
+    this.converter = converter;
+  }
+
+  /** Supply cached method metadata info. */
+  RequestBuilder methodInfo(RestMethodInfo methodDetails) {
+    this.methodInfo = methodDetails;
+    return this;
+  }
+
+  /** Base API url. */
+  RequestBuilder apiUrl(String apiUrl) {
+    this.apiUrl = apiUrl;
+    return this;
+  }
+
+  /** Arguments from method invocation. */
+  RequestBuilder args(Object[] args) {
+    this.args = args;
+    return this;
+  }
+
+  /** A list of custom headers. */
+  RequestBuilder headers(List&lt;retrofit.client.Header&gt; headers) {
+    this.headers = headers;
+    return this;
+  }
+
+  /**
+   * Construct a {@link Request} from the supplied information. You &lt;strong&gt;must&lt;/strong&gt; call
+   * {@link #methodInfo}, {@link #apiUrl}, {@link #args}, and {@link #headers} before invoking this
+   * method.
+   */
+  Request build() throws UnsupportedEncodingException {
+    String apiUrl = this.apiUrl;
+
+    StringBuilder url = new StringBuilder(apiUrl);
+    if (apiUrl.endsWith("/")) {
+      // We require relative paths to start with '/'. Prevent a double-slash.
+      url.deleteCharAt(url.length() - 1);
+    }
+
+    // Append the method relative URL.
+    url.append(buildRelativeUrl());
+
+    // Append query parameters, if needed.
+    if (methodInfo.hasQueryParams) {
+      boolean first = true;
+      String requestQuery = methodInfo.requestQuery;
+      if (requestQuery != null) {
+        url.append(requestQuery);
+        first = false;
+      }
+      String[] requestQueryName = methodInfo.requestQueryName;
+      for (int i = 0; i &lt; requestQueryName.length; i++) {
+        String query = requestQueryName[i];
+        if (query != null) {
+          String value = URLEncoder.encode(String.valueOf(args[i]), "UTF-8");
+          url.append(first ? '?' : '&amp;').append(query).append('=').append(value);
+          first = false;
+        }
+      }
+    }
+
+    List&lt;retrofit.client.Header&gt; headers = new ArrayList&lt;retrofit.client.Header&gt;();
+    if (this.headers != null) {
+      headers.addAll(this.headers);
+    }
+    List&lt;Header&gt; methodHeaders = methodInfo.headers;
+    if (methodHeaders != null) {
+      headers.addAll(methodHeaders);
+    }
+    // RFC 2616: Header names are case-insensitive.
+    String[] requestParamHeader = methodInfo.requestParamHeader;
+    if (requestParamHeader != null) {
+      for (int i = 0; i &lt; requestParamHeader.length; i++) {
+        String name = requestParamHeader[i];
+        if (name == null) continue;
+        Object arg = args[i];
+        if (arg != null) {
+          headers.add(new retrofit.client.Header(name, String.valueOf(arg)));
+        }
+      }
+    }
+
+    return new Request(methodInfo.requestMethod, url.toString(), headers, buildBody());
+  }
+
+  /** Create the final relative URL by performing parameter replacement. */
+  private String buildRelativeUrl() throws UnsupportedEncodingException {
+    String replacedPath = methodInfo.requestUrl;
+    String[] requestUrlParam = methodInfo.requestUrlParam;
+    for (int i = 0; i &lt; requestUrlParam.length; i++) {
+      String param = requestUrlParam[i];
+      if (param != null) {
+        String value = URLEncoder.encode(String.valueOf(args[i]), "UTF-8");
+        replacedPath = replacedPath.replace("{" + param + "}", value);
+      }
+    }
+    return replacedPath;
+  }
+
+  /** Create the request body using the method info and invocation arguments. */
+  private TypedOutput buildBody() {
+    switch (methodInfo.requestType) {
+      case SIMPLE: {
+        int bodyIndex = methodInfo.bodyIndex;
+        if (bodyIndex == RestMethodInfo.NO_BODY) {
+          return null;
+        }
+        Object body = args[bodyIndex];
+        if (body instanceof TypedOutput) {
+          return (TypedOutput) body;
+        } else {
+          return converter.toBody(body);
+        }
+      }
+
+      case FORM_URL_ENCODED: {
+        FormUrlEncodedTypedOutput body = new FormUrlEncodedTypedOutput();
+        String[] requestFormFields = methodInfo.requestFormFields;
+        for (int i = 0; i &lt; requestFormFields.length; i++) {
+          String name = requestFormFields[i];
+          if (name != null) {
+            body.addField(name, String.valueOf(args[i]));
+          }
+        }
+        return body;
+      }
+
+      case MULTIPART: {
+        MultipartTypedOutput body = new MultipartTypedOutput();
+        String[] requestMultipartPart = methodInfo.requestMultipartPart;
+        for (int i = 0; i &lt; requestMultipartPart.length; i++) {
+          String name = requestMultipartPart[i];
+          if (name != null) {
+            Object value = args[i];
+            if (value instanceof TypedOutput) {
+              body.addPart(name, (TypedOutput) value);
+            } else {
+              body.addPart(name, converter.toBody(value));
+            }
+          }
+        }
+        return body;
+      }
+
+      default:
+        throw new IllegalArgumentException("Unknown request type " + methodInfo.requestType);
+    }
+  }
+}
+```
+
+Diff version A and the base:
+```diff
+--- a/retrofit/src/main/java/retrofit/RequestBuilder.java
++++ b/retrofit/src/main/java/retrofit/RequestBuilder.java
+@@ -85,7 +85,7 @@ final class RequestBuilder {
+       boolean first = true;
+       String requestQuery = methodInfo.requestQuery;
+       if (requestQuery != null) {
+-        url.append(requestQuery);
++        url.append('?').append(requestQuery);
+         first = false;
+       }
+       String[] requestQueryName = methodInfo.requestQueryName;
+```
+
+Diff version B and the base:
+```diff
+--- a/retrofit/src/main/java/retrofit/RequestBuilder.java
++++ b/retrofit/src/main/java/retrofit/RequestBuilder.java
+@@ -92,9 +92,12 @@ final class RequestBuilder {
+       for (int i = 0; i &lt; requestQueryName.length; i++) {
+         String query = requestQueryName[i];
+         if (query != null) {
+-          String value = URLEncoder.encode(String.valueOf(args[i]), "UTF-8");
+-          url.append(first ? '?' : '&amp;').append(query).append('=').append(value);
+-          first = false;
++          Object arg = args[i];
++          if (arg != null) { // Null values are skipped.
++            String value = URLEncoder.encode(String.valueOf(arg), "UTF-8");
++            url.append(first ? '?' : '&amp;').append(query).append('=').append(value);
++            first = false;
++          }
+         }
+       }
+     }
+@@ -130,7 +133,11 @@ final class RequestBuilder {
+     for (int i = 0; i &lt; requestUrlParam.length; i++) {
+       String param = requestUrlParam[i];
+       if (param != null) {
+-        String value = URLEncoder.encode(String.valueOf(args[i]), "UTF-8");
++        Object arg = args[i];
++        if (arg == null) {
++          throw new IllegalArgumentException("Path parameters must not be null: " + param + ".");
++        }
++        String value = URLEncoder.encode(String.valueOf(arg), "UTF-8");
+         replacedPath = replacedPath.replace("{" + param + "}", value);
+       }
+     }
+@@ -146,6 +153,9 @@ final class RequestBuilder {
+           return null;
+         }
+         Object body = args[bodyIndex];
++        if (body == null) {
++          throw new IllegalArgumentException("Body must not be null.");
++        }
+         if (body instanceof TypedOutput) {
+           return (TypedOutput) body;
+         } else {
+@@ -159,7 +169,10 @@ final class RequestBuilder {
+         for (int i = 0; i &lt; requestFormFields.length; i++) {
+           String name = requestFormFields[i];
+           if (name != null) {
+-            body.addField(name, String.valueOf(args[i]));
++            Object value = args[i];
++            if (value != null) { // Null values are skipped.
++              body.addField(name, String.valueOf(value));
++            }
+           }
+         }
+         return body;
+@@ -172,6 +185,9 @@ final class RequestBuilder {
+           String name = requestMultipartPart[i];
+           if (name != null) {
+             Object value = args[i];
++            if (value == null) {
++              throw new IllegalArgumentException("Multipart part must not be null: " + name + ".");
++            }
+             if (value instanceof TypedOutput) {
+               body.addPart(name, (TypedOutput) value);
+             } else {
+```
+
+Merge version:
+```java
+/*
+ * Copyright (C) 2012 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package retrofit;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+import retrofit.client.Header;
+import retrofit.client.Request;
+import retrofit.converter.Converter;
+import retrofit.mime.FormUrlEncodedTypedOutput;
+import retrofit.mime.MultipartTypedOutput;
+import retrofit.mime.TypedOutput;
+
+/** Builds HTTP requests from Java method invocations. */
+final class RequestBuilder {
+  private final Converter converter;
+
+  private RestMethodInfo methodInfo;
+  private Object[] args;
+  private String apiUrl;
+  private List&lt;retrofit.client.Header&gt; headers;
+
+  RequestBuilder(Converter converter) {
+    this.converter = converter;
+  }
+
+  /** Supply cached method metadata info. */
+  RequestBuilder methodInfo(RestMethodInfo methodDetails) {
+    this.methodInfo = methodDetails;
+    return this;
+  }
+
+  /** Base API url. */
+  RequestBuilder apiUrl(String apiUrl) {
+    this.apiUrl = apiUrl;
+    return this;
+  }
+
+  /** Arguments from method invocation. */
+  RequestBuilder args(Object[] args) {
+    this.args = args;
+    return this;
+  }
+
+  /** A list of custom headers. */
+  RequestBuilder headers(List&lt;retrofit.client.Header&gt; headers) {
+    this.headers = headers;
+    return this;
+  }
+
+  /**
+   * Construct a {@link Request} from the supplied information. You &lt;strong&gt;must&lt;/strong&gt; call
+   * {@link #methodInfo}, {@link #apiUrl}, {@link #args}, and {@link #headers} before invoking this
+   * method.
+   */
+  Request build() throws UnsupportedEncodingException {
+    String apiUrl = this.apiUrl;
+
+    StringBuilder url = new StringBuilder(apiUrl);
+    if (apiUrl.endsWith("/")) {
+      // We require relative paths to start with '/'. Prevent a double-slash.
+      url.deleteCharAt(url.length() - 1);
+    }
+
+    // Append the method relative URL.
+    url.append(buildRelativeUrl());
+
+    // Append query parameters, if needed.
+    if (methodInfo.hasQueryParams) {
+      boolean first = true;
+      String requestQuery = methodInfo.requestQuery;
+      if (requestQuery != null) {
+        url.append('?').append(requestQuery);
+        first = false;
+      }
+      String[] requestQueryName = methodInfo.requestQueryName;
+      for (int i = 0; i &lt; requestQueryName.length; i++) {
+        String query = requestQueryName[i];
+        if (query != null) {
+          Object arg = args[i];
+          if (arg != null) { // Null values are skipped.
+            String value = URLEncoder.encode(String.valueOf(arg), "UTF-8");
+            url.append(first ? '?' : '&amp;').append(query).append('=').append(value);
+            first = false;
+          }
+        }
+      }
+    }
+
+    List&lt;retrofit.client.Header&gt; headers = new ArrayList&lt;retrofit.client.Header&gt;();
+    if (this.headers != null) {
+      headers.addAll(this.headers);
+    }
+    List&lt;Header&gt; methodHeaders = methodInfo.headers;
+    if (methodHeaders != null) {
+      headers.addAll(methodHeaders);
+    }
+    // RFC 2616: Header names are case-insensitive.
+    String[] requestParamHeader = methodInfo.requestParamHeader;
+    if (requestParamHeader != null) {
+      for (int i = 0; i &lt; requestParamHeader.length; i++) {
+        String name = requestParamHeader[i];
+        if (name == null) continue;
+        Object arg = args[i];
+        if (arg != null) {
+          headers.add(new retrofit.client.Header(name, String.valueOf(arg)));
+        }
+      }
+    }
+
+    return new Request(methodInfo.requestMethod, url.toString(), headers, buildBody());
+  }
+
+  /** Create the final relative URL by performing parameter replacement. */
+  private String buildRelativeUrl() throws UnsupportedEncodingException {
+    String replacedPath = methodInfo.requestUrl;
+    String[] requestUrlParam = methodInfo.requestUrlParam;
+    for (int i = 0; i &lt; requestUrlParam.length; i++) {
+      String param = requestUrlParam[i];
+      if (param != null) {
+        Object arg = args[i];
+        if (arg == null) {
+          throw new IllegalArgumentException("Path parameters must not be null: " + param + ".");
+        }
+        String value = URLEncoder.encode(String.valueOf(arg), "UTF-8");
+        replacedPath = replacedPath.replace("{" + param + "}", value);
+      }
+    }
+    return replacedPath;
+  }
+
+  /** Create the request body using the method info and invocation arguments. */
+  private TypedOutput buildBody() {
+    switch (methodInfo.requestType) {
+      case SIMPLE: {
+        int bodyIndex = methodInfo.bodyIndex;
+        if (bodyIndex == RestMethodInfo.NO_BODY) {
+          return null;
+        }
+        Object body = args[bodyIndex];
+        if (body == null) {
+          throw new IllegalArgumentException("Body must not be null.");
+        }
+        if (body instanceof TypedOutput) {
+          return (TypedOutput) body;
+        } else {
+          return converter.toBody(body);
+        }
+      }
+
+      case FORM_URL_ENCODED: {
+        FormUrlEncodedTypedOutput body = new FormUrlEncodedTypedOutput();
+        String[] requestFormFields = methodInfo.requestFormFields;
+        for (int i = 0; i &lt; requestFormFields.length; i++) {
+          String name = requestFormFields[i];
+          if (name != null) {
+            Object value = args[i];
+            if (value != null) { // Null values are skipped.
+              body.addField(name, String.valueOf(value));
+            }
+          }
+        }
+        return body;
+      }
+
+      case MULTIPART: {
+        MultipartTypedOutput body = new MultipartTypedOutput();
+        String[] requestMultipartPart = methodInfo.requestMultipartPart;
+        for (int i = 0; i &lt; requestMultipartPart.length; i++) {
+          String name = requestMultipartPart[i];
+          if (name != null) {
+            Object value = args[i];
+            if (value == null) {
+              throw new IllegalArgumentException("Multipart part must not be null: " + name + ".");
+            }
+            if (value instanceof TypedOutput) {
+              body.addPart(name, (TypedOutput) value);
+            } else {
+              body.addPart(name, converter.toBody(value));
+            }
+          }
+        }
+        return body;
+      }
+
+      default:
+        throw new IllegalArgumentException("Unknown request type " + methodInfo.requestType);
+    }
+  }
+}
+```
+
+Explanation of the semantic conflict: The merge involves the method build() and the changes made to it and to buildRelativeUrl().
+Branch A only alters how request queries are handled, by adding the appropriate ? to the url when one is present.
+Branch B adds several checks for Null arguments for request query arguments, path parameters, form fields and multipart parts, throwing an exception or ignoring them
+as adequate.
+Both of these chances are integrated and as a result, the behaviour of Request construction is different in the merge.
+Generate just code with necessary imports. No explanation needed.</div></pre><pre class="message"><div class="author">ChatGPT</div><div>```java
+import static org.junit.Assert.*;
+import org.junit.Test;
+import retrofit.client.Header;
+import retrofit.client.Request;
+import retrofit.mime.FormUrlEncodedTypedOutput;
+import retrofit.mime.MultipartTypedOutput;
+import retrofit.mime.TypedOutput;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+```
+
+```java
+public class RequestBuilderTest {
+
+    @Test
+    public void testBuild_RequestQuery() throws UnsupportedEncodingException {
+        RequestBuilder builder = new RequestBuilder(new Converter());
+        RestMethodInfo methodInfo = new RestMethodInfo();
+        methodInfo.hasQueryParams = true;
+        methodInfo.requestQuery = "param=value";
+        methodInfo.requestQueryName = new String[] { "param" };
+        builder.methodInfo(methodInfo).apiUrl("http://example.com").args(new Object[] { "test" }).headers(null);
+        Request request = builder.build();
+        assertEquals("http://example.com?param=value&amp;param=test", request.getUrl());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testBuild_PathParamNull() throws UnsupportedEncodingException {
+        RequestBuilder builder = new RequestBuilder(new Converter());
+        RestMethodInfo methodInfo = new RestMethodInfo();
+        methodInfo.requestUrl = "http://example.com/{param}";
+        methodInfo.requestUrlParam = new String[] { "param" };
+        builder.methodInfo(methodInfo).apiUrl("http://example.com").args(new Object[] { null }).headers(null);
+        builder.build();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testBuild_BodyNull() throws UnsupportedEncodingException {
+        RequestBuilder builder = new RequestBuilder(new Converter());
+        RestMethodInfo methodInfo = new RestMethodInfo();
+        methodInfo.requestType = RestMethodInfo.RequestType.SIMPLE;
+        methodInfo.bodyIndex = 0;
+        builder.methodInfo(methodInfo).apiUrl("http://example.com").args(new Object[] { null }).headers(null);
+        builder.build();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testBuild_FormFieldNull() throws UnsupportedEncodingException {
+        RequestBuilder builder = new RequestBuilder(new Converter());
+        RestMethodInfo methodInfo = new RestMethodInfo();
+        methodInfo.requestType = RestMethodInfo.RequestType.FORM_URL_ENCODED;
+        methodInfo.requestFormFields = new String[] { "field" };
+        builder.methodInfo(methodInfo).apiUrl("http://example.com").args(new Object[] { null }).headers(null);
+        builder.build();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testBuild_MultipartPartNull() throws UnsupportedEncodingException {
+        RequestBuilder builder = new RequestBuilder(new Converter());
+        RestMethodInfo methodInfo = new RestMethodInfo();
+        methodInfo.requestType = RestMethodInfo.RequestType.MULTIPART;
+        methodInfo.requestMultipartPart = new String[] { "part" };
+        builder.methodInfo(methodInfo).apiUrl("http://example.com").args(new Object[] { null }).headers(null);
+        builder.build();
+    }
+}
+```</div></pre></div>
+<div class="conversation"><h4>RQ2, Retrofit, P1, T1</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
+
+Base version:
+```java
+/*
+ * Copyright (C) 2012 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package retrofit;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+import retrofit.client.Header;
+import retrofit.client.Request;
+import retrofit.converter.Converter;
+import retrofit.mime.FormUrlEncodedTypedOutput;
+import retrofit.mime.MultipartTypedOutput;
+import retrofit.mime.TypedOutput;
+
+/** Builds HTTP requests from Java method invocations. */
+final class RequestBuilder {
+  private final Converter converter;
+
+  private RestMethodInfo methodInfo;
+  private Object[] args;
+  private String apiUrl;
+  private List&lt;retrofit.client.Header&gt; headers;
+
+  RequestBuilder(Converter converter) {
+    this.converter = converter;
+  }
+
+  /** Supply cached method metadata info. */
+  RequestBuilder methodInfo(RestMethodInfo methodDetails) {
+    this.methodInfo = methodDetails;
+    return this;
+  }
+
+  /** Base API url. */
+  RequestBuilder apiUrl(String apiUrl) {
+    this.apiUrl = apiUrl;
+    return this;
+  }
+
+  /** Arguments from method invocation. */
+  RequestBuilder args(Object[] args) {
+    this.args = args;
+    return this;
+  }
+
+  /** A list of custom headers. */
+  RequestBuilder headers(List&lt;retrofit.client.Header&gt; headers) {
+    this.headers = headers;
+    return this;
+  }
+
+  /**
+   * Construct a {@link Request} from the supplied information. You &lt;strong&gt;must&lt;/strong&gt; call
+   * {@link #methodInfo}, {@link #apiUrl}, {@link #args}, and {@link #headers} before invoking this
+   * method.
+   */
+  Request build() throws UnsupportedEncodingException {
+    String apiUrl = this.apiUrl;
+
+    StringBuilder url = new StringBuilder(apiUrl);
+    if (apiUrl.endsWith("/")) {
+      // We require relative paths to start with '/'. Prevent a double-slash.
+      url.deleteCharAt(url.length() - 1);
+    }
+
+    // Append the method relative URL.
+    url.append(buildRelativeUrl());
+
+    // Append query parameters, if needed.
+    if (methodInfo.hasQueryParams) {
+      boolean first = true;
+      String requestQuery = methodInfo.requestQuery;
+      if (requestQuery != null) {
+        url.append(requestQuery);
+        first = false;
+      }
+      String[] requestQueryName = methodInfo.requestQueryName;
+      for (int i = 0; i &lt; requestQueryName.length; i++) {
+        String query = requestQueryName[i];
+        if (query != null) {
+          String value = URLEncoder.encode(String.valueOf(args[i]), "UTF-8");
+          url.append(first ? '?' : '&amp;').append(query).append('=').append(value);
+          first = false;
+        }
+      }
+    }
+
+    List&lt;retrofit.client.Header&gt; headers = new ArrayList&lt;retrofit.client.Header&gt;();
+    if (this.headers != null) {
+      headers.addAll(this.headers);
+    }
+    List&lt;Header&gt; methodHeaders = methodInfo.headers;
+    if (methodHeaders != null) {
+      headers.addAll(methodHeaders);
+    }
+    // RFC 2616: Header names are case-insensitive.
+    String[] requestParamHeader = methodInfo.requestParamHeader;
+    if (requestParamHeader != null) {
+      for (int i = 0; i &lt; requestParamHeader.length; i++) {
+        String name = requestParamHeader[i];
+        if (name == null) continue;
+        Object arg = args[i];
+        if (arg != null) {
+          headers.add(new retrofit.client.Header(name, String.valueOf(arg)));
+        }
+      }
+    }
+
+    return new Request(methodInfo.requestMethod, url.toString(), headers, buildBody());
+  }
+
+  /** Create the final relative URL by performing parameter replacement. */
+  private String buildRelativeUrl() throws UnsupportedEncodingException {
+    String replacedPath = methodInfo.requestUrl;
+    String[] requestUrlParam = methodInfo.requestUrlParam;
+    for (int i = 0; i &lt; requestUrlParam.length; i++) {
+      String param = requestUrlParam[i];
+      if (param != null) {
+        String value = URLEncoder.encode(String.valueOf(args[i]), "UTF-8");
+        replacedPath = replacedPath.replace("{" + param + "}", value);
+      }
+    }
+    return replacedPath;
+  }
+
+  /** Create the request body using the method info and invocation arguments. */
+  private TypedOutput buildBody() {
+    switch (methodInfo.requestType) {
+      case SIMPLE: {
+        int bodyIndex = methodInfo.bodyIndex;
+        if (bodyIndex == RestMethodInfo.NO_BODY) {
+          return null;
+        }
+        Object body = args[bodyIndex];
+        if (body instanceof TypedOutput) {
+          return (TypedOutput) body;
+        } else {
+          return converter.toBody(body);
+        }
+      }
+
+      case FORM_URL_ENCODED: {
+        FormUrlEncodedTypedOutput body = new FormUrlEncodedTypedOutput();
+        String[] requestFormFields = methodInfo.requestFormFields;
+        for (int i = 0; i &lt; requestFormFields.length; i++) {
+          String name = requestFormFields[i];
+          if (name != null) {
+            body.addField(name, String.valueOf(args[i]));
+          }
+        }
+        return body;
+      }
+
+      case MULTIPART: {
+        MultipartTypedOutput body = new MultipartTypedOutput();
+        String[] requestMultipartPart = methodInfo.requestMultipartPart;
+        for (int i = 0; i &lt; requestMultipartPart.length; i++) {
+          String name = requestMultipartPart[i];
+          if (name != null) {
+            Object value = args[i];
+            if (value instanceof TypedOutput) {
+              body.addPart(name, (TypedOutput) value);
+            } else {
+              body.addPart(name, converter.toBody(value));
+            }
+          }
+        }
+        return body;
+      }
+
+      default:
+        throw new IllegalArgumentException("Unknown request type " + methodInfo.requestType);
+    }
+  }
+}
+```
+
+Diff version A and the base:
+```diff
+--- a/retrofit/src/main/java/retrofit/RequestBuilder.java
++++ b/retrofit/src/main/java/retrofit/RequestBuilder.java
+@@ -85,7 +85,7 @@ final class RequestBuilder {
+       boolean first = true;
+       String requestQuery = methodInfo.requestQuery;
+       if (requestQuery != null) {
+-        url.append(requestQuery);
++        url.append('?').append(requestQuery);
+         first = false;
+       }
+       String[] requestQueryName = methodInfo.requestQueryName;
+```
+
+Diff version B and the base:
+```diff
+--- a/retrofit/src/main/java/retrofit/RequestBuilder.java
++++ b/retrofit/src/main/java/retrofit/RequestBuilder.java
+@@ -92,9 +92,12 @@ final class RequestBuilder {
+       for (int i = 0; i &lt; requestQueryName.length; i++) {
+         String query = requestQueryName[i];
+         if (query != null) {
+-          String value = URLEncoder.encode(String.valueOf(args[i]), "UTF-8");
+-          url.append(first ? '?' : '&amp;').append(query).append('=').append(value);
+-          first = false;
++          Object arg = args[i];
++          if (arg != null) { // Null values are skipped.
++            String value = URLEncoder.encode(String.valueOf(arg), "UTF-8");
++            url.append(first ? '?' : '&amp;').append(query).append('=').append(value);
++            first = false;
++          }
+         }
+       }
+     }
+@@ -130,7 +133,11 @@ final class RequestBuilder {
+     for (int i = 0; i &lt; requestUrlParam.length; i++) {
+       String param = requestUrlParam[i];
+       if (param != null) {
+-        String value = URLEncoder.encode(String.valueOf(args[i]), "UTF-8");
++        Object arg = args[i];
++        if (arg == null) {
++          throw new IllegalArgumentException("Path parameters must not be null: " + param + ".");
++        }
++        String value = URLEncoder.encode(String.valueOf(arg), "UTF-8");
+         replacedPath = replacedPath.replace("{" + param + "}", value);
+       }
+     }
+@@ -146,6 +153,9 @@ final class RequestBuilder {
+           return null;
+         }
+         Object body = args[bodyIndex];
++        if (body == null) {
++          throw new IllegalArgumentException("Body must not be null.");
++        }
+         if (body instanceof TypedOutput) {
+           return (TypedOutput) body;
+         } else {
+@@ -159,7 +169,10 @@ final class RequestBuilder {
+         for (int i = 0; i &lt; requestFormFields.length; i++) {
+           String name = requestFormFields[i];
+           if (name != null) {
+-            body.addField(name, String.valueOf(args[i]));
++            Object value = args[i];
++            if (value != null) { // Null values are skipped.
++              body.addField(name, String.valueOf(value));
++            }
+           }
+         }
+         return body;
+@@ -172,6 +185,9 @@ final class RequestBuilder {
+           String name = requestMultipartPart[i];
+           if (name != null) {
+             Object value = args[i];
++            if (value == null) {
++              throw new IllegalArgumentException("Multipart part must not be null: " + name + ".");
++            }
+             if (value instanceof TypedOutput) {
+               body.addPart(name, (TypedOutput) value);
+             } else {
+```
+
+Merge version:
+```java
+/*
+ * Copyright (C) 2012 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package retrofit;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+import retrofit.client.Header;
+import retrofit.client.Request;
+import retrofit.converter.Converter;
+import retrofit.mime.FormUrlEncodedTypedOutput;
+import retrofit.mime.MultipartTypedOutput;
+import retrofit.mime.TypedOutput;
+
+/** Builds HTTP requests from Java method invocations. */
+final class RequestBuilder {
+  private final Converter converter;
+
+  private RestMethodInfo methodInfo;
+  private Object[] args;
+  private String apiUrl;
+  private List&lt;retrofit.client.Header&gt; headers;
+
+  RequestBuilder(Converter converter) {
+    this.converter = converter;
+  }
+
+  /** Supply cached method metadata info. */
+  RequestBuilder methodInfo(RestMethodInfo methodDetails) {
+    this.methodInfo = methodDetails;
+    return this;
+  }
+
+  /** Base API url. */
+  RequestBuilder apiUrl(String apiUrl) {
+    this.apiUrl = apiUrl;
+    return this;
+  }
+
+  /** Arguments from method invocation. */
+  RequestBuilder args(Object[] args) {
+    this.args = args;
+    return this;
+  }
+
+  /** A list of custom headers. */
+  RequestBuilder headers(List&lt;retrofit.client.Header&gt; headers) {
+    this.headers = headers;
+    return this;
+  }
+
+  /**
+   * Construct a {@link Request} from the supplied information. You &lt;strong&gt;must&lt;/strong&gt; call
+   * {@link #methodInfo}, {@link #apiUrl}, {@link #args}, and {@link #headers} before invoking this
+   * method.
+   */
+  Request build() throws UnsupportedEncodingException {
+    String apiUrl = this.apiUrl;
+
+    StringBuilder url = new StringBuilder(apiUrl);
+    if (apiUrl.endsWith("/")) {
+      // We require relative paths to start with '/'. Prevent a double-slash.
+      url.deleteCharAt(url.length() - 1);
+    }
+
+    // Append the method relative URL.
+    url.append(buildRelativeUrl());
+
+    // Append query parameters, if needed.
+    if (methodInfo.hasQueryParams) {
+      boolean first = true;
+      String requestQuery = methodInfo.requestQuery;
+      if (requestQuery != null) {
+        url.append('?').append(requestQuery);
+        first = false;
+      }
+      String[] requestQueryName = methodInfo.requestQueryName;
+      for (int i = 0; i &lt; requestQueryName.length; i++) {
+        String query = requestQueryName[i];
+        if (query != null) {
+          Object arg = args[i];
+          if (arg != null) { // Null values are skipped.
+            String value = URLEncoder.encode(String.valueOf(arg), "UTF-8");
+            url.append(first ? '?' : '&amp;').append(query).append('=').append(value);
+            first = false;
+          }
+        }
+      }
+    }
+
+    List&lt;retrofit.client.Header&gt; headers = new ArrayList&lt;retrofit.client.Header&gt;();
+    if (this.headers != null) {
+      headers.addAll(this.headers);
+    }
+    List&lt;Header&gt; methodHeaders = methodInfo.headers;
+    if (methodHeaders != null) {
+      headers.addAll(methodHeaders);
+    }
+    // RFC 2616: Header names are case-insensitive.
+    String[] requestParamHeader = methodInfo.requestParamHeader;
+    if (requestParamHeader != null) {
+      for (int i = 0; i &lt; requestParamHeader.length; i++) {
+        String name = requestParamHeader[i];
+        if (name == null) continue;
+        Object arg = args[i];
+        if (arg != null) {
+          headers.add(new retrofit.client.Header(name, String.valueOf(arg)));
+        }
+      }
+    }
+
+    return new Request(methodInfo.requestMethod, url.toString(), headers, buildBody());
+  }
+
+  /** Create the final relative URL by performing parameter replacement. */
+  private String buildRelativeUrl() throws UnsupportedEncodingException {
+    String replacedPath = methodInfo.requestUrl;
+    String[] requestUrlParam = methodInfo.requestUrlParam;
+    for (int i = 0; i &lt; requestUrlParam.length; i++) {
+      String param = requestUrlParam[i];
+      if (param != null) {
+        Object arg = args[i];
+        if (arg == null) {
+          throw new IllegalArgumentException("Path parameters must not be null: " + param + ".");
+        }
+        String value = URLEncoder.encode(String.valueOf(arg), "UTF-8");
+        replacedPath = replacedPath.replace("{" + param + "}", value);
+      }
+    }
+    return replacedPath;
+  }
+
+  /** Create the request body using the method info and invocation arguments. */
+  private TypedOutput buildBody() {
+    switch (methodInfo.requestType) {
+      case SIMPLE: {
+        int bodyIndex = methodInfo.bodyIndex;
+        if (bodyIndex == RestMethodInfo.NO_BODY) {
+          return null;
+        }
+        Object body = args[bodyIndex];
+        if (body == null) {
+          throw new IllegalArgumentException("Body must not be null.");
+        }
+        if (body instanceof TypedOutput) {
+          return (TypedOutput) body;
+        } else {
+          return converter.toBody(body);
+        }
+      }
+
+      case FORM_URL_ENCODED: {
+        FormUrlEncodedTypedOutput body = new FormUrlEncodedTypedOutput();
+        String[] requestFormFields = methodInfo.requestFormFields;
+        for (int i = 0; i &lt; requestFormFields.length; i++) {
+          String name = requestFormFields[i];
+          if (name != null) {
+            Object value = args[i];
+            if (value != null) { // Null values are skipped.
+              body.addField(name, String.valueOf(value));
+            }
+          }
+        }
+        return body;
+      }
+
+      case MULTIPART: {
+        MultipartTypedOutput body = new MultipartTypedOutput();
+        String[] requestMultipartPart = methodInfo.requestMultipartPart;
+        for (int i = 0; i &lt; requestMultipartPart.length; i++) {
+          String name = requestMultipartPart[i];
+          if (name != null) {
+            Object value = args[i];
+            if (value == null) {
+              throw new IllegalArgumentException("Multipart part must not be null: " + name + ".");
+            }
+            if (value instanceof TypedOutput) {
+              body.addPart(name, (TypedOutput) value);
+            } else {
+              body.addPart(name, converter.toBody(value));
+            }
+          }
+        }
+        return body;
+      }
+
+      default:
+        throw new IllegalArgumentException("Unknown request type " + methodInfo.requestType);
+    }
+  }
+}
+```
+
+Explanation of the semantic conflict: The merge involves the method build() and the changes made to it and to buildRelativeUrl().
+Branch A only alters how request queries are handled, by adding the appropriate ? to the url when one is present.
+Branch B adds several checks for Null arguments for request query arguments, path parameters, form fields and multipart parts, throwing an exception or ignoring them
+as adequate.
+Both of these chances are integrated and as a result, the behaviour of Request construction is different in the merge.
+Generate just code with necessary imports. No explanation needed.</div></pre><pre class="message"><div class="author">ChatGPT</div><div>```java
+import static org.junit.Assert.*;
+import org.junit.Test;
+import retrofit.Request;
+import retrofit.client.Header;
+import retrofit.converter.Converter;
+import retrofit.mime.FormUrlEncodedTypedOutput;
+import retrofit.mime.MultipartTypedOutput;
+import retrofit.mime.TypedOutput;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+import java.net.URLEncoder;
+```
+
+```java
+public class RequestBuilderTest {
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testBuildRelativeUrlWithNullPathParam() throws UnsupportedEncodingException {
+    RequestBuilder builder = new RequestBuilder(mockConverter());
+    builder.methodInfo(mockMethodInfo());
+    builder.apiUrl("http://example.com");
+    builder.args(new Object[]{null}); // Pass null argument
+    builder.build(); // This should throw IllegalArgumentException
+  }
+
+  // Additional test cases for other scenarios would be added here
+}
+```</div></pre></div>
 <div class="conversation"><h4>RQ2, Antlr, P1, T3</h4><pre class="message"><div class="author">user</div><div>You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
 
