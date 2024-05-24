@@ -178,6 +178,7 @@ From this we can observe:
     Cart (PM) Manual         & 0 & 18 & Other \\
     Cart (PM) ChatGPT        & 1 & 42 & Assert/Other \\
     Antlr (PF) Manual        & 3 & 1 & Assert \\
+    Retrofit (PM/CM) Manual  & 0 & N/A & Other \\
     \midrule
     \end{tabular}
     \caption{Results by conflict and explanation type.\label{tab:results:rq2}}
@@ -260,11 +261,10 @@ the method is called for Producer. However the ```Resgistration''' typo is corre
 Naturally, this stops code from compiling, but it is a noteworthy example of how Large-Language Models, due to their nature as 
 predictive models, can fail in outlier cases, such as an unexpected typo in method namings.
 
-It is noticeable that for the cases with many compilation errors, namely the Cart examples, prompts with ChatGPT explanations
-required significant more correction than prompts with manual corrections. An explanation might be that due to their more
-extensive length, ChatGPT explanations prompt the generation of more complex and longer tests. However as can be seen in
+It is noticeable that for Cart(CM), the manual explanation test cases required relatively more edit, while the reverse
+is observed for Cart(PM). An explanation might be that one type of prompt generates more complex and longer tests. However as can be seen in
 \cref{tab:results:rq2tests}, both examples have comparable amount of test cases and test length does not vary much.
-It is possible these are the results of outliers: that if we for example observe Cart (PM), the results are significantly weighed by
+It is possible these are the results of outliers: that if we for example observe Cart (PM), ChatGPT explanation, the results are significantly weighed by
 trial 3, which requires significant correction due to the way it tries to access the user:
 \begin{answer}
     @Test
@@ -339,8 +339,12 @@ has an edit distance of 121, has correction requires extracting the user for acc
         assertEquals(0, user.balance, 0.001);
     }
 \end{answer}
-This same error of trying to access user from cart can be found in other ChatGPT results, but it is ambiguous
-whether this is somehow the result of the prompt or coincidental generations.
+This same error of trying to access user from cart can be found in other ChatGPT results in PM, but it is ambiguous
+whether this is somehow the result of the prompt or coincidental generations. On the other side, Cart (CM) tended to generate
+asserts of type AssertThrow and AssertNotThrow, which often had to be reversed to be in line with merge, for manual, whereas for
+ChatGPT explanation the conflict these asserts were more often correct. This is clearly an issue with the manually written explanation,
+which claims the error throwing behaviour in merge is not intended, leading for tests that assert that nothing is thrown.
+It is thus likely good practice to not make value judgements on the behaviour of the code in merge.
 
 On the topic of compilation errors, it is worth nothing often, for Cart(CM) these were related to constructors, as the constructors
 for the other classes involved in the Cart conflicts (Item and User) were not included in the prompt. It is interesting
@@ -413,6 +417,65 @@ The other case where the conflict is rarely identified despite our corrections i
 \end{answer}
 Within the parameters of our work and a corrective system that works off compilation and test errors, this is the most problematic case: as the test works perfectly in merge,
 there is nothing prompting us for repair and repair would require more than simply changing a value, but to actually change the type of assert itself.
+
+Retrofit stands as an outlier and indeed we did correct the generated tests as they are so deviated from correctness, any edit would have to fundamentally alter the setup and structure of the test,
+to a point where if henceforth the test worked, we could not say it reflected anything on ChatGPT's capabilities. 
+From observing, it is clear the LLM in a way does not have enough information to correctly generate tests and thus opts for generating non-existent mocks:
+\begin{answer}
+    @Test(expected = IllegalArgumentException.class)
+    public void testBuildRelativeUrlWithNullPathParam() throws UnsupportedEncodingException {
+      RequestBuilder builder = new RequestBuilder(mockConverter());
+      builder.methodInfo(mockMethodInfo());
+      builder.apiUrl("http://example.com");
+      builder.args(new Object[]{null}); // Pass null argument
+      builder.build(); // This should throw IllegalArgumentException
+    }
+\end{answer}
+As well as extensive incomplete test suites, which end up being almost all the same.
+\begin{answer}
+    @Test(expected = IllegalArgumentException.class)
+    public void testBuildRelativeUrl_NullPathParam() throws UnsupportedEncodingException {
+      RequestBuilder builder = new RequestBuilder(mock(Converter.class));
+      builder.methodInfo(mock(RestMethodInfo.class))
+             .apiUrl("http://example.com")
+             .args(new Object[] {null})
+             .build();
+    }
+  
+    @Test(expected = IllegalArgumentException.class)
+    public void testBuildBody_NullBody() {
+      RequestBuilder builder = new RequestBuilder(mock(Converter.class));
+      builder.methodInfo(mock(RestMethodInfo.class))
+             .apiUrl("http://example.com")
+             .args(new Object[] {null})
+             .build();
+    }
+  
+    @Test(expected = IllegalArgumentException.class)
+    public void testBuildBody_NullFormUrlEncodedField() {
+      RequestBuilder builder = new RequestBuilder(mock(Converter.class));
+      builder.methodInfo(mock(RestMethodInfo.class))
+             .apiUrl("http://example.com")
+             .args(new Object[] {null})
+             .build();
+    }
+  
+    @Test(expected = IllegalArgumentException.class)
+    public void testBuildBody_NullMultipartPart() {
+      RequestBuilder builder = new RequestBuilder(mock(Converter.class));
+      builder.methodInfo(mock(RestMethodInfo.class))
+             .apiUrl("http://example.com")
+             .args(new Object[] {null})
+             .build();
+    }
+\end{answer}
+It is worth noting none of the tests seem to attempt to test both modified behaviours at once (? addition to query parameters and null handlings). Thus even if correctly designed, they would not detect the conflict.
+However this could always be a prompt issue.
+
+It is worth nothing Retrofit has a large existing test suite, including a Helper class which is very helpful for setting up the RequestBuilder with appropriate arguments.
+Exploratory work had shown that feeding this test class and prompting for generation on its style could lead to the generation of working (but not detecting) tests. It is probable then,
+that for these complex real-world scenarions, aiding test generation by giving examples of existing test suites will be a necessary part of the prompt. Indeed, even if ChatGPT could generate
+working tests regardless, it would still be useful for developers to have them more closely conform the existing suite.
 
 Despite all the problems mentioned previously, the results are generally quite good, as most errors are relatively small and easily fixable with further prompting or manual edits as we did.
 Thus we can say with some certainty that for these simple cases, most of which where ChatGPT can identify the conflict with some degree of confidence, it can also generate appropriate unit tests.
