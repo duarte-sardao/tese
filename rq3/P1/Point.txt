@@ -1,0 +1,16 @@
+"move()"
+public class Point {
+    private double x;
+    private double y;
+    public Point(double, double);
+    public double getX() ;
+    public double getY();
+    public double distance();
+    public String toString();
+    //Focal Method
+    public void move() {
+         double dist = distance();
+         this.x += dist;
+         this.y += dist;
+    }
+}

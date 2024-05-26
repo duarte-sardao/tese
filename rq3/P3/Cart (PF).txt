@@ -1,0 +1,22 @@
+getDiscountCodes()
+Cart
+public class Cart {
+    private List<Item> cartItems;
+    private final User user;
+    private static final Map<String, Double> discounts = Collections.unmodifiableMap(new HashMap<>() {{
+        put("loyal", 0.1d);
+        put("30ff", 0.3d); put("2023", 0.3d);
+        put("throwback", 0.15d); put("2024", 0.2d);
+        put("fun", 0.05d);
+    }});
+    public boolean checkForDiscountRenewal();
+    public Cart(User);
+    public double sum_items();
+    public double total_cost(double);
+    public void add_item(Item);
+    public void checkout(String);
+    //Focal Method
+    public Set<String> getDiscountCodes() {
+        return discounts.keySet();
+    }
+}

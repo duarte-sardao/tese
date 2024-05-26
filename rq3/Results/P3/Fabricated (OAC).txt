@@ -1,0 +1,114 @@
+Prompt:
+Please help me generate a whole JUnit test for a focal method in a focal class. I will provide the following information: 
+1. Required dependencies to import.
+2. The focal class signature.
+3. Source code of the focal method.
+4. Signatures of other methods and fields in the class.
+I need you to create a whole unit test using JUnit 4 and Mockito 3, ensuring optimal branch and line coverage. The test should include necessary imports for JUnit 4 andMockito 3, compile without errors, and use reflection to invoke private methods. No additional explanations required.
+
+The focal method is setProducerNumber(int) in focal class Event, the information is public class Event {
+
+	public static final String FIND_BY_NAME = "Event.findByName";
+	public static final String DATES_WITH_TICKETS_BY_STATE = "Event.datesWithTicketsByState";
+	public static final String SEATS_FOR_EVENT_DATE_BY_STATE = "Event.seatsForEventDateByState";
+	public static final String STRING_NAME = "name";
+	public static final String DATE_DATE = "date";
+	public static final String _TICKETS = "tickets";
+	public static final String ENUM_TICKET_STATE = "ticket_state";
+
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	private int id;
+
+	@Column(nullable = false, unique = true, name="Name")
+	private String name;
+
+	@Convert(converter = LocalDateAttributeConverter.class)
+	private LocalDate ticketStartSellingDate;
+
+	@Enumerated(EnumType.STRING)
+	private String type;
+
+	@OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<EventDate> dates;
+
+	@OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Ticket> tickets;
+
+	@ManyToOne
+	private EventVenue venue;
+
+	@ManyToOne
+	private Producer producer;
+
+	public Event();
+	
+	public Event(Producer, String, String, List<Triplet<LocalDate, LocalTime, LocalTime>>);
+	
+	public int getId();
+	public LocalDate getStartSellingDate();
+	public void setStartSellingDate(LocalDate);
+	public EventVenue getVenue();
+	public void setVenue(EventVenue);
+	public String getName();
+	public String getType();
+	public List<Ticket> getTickets();
+	public Producer getProducer();
+	public void setProducer(Producer p);
+	public void setTickets(List<Ticket> tickets);
+	public void setName(String name);
+	public List<EventDate> getDates();
+	//Focal Method
+	public int setProducerNumber(int n){
+		if(producer != null){
+			producer.setResgistrationNumber(n);
+			return producer.getRegistrationNumber();
+		}
+		return -1;
+	}
+}
+Completion:
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Test;
+
+public class EventTest {
+
+	@Test
+	public void testSetProducerNumber() throws Exception {
+		// Create a mock Event object
+		Event event = new Event();
+		
+		// Create a mock Producer object
+		Producer producer = mock(Producer.class);
+		
+		// Set up the Event object with the mock Producer
+		event.setProducer(producer);
+		
+		// Set up the input value for the setProducerNumber method
+		int n = 12345;
+		
+		// Set up the expected output value
+		int expected = 12345;
+		
+		// Mock the behavior of the getRegistrationNumber method of the Producer
+		when(producer.getRegistrationNumber()).thenReturn(expected);
+		
+		// Call the focal method using reflection
+		Event.class.getDeclaredMethod("setProducerNumber", int.class).invoke(event, n);
+		
+		// Verify that the setRegistrationNumber method of the Producer was called with the correct input value
+		verify(producer).setRegistrationNumber(n);
+		
+		// Verify that the getRegistrationNumber method of the Producer was called
+		verify(producer).getRegistrationNumber();
+		
+		// Check that the return value of the focal method is as expected
+		assertEquals(expected, event.getProducer().getRegistrationNumber());
+	}
+
+}

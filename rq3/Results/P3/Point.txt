@@ -1,0 +1,53 @@
+Prompt:
+Please help me generate a whole JUnit test for a focal method in a focal class. I will provide the following information: 
+1. Required dependencies to import.
+2. The focal class signature.
+3. Source code of the focal method.
+4. Signatures of other methods and fields in the class.
+I need you to create a whole unit test using JUnit 4 and Mockito 3, ensuring optimal branch and line coverage. The test should include necessary imports for JUnit 4 andMockito 3, compile without errors, and use reflection to invoke private methods. No additional explanations required.
+
+The focal method is move() in focal class Point, the information is public class Point {
+    private double x;
+    private double y;
+    public Point(double, double);
+    public double getX() ;
+    public double getY();
+    public double distance();
+    public String toString();
+    //Focal Method
+    public void move() {
+         double dist = distance();
+         this.x += dist;
+         this.y += dist;
+    }
+}
+Completion:
+```java
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
+public class PointTest {
+
+    @Mock
+    private Point point;
+
+    @Test
+    public void testMove() throws Exception {
+        // Mocking distance method
+        when(point.distance()).thenReturn(5.0);
+
+        // Using reflection to invoke private method move()
+        Point.class.getDeclaredMethod("move").invoke(point);
+
+        // Verifying the new values of x and y after calling move()
+        assertEquals(5.0, point.getX(), 0.0);
+        assertEquals(5.0, point.getY(), 0.0);
+    }
+}
+```

@@ -1,0 +1,151 @@
+Prompt:
+//Cart.java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Cart {
+    private List<Item> cartItems;
+    private final User user;
+
+    private static final Map<String, Double> discounts = Collections.unmodifiableMap(new HashMap<>() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        if(user.admin)
+            return 0;
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        if(cost==0)
+            throw new RuntimeException("Cost can't be 0");
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+
+//CartTest.java
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+
+/**
+ * Test class of Cart.
+ * It contains 10 unit test cases for the
+ * checkout() method.
+ */
+ class CartTest {
+
+
+Completion:
+import org.junit.jupiter.api.BeforeEach;
+
+class CartTest {
+
+    private Cart cart;
+    private User user;
+
+    @BeforeEach
+    void setUp() {
+        user = new User("John", false, 100.0);
+        cart = new Cart(user);
+    }
+
+    @Test
+    void testCheckoutWithValidCode() {
+        Item item = new Item("Item1", 10.0, 2);
+        cart.add_item(item);
+        cart.checkout("loyal");
+        assertEquals(80.0, user.balance);
+    }
+
+    @Test
+    void testCheckoutWithInvalidCode() {
+        Item item = new Item("Item2", 20.0, 1);
+        cart.add_item(item);
+        assertThrows(NullPointerException.class, () -> cart.checkout("invalid"));
+    }
+
+    @Test
+    void testCheckoutWithZeroCost() {
+        Item item = new Item("Item3", 30.0, 1);
+        cart.add_item(item);
+        assertThrows(RuntimeException.class, () -> cart.checkout("30ff"));
+    }
+
+    @Test
+    void testCheckoutWithAdminUser() {
+        user.setAdmin(true);
+        Item item = new Item("Item4", 40.0, 1);
+        cart.add_item(item);
+        cart.checkout("superpromo");
+        assertEquals(100.0, user.balance);
+    }
+
+    @Test
+    void testCheckoutWithMultipleItems() {
+        Item item1 = new Item("Item5", 10.0, 2);
+        Item item2 = new Item("Item6", 20.0, 1);
+        cart.add_item(item1);
+        cart.add_item(item2);
+        cart.checkout("2024");
+        assertEquals(50.0, user.balance);
+    }
+
+    @Test
+    void testCheckoutWithEmptyCart() {
+        assertThrows(RuntimeException.class, () -> cart.checkout("superpromo"));
+    }
+
+    @Test
+    void testSumItems() {
+        Item item1 = new Item("Item7", 10.0, 2);
+        Item item2 = new Item("Item8", 20.0, 1);
+        cart.add_item(item1);
+        cart.add_item(item2);
+        assertEquals(40.0, cart.sum_items());
+    }
+
+    @Test
+    void testTotalCost() {
+        Item item = new Item("Item9", 10.0, 2);
+        cart.add_item(item);
+        assertEquals(18.0, cart.total_cost(0.1));
+    }
+
+    @Test
+    void testTotalCostWithAdminUser() {
+        user.setAdmin(true);
+        Item item = new Item("Item10", 20.0, 1);
+        cart.add_item(item);
+        assertEquals(0.0, cart.total_cost(0.25));
+    }
+}

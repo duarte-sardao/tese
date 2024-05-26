@@ -1,0 +1,123 @@
+Prompt:
+//Point.java
+public class Point {
+    private double x;
+    private double y;
+
+    public Point(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+     public void move() {
+         double dist = distance();
+         this.x += dist;
+         this.y += dist;
+     }
+
+    public double distance() {
+        return Math.abs(getX())+Math.abs(getY());
+    }
+
+    public String toString() {
+        return "(" + getX() + ", " + getY() + ")";
+    }
+}
+
+//PointTest.java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+
+/**
+ * Test class of Point.
+ * It contains 10 unit test cases for the
+ * move() method.
+ */
+ class PointTest {
+
+
+Completion:
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class PointTest {
+
+    @Test
+    void testMovePositiveCoordinates() {
+        Point point = new Point(3, 4);
+        point.move();
+        assertEquals("(7.0, 8.0)", point.toString());
+    }
+
+    @Test
+    void testMoveNegativeCoordinates() {
+        Point point = new Point(-2, -5);
+        point.move();
+        assertEquals("(1.0, 0.0)", point.toString());
+    }
+
+    @Test
+    void testMoveZeroCoordinates() {
+        Point point = new Point(0, 0);
+        point.move();
+        assertEquals("(0.0, 0.0)", point.toString());
+    }
+
+    @Test
+    void testMoveMixedCoordinates() {
+        Point point = new Point(-3, 5);
+        point.move();
+        assertEquals("(2.0, 8.0)", point.toString());
+    }
+
+    @Test
+    void testMoveLargeCoordinates() {
+        Point point = new Point(1000, 2000);
+        point.move();
+        assertEquals("(3000.0, 4000.0)", point.toString());
+    }
+
+    @Test
+    void testMoveDecimalCoordinates() {
+        Point point = new Point(1.5, 2.5);
+        point.move();
+        assertEquals("(4.0, 5.0)", point.toString());
+    }
+
+    @Test
+    void testMoveNegativeDecimalCoordinates() {
+        Point point = new Point(-1.5, -2.5);
+        point.move();
+        assertEquals("(1.0, 0.0)", point.toString());
+    }
+
+    @Test
+    void testMoveZeroDecimalCoordinates() {
+        Point point = new Point(0.0, 0.0);
+        point.move();
+        assertEquals("(0.0, 0.0)", point.toString());
+    }
+
+    @Test
+    void testMoveLargeDecimalCoordinates() {
+        Point point = new Point(1234.5678, 9876.5432);
+        point.move();
+        assertEquals("(11111.111, 11111.111)", point.toString());
+    }
+
+    @Test
+    void testMoveNegativeLargeDecimalCoordinates() {
+        Point point = new Point(-1234.5678, -9876.5432);
+        point.move();
+        assertEquals("(11111.111, 11111.111)", point.toString());
+    }
+}

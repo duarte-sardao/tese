@@ -1,0 +1,45 @@
+//Point.java
+public class Point {
+    private double x;
+    private double y;
+
+    public Point(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+     public void move() {
+         double dist = distance();
+         this.x += dist;
+         this.y += dist;
+     }
+
+    public double distance() {
+        return Math.abs(getX())+Math.abs(getY());
+    }
+
+    public String toString() {
+        return "(" + getX() + ", " + getY() + ")";
+    }
+}
+
+//PointTest.java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+
+/**
+ * Test class of Point.
+ * It contains 10 unit test cases for the
+ * move() method.
+ */
+ class PointTest {
+

@@ -1,0 +1,19 @@
+hashString()
+InstalacaoAssentos
+public class InstalacaoAssentos extends Instalacao implements Serializable {
+	private static final long serialVersionUID = 1L;
+	@OneToMany
+	private List<Lugar> lugares;
+	public InstalacaoAssentos();
+	@Override
+	public List<Lugar> getLugares();
+	public void setLugares(List<Lugar>);
+	@Override
+	public String getType();
+	@Override
+	public int getOcupacao();
+	//Focal Method
+	public int hashString(){
+		return helpString().hashCode();
+	}
+}

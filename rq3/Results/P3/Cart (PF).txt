@@ -1,0 +1,70 @@
+Prompt:
+Please help me generate a whole JUnit test for a focal method in a focal class. I will provide the following information: 
+1. Required dependencies to import.
+2. The focal class signature.
+3. Source code of the focal method.
+4. Signatures of other methods and fields in the class.
+I need you to create a whole unit test using JUnit 4 and Mockito 3, ensuring optimal branch and line coverage. The test should include necessary imports for JUnit 4 andMockito 3, compile without errors, and use reflection to invoke private methods. No additional explanations required.
+
+The focal method is getDiscountCodes() in focal class Cart, the information is public class Cart {
+    private List<Item> cartItems;
+    private final User user;
+    private static final Map<String, Double> discounts = Collections.unmodifiableMap(new HashMap<>() {{
+        put("loyal", 0.1d);
+        put("30ff", 0.3d); put("2023", 0.3d);
+        put("throwback", 0.15d); put("2024", 0.2d);
+        put("fun", 0.05d);
+    }});
+    public boolean checkForDiscountRenewal();
+    public Cart(User);
+    public double sum_items();
+    public double total_cost(double);
+    public void add_item(Item);
+    public void checkout(String);
+    //Focal Method
+    public Set<String> getDiscountCodes() {
+        return discounts.keySet();
+    }
+}
+Completion:
+```java
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.junit.Test;
+
+public class CartTest {
+
+    @Test
+    public void testGetDiscountCodes() throws Exception {
+        // Setup
+        Cart cart = new Cart(mock(User.class));
+
+        // Invoke focal method using reflection
+        Set<String> result = invokeGetDiscountCodes(cart);
+
+        // Verify
+        Set<String> expectedDiscountCodes = new HashSet<>(Collections.unmodifiableMap(new HashMap<String, Double>() {{
+            put("loyal", 0.1d);
+            put("30ff", 0.3d);
+            put("2023", 0.3d);
+            put("throwback", 0.15d);
+            put("2024", 0.2d);
+            put("fun", 0.05d);
+        }}).keySet());
+        assertEquals(expectedDiscountCodes, result);
+    }
+
+    // Helper method to invoke private method using reflection
+    private Set<String> invokeGetDiscountCodes(Cart cart) throws Exception {
+        return (Set<String>) Cart.class.getDeclaredMethod("getDiscountCodes").invoke(cart);
+    }
+}
+```

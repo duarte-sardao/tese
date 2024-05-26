@@ -1,0 +1,105 @@
+Prompt:
+Please help me generate a whole JUnit test for a focal method in a focal class. I will provide the following information: 
+1. Required dependencies to import.
+2. The focal class signature.
+3. Source code of the focal method.
+4. Signatures of other methods and fields in the class.
+I need you to create a whole unit test using JUnit 4 and Mockito 3, ensuring optimal branch and line coverage. The test should include necessary imports for JUnit 4 andMockito 3, compile without errors, and use reflection to invoke private methods. No additional explanations required.
+
+The focal method is getBadWords() in focal class Python2Target, the information is public class Python2Target extends Target {
+	protected static final String[] python2Keywords = {
+		"abs", "all", "any", "apply", "as",
+		"bin", "bool", "buffer", "bytearray",
+		"callable", "chr", "classmethod", "coerce", "compile", "complex",
+		"del", "delattr", "dict", "dir", "divmod",
+		"enumerate", "eval", "execfile",
+		"file", "filter", "float", "format", "frozenset",
+		"getattr", "globals",
+		"hasattr", "hash", "help", "hex",
+		"id", "input", "int", "intern", "isinstance", "issubclass", "iter",
+		"len", "list", "locals",
+		"map", "max", "min", "next",
+		"memoryview",
+		"object", "oct", "open", "ord",
+		"pow", "print", "property",
+		"range", "raw_input", "reduce", "reload", "repr", "return", "reversed", "round",
+		"set", "setattr", "slice", "sorted", "staticmethod", "str", "sum", "super",
+		"tuple", "type",
+		"unichr", "unicode",
+		"vars",
+		"with",
+		"xrange",
+		"zip",
+		"__import__",
+		"True", "False", "None"
+	};
+	protected final Set<String> badWords = new HashSet<String>();
+	public Python2Target(CodeGenerator);
+	@Override
+	protected boolean visibleGrammarSymbolCausesIssueInGeneratedCode(GrammarAST);
+	@Override
+	protected STGroup loadTemplates();
+	protected static class PythonStringRenderer extends StringRenderer {
+
+		@Override
+		public String toString(Object, String, Locale);
+	}
+	@Override
+	public boolean wantsBaseListener();
+	@Override
+	public boolean wantsBaseVisitor();
+	@Override
+	public boolean supportsOverloadedMethods();
+	@Override
+	public String getVersion();
+	protected void addBadWords();
+	//Focal Method
+	public Set<String> getBadWords() {
+		if (badWords.isEmpty()) {
+			addBadWords();
+		}
+
+		return badWords;
+	}
+}
+Completion:
+```java
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.antlr.v4.tool.GrammarAST;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.StringRenderer;
+import org.junit.Test;
+
+public class Python2TargetTest {
+
+    @Test
+    public void testGetBadWords() throws Exception {
+        Python2Target python2Target = new Python2Target(mock(CodeGenerator.class));
+        Set<String> expectedBadWords = new HashSet<>();
+        expectedBadWords.add("abs");
+        expectedBadWords.add("all");
+        expectedBadWords.add("any");
+        expectedBadWords.add("apply");
+        expectedBadWords.add("as");
+        // Add more expected bad words as needed
+
+        // Mock the addBadWords method to populate the badWords set
+        Python2Target spyPython2Target = org.mockito.Mockito.spy(python2Target);
+        when(spyPython2Target.getBadWords()).thenCallRealMethod();
+        when(spyPython2Target.badWords).thenReturn(new HashSet<>());
+        spyPython2Target.getBadWords();
+
+        // Use reflection to access the private badWords field
+        Set<String> actualBadWords = (Set<String>) spyPython2Target.getClass().getDeclaredField("badWords").get(spyPython2Target);
+
+        assertEquals(expectedBadWords, actualBadWords);
+    }
+}
+```
+Please make sure to add the necessary imports for the classes used in the test.

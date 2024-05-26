@@ -1,0 +1,58 @@
+getBadWords()
+Python2Target
+public class Python2Target extends Target {
+	protected static final String[] python2Keywords = {
+		"abs", "all", "any", "apply", "as",
+		"bin", "bool", "buffer", "bytearray",
+		"callable", "chr", "classmethod", "coerce", "compile", "complex",
+		"del", "delattr", "dict", "dir", "divmod",
+		"enumerate", "eval", "execfile",
+		"file", "filter", "float", "format", "frozenset",
+		"getattr", "globals",
+		"hasattr", "hash", "help", "hex",
+		"id", "input", "int", "intern", "isinstance", "issubclass", "iter",
+		"len", "list", "locals",
+		"map", "max", "min", "next",
+		"memoryview",
+		"object", "oct", "open", "ord",
+		"pow", "print", "property",
+		"range", "raw_input", "reduce", "reload", "repr", "return", "reversed", "round",
+		"set", "setattr", "slice", "sorted", "staticmethod", "str", "sum", "super",
+		"tuple", "type",
+		"unichr", "unicode",
+		"vars",
+		"with",
+		"xrange",
+		"zip",
+		"__import__",
+		"True", "False", "None"
+	};
+	protected final Set<String> badWords = new HashSet<String>();
+	public Python2Target(CodeGenerator);
+	@Override
+	protected boolean visibleGrammarSymbolCausesIssueInGeneratedCode(GrammarAST);
+	@Override
+	protected STGroup loadTemplates();
+	protected static class PythonStringRenderer extends StringRenderer {
+
+		@Override
+		public String toString(Object, String, Locale);
+	}
+	@Override
+	public boolean wantsBaseListener();
+	@Override
+	public boolean wantsBaseVisitor();
+	@Override
+	public boolean supportsOverloadedMethods();
+	@Override
+	public String getVersion();
+	protected void addBadWords();
+	//Focal Method
+	public Set<String> getBadWords() {
+		if (badWords.isEmpty()) {
+			addBadWords();
+		}
+
+		return badWords;
+	}
+}

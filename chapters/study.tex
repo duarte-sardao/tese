@@ -136,7 +136,9 @@ The instance of ChatGPT used was the web-based ChatGPT 3.5 Turbo, with default t
   \item[\textbf{RQ1:}] Can ChatGPT identify, understand, and explain, whether
   there is a semantic conflict in a merge commit?
 
-  \item[\textbf{RQ2:}] Can ChatGPT develop unit tests to identify the introduced, altered or lost behaviour due to a semantic conflict, if given an explanation of it?
+  \item[\textbf{RQ2:}] Can ChatGPT develop unit tests to identify the emergent behaviour of to a semantic conflict, if given an explanation of it?
+  
+  \item[\textbf{RQ3:}] Can state-of-the-art prompts develop unit tests to identify semantic conflicts, and how do they compare to the prompt developed for RQ2?
 \end{itemize}
 
 \section{Experimental procedure}
@@ -397,8 +399,24 @@ Two versions of the prompt were run, each with three trials: in the first, the e
 This way it could be evaluated to what extent this influence test generation results.
 
 Testing of the subjects was done on the basis of identifying emergent behaviour: this involves the generation of unit tests that 
-pass in merge and fail in the parent branches (or one branch fails to compile)~\citet{kn:nuno}. This identifies the conflict by
+pass in merge and fail in the parent branches (or one branch fails to compile)~\citep{kn:nuno}. This identifies the conflict by
 asserting the behaviour present in merge that was not present before, ie, emerges.
+
+\subsection{RQ3}
+
+Research Question 3 seeks to assess the relevance of our developed work by assessing the generative abilities of previous state-of-the-art prompts,
+which just generate tests for methods, with no conflict information. This will allow us to consider to what extent this feature affects test generation.
+
+We took three prompts:
+\begin{itemize}
+  \item Prompt 1, from ``No More Manual Tests? Evaluating and Improving ChatGPT for Unit Test Generation''by ~\citet{kn:chattester}
+  \item Prompt 2, from ``Using Large Language Models to Generate JUnit Tests: An Empirical Study''by ~\citet{kn:siddiq2023empirical}
+  \item Prompt 3, from ``ChatUniTest: A Framework for LLM-Based Test Generation''by~\citet{kn:chatunitest}
+\end{itemize}
+
+Only one test was generated per subject, as the focus was more on the behaviour throughout the whole suite instead of evaluation on a subject by subject basis.
+Furthermore, Prompt 2 has a temperature of 0, makign repeated trials redundant.
+
 
 \section{Threats to validity}
 

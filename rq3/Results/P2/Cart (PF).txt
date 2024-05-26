@@ -1,0 +1,144 @@
+Prompt:
+//Cart.java
+import java.util.*;
+
+public class Cart {
+    private List<Item> cartItems;
+    private final User user;
+
+    private static final Map<String, Double> discounts = Collections.unmodifiableMap(new HashMap<>() {{
+        put("loyal", 0.1d);
+        put("30ff", 0.3d); put("2023", 0.3d);
+        put("throwback", 0.15d); put("2024", 0.2d);
+        put("fun", 0.05d);
+    }});
+
+    public Set<String> getDiscountCodes() {
+        return discounts.keySet();
+    }
+
+    public boolean checkForDiscountRenewal() {
+        if(getDiscountCodes().size() <= 6)
+            return true;
+        else
+            return false;
+    }
+
+
+    public Cart(User user) {
+        this.user = user;
+        cartItems = new ArrayList<>();
+    }
+
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            sum += item.value*item.amount;
+        }
+        return Math.max(0, sum);
+    }
+    public double total_cost(double discount) {
+        double sum = sum_items();
+        return sum - sum * discount;
+    }
+
+    public void add_item(Item item) {
+        cartItems.add(item);
+    }
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+
+//CartTest.java
+import java.util.*;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+
+/**
+ * Test class of Cart.
+ * It contains 10 unit test cases for the
+ * getDiscountCodes() method.
+ */
+ class CartTest {
+
+
+Completion:
+@Test
+void testGetDiscountCodesNotEmpty() {
+    Cart cart = new Cart(new User("John"));
+    Set<String> discountCodes = cart.getDiscountCodes();
+    assertFalse(discountCodes.isEmpty());
+}
+
+@Test
+void testGetDiscountCodesSize() {
+    Cart cart = new Cart(new User("Alice"));
+    Set<String> discountCodes = cart.getDiscountCodes();
+    assertEquals(6, discountCodes.size());
+}
+
+@Test
+void testGetDiscountCodesContains() {
+    Cart cart = new Cart(new User("Bob"));
+    Set<String> discountCodes = cart.getDiscountCodes();
+    assertTrue(discountCodes.contains("loyal"));
+}
+
+@Test
+void testCheckForDiscountRenewalTrue() {
+    Cart cart = new Cart(new User("Jane"));
+    assertTrue(cart.checkForDiscountRenewal());
+}
+
+@Test
+void testCheckForDiscountRenewalFalse() {
+    Cart cart = new Cart(new User("Doe"));
+    cart.getDiscountCodes().add("newDiscount");
+    assertFalse(cart.checkForDiscountRenewal());
+}
+
+@Test
+void testSumItemsEmptyCart() {
+    Cart cart = new Cart(new User("Sam"));
+    assertEquals(0.0, cart.sum_items());
+}
+
+@Test
+void testSumItemsNonEmptyCart() {
+    Cart cart = new Cart(new User("Eve"));
+    cart.add_item(new Item("Apple", 1.0, 2));
+    cart.add_item(new Item("Banana", 0.5, 3));
+    assertEquals(3.0, cart.sum_items());
+}
+
+@Test
+void testTotalCostWithDiscount() {
+    Cart cart = new Cart(new User("Mike"));
+    cart.add_item(new Item("Laptop", 1000.0, 1));
+    double totalCost = cart.total_cost(0.1);
+    assertEquals(900.0, totalCost);
+}
+
+@Test
+void testTotalCostWithoutDiscount() {
+    Cart cart = new Cart(new User("Sarah"));
+    cart.add_item(new Item("Book", 20.0, 2));
+    double totalCost = cart.total_cost(0.0);
+    assertEquals(40.0, totalCost);
+}
+
+@Test
+void testCheckout() {
+    User user = new User("Chris", 100.0);
+    Cart cart = new Cart(user);
+    cart.add_item(new Item("Shirt", 15.0, 1));
+    cart.checkout("loyal");
+    assertEquals(85.0, user.balance);
+    assertTrue(cart.cartItems.isEmpty());
+}
+}

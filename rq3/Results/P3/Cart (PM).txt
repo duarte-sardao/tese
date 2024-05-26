@@ -1,0 +1,108 @@
+Prompt:
+Please help me generate a whole JUnit test for a focal method in a focal class. I will provide the following information: 
+1. Required dependencies to import.
+2. The focal class signature.
+3. Source code of the focal method.
+4. Signatures of other methods and fields in the class.
+I need you to create a whole unit test using JUnit 4 and Mockito 3, ensuring optimal branch and line coverage. The test should include necessary imports for JUnit 4 andMockito 3, compile without errors, and use reflection to invoke private methods. No additional explanations required.
+
+The focal method is sum_items() in focal class Cart, the information is public class Cart {
+    private List<Item> cartItems;
+    private final User user;
+    private static final Map<String, Double> discounts = Collections.unmodifiableMap(new HashMap<>() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+    public Cart(User);
+    public double total_cost(double);
+    public void add_item(Item);
+    public void checkout(String);
+    //Focal Method
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            if(item.coupon)
+                sum -= item.value*item.amount;
+            else
+                sum += item.value*item.amount;
+        }
+        return sum;
+    }
+}
+Completion:
+```java
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Before;
+import org.junit.Test;
+
+public class CartTest {
+
+    private Cart cart;
+    private User user;
+    private List<Item> cartItems;
+
+    @Before
+    public void setup() {
+        user = new User("John Doe");
+        cart = new Cart(user);
+        cartItems = Arrays.asList(new Item("Item1", 10.0, 2, false),
+                                  new Item("Item2", 20.0, 1, true));
+        cart.add_items(cartItems);
+    }
+
+    @Test
+    public void testSumItems() {
+        assertEquals(30.0, cart.sum_items(), 0.001);
+    }
+
+    @Test
+    public void testSumItemsWithDiscount() {
+        cartItems = Arrays.asList(new Item("Item1", 10.0, 2, false),
+                                  new Item("Item2", 20.0, 1, true),
+                                  new Item("Item3", 15.0, 1, false));
+        cart.add_items(cartItems);
+        assertEquals(45.0, cart.sum_items(), 0.001);
+    }
+
+    @Test
+    public void testSumItemsWithNegativeValue() {
+        cartItems = Collections.singletonList(new Item("Item1", 10.0, 2, true));
+        cart.add_items(cartItems);
+        assertEquals(-20.0, cart.sum_items(), 0.001);
+    }
+
+    // Additional tests for other methods in the Cart class can be added here
+
+    private class User {
+        private String name;
+
+        public User(String name) {
+            this.name = name;
+        }
+    }
+
+    private class Item {
+        private String name;
+        private double value;
+        private int amount;
+        private boolean coupon;
+
+        public Item(String name, double value, int amount, boolean coupon) {
+            this.name = name;
+            this.value = value;
+            this.amount = amount;
+            this.coupon = coupon;
+        }
+    }
+}
+```

@@ -1,0 +1,155 @@
+Prompt:
+Please help me generate a whole JUnit test for a focal method in a focal class. I will provide the following information: 
+1. Required dependencies to import.
+2. The focal class signature.
+3. Source code of the focal method.
+4. Signatures of other methods and fields in the class.
+I need you to create a whole unit test using JUnit 4 and Mockito 3, ensuring optimal branch and line coverage. The test should include necessary imports for JUnit 4 andMockito 3, compile without errors, and use reflection to invoke private methods. No additional explanations required.
+
+The focal method is build() in focal class RequestBuilder, the information is final class RequestBuilder {
+  private final Converter converter;
+  private RestMethodInfo methodInfo;
+  private Object[] args;
+  private String apiUrl;
+  private List<retrofit.client.Header> headers;
+  RequestBuilder(Converter);
+  RequestBuilder methodInfo(RestMethodInfo);
+  RequestBuilder apiUrl(String);
+  RequestBuilder args(Object[]);
+  RequestBuilder headers(List<retrofit.client.Header>);
+  private String buildRelativeUrl();
+  private TypedOutput buildBody();
+  Request build() throws UnsupportedEncodingException {
+    String apiUrl = this.apiUrl;
+
+    StringBuilder url = new StringBuilder(apiUrl);
+    if (apiUrl.endsWith("/")) {
+      // We require relative paths to start with '/'. Prevent a double-slash.
+      url.deleteCharAt(url.length() - 1);
+    }
+
+    // Append the method relative URL.
+    url.append(buildRelativeUrl());
+
+    // Append query parameters, if needed.
+    if (methodInfo.hasQueryParams) {
+      boolean first = true;
+      String requestQuery = methodInfo.requestQuery;
+      if (requestQuery != null) {
+        url.append('?').append(requestQuery);
+        first = false;
+      }
+      String[] requestQueryName = methodInfo.requestQueryName;
+      for (int i = 0; i < requestQueryName.length; i++) {
+        String query = requestQueryName[i];
+        if (query != null) {
+          Object arg = args[i];
+          if (arg != null) { // Null values are skipped.
+            String value = URLEncoder.encode(String.valueOf(arg), "UTF-8");
+            url.append(first ? '?' : '&').append(query).append('=').append(value);
+            first = false;
+          }
+        }
+      }
+    }
+
+    List<retrofit.client.Header> headers = new ArrayList<retrofit.client.Header>();
+    if (this.headers != null) {
+      headers.addAll(this.headers);
+    }
+    List<Header> methodHeaders = methodInfo.headers;
+    if (methodHeaders != null) {
+      headers.addAll(methodHeaders);
+    }
+    // RFC 2616: Header names are case-insensitive.
+    String[] requestParamHeader = methodInfo.requestParamHeader;
+    if (requestParamHeader != null) {
+      for (int i = 0; i < requestParamHeader.length; i++) {
+        String name = requestParamHeader[i];
+        if (name == null) continue;
+        Object arg = args[i];
+        if (arg != null) {
+          headers.add(new retrofit.client.Header(name, String.valueOf(arg)));
+        }
+      }
+    }
+
+    return new Request(methodInfo.requestMethod, url.toString(), headers, buildBody());
+  }
+}
+Completion:
+```java
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import retrofit.client.Header;
+import retrofit.client.Request;
+import retrofit.converter.Converter;
+import retrofit.mime.TypedOutput;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
+public class RequestBuilderTest {
+
+    @Mock
+    Converter converter;
+
+    @Mock
+    RestMethodInfo methodInfo;
+
+    private Object[] args = {1, "example"};
+    private String apiUrl = "https://example.com/api";
+    private List<retrofit.client.Header> headers = new ArrayList<>();
+
+    @Test
+    public void testBuild() throws UnsupportedEncodingException {
+        // Setup
+        RequestBuilder requestBuilder = new RequestBuilder(converter);
+        requestBuilder.methodInfo(methodInfo);
+        requestBuilder.apiUrl(apiUrl);
+        requestBuilder.args(args);
+        requestBuilder.headers(headers);
+
+        // Mock methodInfo
+        when(methodInfo.hasQueryParams()).thenReturn(true);
+        when(methodInfo.requestQuery()).thenReturn("param=value");
+        when(methodInfo.requestQueryName()).thenReturn(new String[]{"param"});
+        when(methodInfo.headers()).thenReturn(new ArrayList<>());
+        when(methodInfo.requestParamHeader()).thenReturn(new String[]{"HeaderName"});
+
+        // Invoke private method buildRelativeUrl using reflection
+        String buildRelativeUrl = invokePrivateMethod(requestBuilder, "buildRelativeUrl");
+
+        // Invoke private method buildBody using reflection
+        TypedOutput buildBody = invokePrivateMethod(requestBuilder, "buildBody");
+
+        // Call the actual build method
+        Request request = requestBuilder.build();
+
+        // Assertions
+        assertEquals("GET", request.getMethod());
+        assertEquals("https://example.com/api?param=value&param=example", request.getUrl());
+        assertEquals(2, request.getHeaders().size());
+        assertEquals(buildBody, request.getBody());
+    }
+
+    private <T> T invokePrivateMethod(Object object, String methodName) {
+        try {
+            java.lang.reflect.Method method = object.getClass().getDeclaredMethod(methodName);
+            method.setAccessible(true);
+            return (T) method.invoke(object);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+}
+```

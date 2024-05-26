@@ -1,0 +1,53 @@
+Prompt:
+
+public class Point {
+    private double x;
+    private double y;
+    public Point(double, double);
+    public double getX() ;
+    public double getY();
+    public double distance();
+    public String toString();
+    //Focal Method
+    public void move() {
+         double dist = distance();
+         this.x += dist;
+         this.y += dist;
+    }
+}
+Please infer the intention of the "move()"
+
+Completion:
+
+The intention of the "move()" method in the Point class is to move the point's coordinates by a distance equal to the current distance of the point from the origin (0,0). This method calculates the distance of the point from the origin using the distance() method, and then adds this distance to both the x and y coordinates of the point, effectively moving the point along the diagonal line passing through the origin.
+
+Prompt 2:
+
+The intention of the "move()" method in the Point class is to move the point's coordinates by a distance equal to the current distance of the point from the origin (0,0). This method calculates the distance of the point from the origin using the distance() method, and then adds this distance to both the x and y coordinates of the point, effectively moving the point along the diagonal line passing through the origin.
+You are a professional who writes Java test methods. Please write a test method for the "move()" with the given Method intention.
+
+Completion 2:
+
+Sure, here is an example of a test method for the "move()" method in the Point class:
+
+```java
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+public class PointTest {
+
+    @Test
+    public void testMove() {
+        Point point = new Point(3, 4); // Create a Point object at coordinates (3,4)
+        
+        double initialDistance = point.distance(); // Calculate initial distance from origin
+        point.move(); // Move the point
+        
+        // Assert that the new coordinates are equal to the initial coordinates plus the initial distance
+        assertEquals(3 + initialDistance, point.getX(), 0.0001); 
+        assertEquals(4 + initialDistance, point.getY(), 0.0001);
+    }
+}
+```
+
+This test method creates a Point object at coordinates (3,4), calculates the initial distance of the point from the origin, then calls the "move()" method to move the point and asserts that the new coordinates are correct based on the expected movement along the diagonal line passing through the origin.

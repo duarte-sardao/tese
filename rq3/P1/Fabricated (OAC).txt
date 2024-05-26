@@ -1,0 +1,61 @@
+"setProducerNumber(int)"
+public class Event {
+
+	public static final String FIND_BY_NAME = "Event.findByName";
+	public static final String DATES_WITH_TICKETS_BY_STATE = "Event.datesWithTicketsByState";
+	public static final String SEATS_FOR_EVENT_DATE_BY_STATE = "Event.seatsForEventDateByState";
+	public static final String STRING_NAME = "name";
+	public static final String DATE_DATE = "date";
+	public static final String _TICKETS = "tickets";
+	public static final String ENUM_TICKET_STATE = "ticket_state";
+
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	private int id;
+
+	@Column(nullable = false, unique = true, name="Name")
+	private String name;
+
+	@Convert(converter = LocalDateAttributeConverter.class)
+	private LocalDate ticketStartSellingDate;
+
+	@Enumerated(EnumType.STRING)
+	private String type;
+
+	@OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<EventDate> dates;
+
+	@OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Ticket> tickets;
+
+	@ManyToOne
+	private EventVenue venue;
+
+	@ManyToOne
+	private Producer producer;
+
+	public Event();
+	
+	public Event(Producer, String, String, List<Triplet<LocalDate, LocalTime, LocalTime>>);
+	
+	public int getId();
+	public LocalDate getStartSellingDate();
+	public void setStartSellingDate(LocalDate);
+	public EventVenue getVenue();
+	public void setVenue(EventVenue);
+	public String getName();
+	public String getType();
+	public List<Ticket> getTickets();
+	public Producer getProducer();
+	public void setProducer(Producer p);
+	public void setTickets(List<Ticket> tickets);
+	public void setName(String name);
+	public List<EventDate> getDates();
+	//Focal Method
+	public int setProducerNumber(int n){
+		if(producer != null){
+			producer.setResgistrationNumber(n);
+			return producer.getRegistrationNumber();
+		}
+		return -1;
+	}
+}

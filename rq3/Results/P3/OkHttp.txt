@@ -1,0 +1,102 @@
+Prompt:
+Please help me generate a whole JUnit test for a focal method in a focal class. I will provide the following information: 
+1. Required dependencies to import.
+2. The focal class signature.
+3. Source code of the focal method.
+4. Signatures of other methods and fields in the class.
+I need you to create a whole unit test using JUnit 4 and Mockito 3, ensuring optimal branch and line coverage. The test should include necessary imports for JUnit 4 andMockito 3, compile without errors, and use reflection to invoke private methods. No additional explanations required.
+
+The focal method is copyWithDefaults() in focal class InstalacaoAssentos, the information is public final class OkHttpClient {
+  private static final List<String> DEFAULT_TRANSPORTS
+      = Util.immutableList(Arrays.asList("spdy/3", "http/1.1"));
+  private Proxy proxy;
+  private List<String> transports;
+  private final Set<Route> failedRoutes;
+  private ProxySelector proxySelector;
+  private CookieHandler cookieHandler;
+  private ResponseCache responseCache;
+  private SSLSocketFactory sslSocketFactory;
+  private HostnameVerifier hostnameVerifier;
+  private OkAuthenticator authenticator;
+  private ConnectionPool connectionPool;
+  private boolean followProtocolRedirects = true;
+  public OkHttpClient();
+  private OkHttpClient(OkHttpClient);
+  public OkHttpClient setProxy(Proxy);
+  public Proxy getProxy();
+  public OkHttpClient setProxySelector(ProxySelector);
+  public ProxySelector getProxySelector();
+  public OkHttpClient setCookieHandler(CookieHandler);
+  public CookieHandler getCookieHandler();
+  public OkHttpClient setResponseCache(ResponseCache);
+  public ResponseCache getResponseCache();
+  private OkResponseCache okResponseCache();
+  public OkHttpClient setSSLSocketFactory(SSLSocketFactory);
+  public SSLSocketFactory getSslSocketFactory();
+  public OkHttpClient setHostnameVerifier(HostnameVerifier);
+  public HostnameVerifier getHostnameVerifier();
+  public OkHttpClient setAuthenticator(OkAuthenticator);
+  public OkAuthenticator getAuthenticator();
+  public OkHttpClient setConnectionPool(ConnectionPool);
+  public ConnectionPool getConnectionPool();
+  public OkHttpClient setFollowProtocolRedirects(boolean);
+  public boolean getFollowProtocolRedirects();
+  public OkHttpClient setTransports(List<String>);
+  public List<String> getTransports();
+  public HttpURLConnection open(URL);
+  //Focal Method
+  private OkHttpClient copyWithDefaults() {
+    OkHttpClient result = new OkHttpClient(this);
+    result.proxy = proxy;
+    result.proxySelector = proxySelector != null ? proxySelector : ProxySelector.getDefault();
+    result.cookieHandler = cookieHandler != null ? cookieHandler : CookieHandler.getDefault();
+    result.responseCache = responseCache != null ? responseCache : ResponseCache.getDefault();
+    result.sslSocketFactory = sslSocketFactory != null
+        ? sslSocketFactory
+        : HttpsURLConnection.getDefaultSSLSocketFactory();
+    result.hostnameVerifier = hostnameVerifier != null
+        ? hostnameVerifier
+        : new OkHostnameVerifier();
+    result.authenticator = authenticator != null
+        ? authenticator
+        : HttpAuthenticator.SYSTEM_DEFAULT;
+    result.connectionPool = connectionPool != null ? connectionPool : ConnectionPool.getDefault();
+    result.followProtocolRedirects = followProtocolRedirects;
+    result.transports = transports != null ? transports : DEFAULT_TRANSPORTS;
+    return result;
+  }
+}
+Completion:
+```java
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import java.net.URL;
+import java.util.Arrays;
+
+import org.junit.Test;
+
+public class InstalacaoAssentosTest {
+
+  @Test
+  public void testCopyWithDefaults() throws Exception {
+    OkHttpClient okHttpClient = new OkHttpClient();
+    OkHttpClient spyClient = spy(okHttpClient);
+
+    OkHttpClient result = spyClient.copyWithDefaults();
+
+    assertNotNull(result);
+    assertNotSame(spyClient, result);
+    assertEquals(spyClient.getProxy(), result.getProxy());
+    assertEquals(spyClient.getProxySelector() != null ? spyClient.getProxySelector() : ProxySelector.getDefault(), result.getProxySelector());
+    assertEquals(spyClient.getCookieHandler() != null ? spyClient.getCookieHandler() : CookieHandler.getDefault(), result.getCookieHandler());
+    assertEquals(spyClient.getResponseCache() != null ? spyClient.getResponseCache() : ResponseCache.getDefault(), result.getResponseCache());
+    assertEquals(spyClient.getSslSocketFactory() != null ? spyClient.getSslSocketFactory() : HttpsURLConnection.getDefaultSSLSocketFactory(), result.getSslSocketFactory());
+    assertEquals(spyClient.getHostnameVerifier() != null ? spyClient.getHostnameVerifier() : new OkHostnameVerifier(), result.getHostnameVerifier());
+    assertEquals(spyClient.getAuthenticator() != null ? spyClient.getAuthenticator() : HttpAuthenticator.SYSTEM_DEFAULT, result.getAuthenticator());
+    assertEquals(spyClient.getConnectionPool() != null ? spyClient.getConnectionPool() : ConnectionPool.getDefault(), result.getConnectionPool());
+    assertEquals(spyClient.getFollowProtocolRedirects(), result.getFollowProtocolRedirects());
+    assertEquals(spyClient.getTransports() != null ? spyClient.getTransports() : OkHttpClient.DEFAULT_TRANSPORTS, result.getTransports());
+  }
+}
+```

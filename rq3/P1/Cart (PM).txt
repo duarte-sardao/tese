@@ -1,0 +1,26 @@
+"sum_items()"
+public class Cart {
+    private List<Item> cartItems;
+    private final User user;
+    private static final Map<String, Double> discounts = Collections.unmodifiableMap(new HashMap<>() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+    public Cart(User);
+    public double total_cost(double);
+    public void add_item(Item);
+    public void checkout(String);
+    //Focal Method
+    public double sum_items() {
+        double sum = 0;
+        for(Item item: cartItems) {
+            if(item.coupon)
+                sum -= item.value*item.amount;
+            else
+                sum += item.value*item.amount;
+        }
+        return sum;
+    }
+}

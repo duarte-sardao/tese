@@ -1,0 +1,68 @@
+Prompt:
+
+public class Cart {
+    private List<Item> cartItems;
+    private final User user;
+    private static final Map<String, Double> discounts = Collections.unmodifiableMap(new HashMap<>() {{
+        put("loyal", 0.1d);
+        put("30ff", 0.3d); put("2023", 0.3d);
+        put("throwback", 0.15d); put("2024", 0.2d);
+        put("fun", 0.05d);
+    }});
+    public boolean checkForDiscountRenewal();
+    public Cart(User);
+    public double sum_items();
+    public double total_cost(double);
+    public void add_item(Item);
+    public void checkout(String);
+    //Focal Method
+    public Set<String> getDiscountCodes() {
+        return discounts.keySet();
+    }
+}
+Please infer the intention of the "getDiscountCodes()"
+
+Completion:
+
+The "getDiscountCodes()" method is intended to return a set of all available discount codes that can be applied to the items in the cart. This method allows the user to see the available discount codes and choose which one to apply during checkout.
+
+Prompt 2:
+
+The "getDiscountCodes()" method is intended to return a set of all available discount codes that can be applied to the items in the cart. This method allows the user to see the available discount codes and choose which one to apply during checkout.
+You are a professional who writes Java test methods. Please write a test method for the "getDiscountCodes()" with the given Method intention.
+
+Completion 2:
+
+Sure, here is an example of a test method written in JUnit for the "getDiscountCodes()" method:
+
+```java
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
+public class CartTest {
+
+    @Test
+    public void testGetDiscountCodes() {
+        Cart cart = new Cart(new User());
+        
+        Set<String> expectedDiscountCodes = new HashSet<>();
+        expectedDiscountCodes.add("loyal");
+        expectedDiscountCodes.add("30ff");
+        expectedDiscountCodes.add("2023");
+        expectedDiscountCodes.add("throwback");
+        expectedDiscountCodes.add("2024");
+        expectedDiscountCodes.add("fun");
+        
+        Set<String> actualDiscountCodes = cart.getDiscountCodes();
+        
+        assertEquals(expectedDiscountCodes.size(), actualDiscountCodes.size());
+        for (String code : actualDiscountCodes) {
+            assertTrue(expectedDiscountCodes.contains(code));
+        }
+    }
+}
+```
+
+In this test method, a new instance of the `Cart` class is created and then the `getDiscountCodes()` method is called to retrieve the set of discount codes. The test method then compares the expected discount codes with the actual discount codes obtained from the `getDiscountCodes()` method. If they match, the test passes.

@@ -1,0 +1,84 @@
+Prompt:
+Please help me generate a whole JUnit test for a focal method in a focal class. I will provide the following information: 
+1. Required dependencies to import.
+2. The focal class signature.
+3. Source code of the focal method.
+4. Signatures of other methods and fields in the class.
+I need you to create a whole unit test using JUnit 4 and Mockito 3, ensuring optimal branch and line coverage. The test should include necessary imports for JUnit 4 andMockito 3, compile without errors, and use reflection to invoke private methods. No additional explanations required.
+
+The focal method is checkout(String) in focal class Cart, the information is public class Cart {
+    private List<Item> cartItems;
+    private final User user;
+    private static final Map<String, Double> discounts = Collections.unmodifiableMap(new HashMap<>() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+    public Cart(User);
+    public double sum_items();
+    public double total_cost(double);
+    public void add_item(Item);
+    //Focal Method
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        if(cost==0)
+            throw new RuntimeException("Cost can't be 0");
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+Completion:
+```java
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Before;
+import org.junit.Test;
+
+public class CartTest {
+    private Cart cart;
+    private User user;
+    
+    @Before
+    public void setUp() {
+        user = mock(User.class);
+        cart = new Cart(user);
+    }
+    
+    @Test
+    public void testCheckout_validCode() {
+        Map<String, Double> discounts = new HashMap<>();
+        discounts.put("loyal", 0.1);
+        discounts.put("superpromo", 0.25);
+        discounts.put("30ff", 0.3);
+        discounts.put("2024", 0.2);
+        
+        double cost = 100.0;
+        when(user.getBalance()).thenReturn(200.0);
+        when(user.getName()).thenReturn("John Doe");
+        
+        cart.add_item(new Item("Item1", 50.0));
+        cart.add_item(new Item("Item2", 50.0));
+        
+        cart.checkout("loyal");
+        
+        assertEquals(100.0, cart.sum_items(), 0.01);
+        assertEquals(100.0, cost, 0.01);
+        verify(user).deductBalance(cost);
+        assertTrue(cart.cartItems.isEmpty());
+    }
+    
+    @Test(expected = RuntimeException.class)
+    public void testCheckout_invalidCode() {
+        when(user.getBalance()).thenReturn(200.0);
+        
+        cart.checkout("invalidCode");
+    }
+}
+```
