@@ -485,8 +485,71 @@ private methods. But it has to be understood that these sort of issues are a pos
 
 \section{RQ3}\label{sec:results:rq3}
 
-\subsection{Prompt 1}
 
-\subsection{Prompt 2}
+\begin{table}[t]
+    \centering
+    \begin{tabular}{@{\extracolsep{\fill}} lrr} \toprule
+                     & Test Results & Possible Identification \\
+    \midrule
+    Point (CM)       & Passing & No \\
+    Fabricated (RO)  & Failing & Yes \\
+    Fabricated (OAC) & Non-Compiling & Yes \\
+    Cart (CM)        & Non-Compiling & No \\
+    Cart (PF)        & Passing & Yes \\
+    Cart (PM)        & Non-Compiling & Yes \\
+    Antlr (PF)       & Non-Compiling & No \\
+    OkHttp (PM)      & Non-Compiling & No \\
+    Retrofit (PM/CM) & Non-Compiling & No \\
+    %\midrule
+    \bottomrule
+    \end{tabular}
+    \caption{Results for Prompt 1.\label{tab:results:rq3p1}}
+    \end{table}
 
-\subsection{Prompt 3}
+\begin{table}[t]
+    \centering
+    \begin{tabular}{@{\extracolsep{\fill}} lrr} \toprule
+                     & Test Results & Possible Identification \\
+    \midrule
+    Point (CM)       & Failing & Yes \\
+    Fabricated (RO)  & Passing & No \\
+    Fabricated (OAC) & Failing & Yes \\
+    Cart (CM)        & Non-Compiling & Yes \\
+    Cart (PF)        & Non-Compiling & No \\
+    Cart (PM)        & Non-Compiling & Yes \\
+    Antlr (PF)       & Non-Compiling & No \\
+    OkHttp (PM)      & Non-Compiling & No \\
+    Retrofit (PM/CM) & Non-Compiling & No \\
+    %\midrule
+    \bottomrule
+    \end{tabular}
+    \caption{Results for Prompt 2.\label{tab:results:rq3p2}}
+    \end{table}
+
+\begin{table}[t]
+    \centering
+    \begin{tabular}{@{\extracolsep{\fill}} lrr} \toprule
+                     & Test Results & Possible Identification \\
+    \midrule
+    Point (CM)       &  & No \\
+    Fabricated (RO)  &  & Yes \\
+    Fabricated (OAC) &  & Yes \\
+    Cart (CM)        & Non-Compiling &  \\
+    Cart (PF)        & Non-Compiling &  \\
+    Cart (PM)        & Non-Compiling &  \\
+    Antlr (PF)       & Non-Compiling &  \\
+    OkHttp (PM)      & Non-Compiling &  \\
+    Retrofit (PM/CM) & Non-Compiling &  \\
+    %\midrule
+    \bottomrule
+    \end{tabular}
+    \caption{Results for Prompt 3.\label{tab:results:rq3p3}}
+    \end{table}
+
+--still quite good results 
+--higher randomess (PF testing for size, Cart CM testing with admin)
+--randomness offset but more tests, but more corrective work then
+--in prompt repair framework, not only edit distance to consider edit amount
+(ie many tests will require many more promptings, which translates to time and
+money)
+--prompts with only method signatures and naturally worse at CM type conflicts
