@@ -486,65 +486,86 @@ private methods. But it has to be understood that these sort of issues are a pos
 \section{RQ3}\label{sec:results:rq3}
 
 
-\begin{table}[t]
-    \centering
-    \begin{tabular}{@{\extracolsep{\fill}} lrr} \toprule
-                     & Test Results & Possible Identification \\
-    \midrule
-    Point (CM)       & Passing & No \\
-    Fabricated (RO)  & Failing & Yes \\
-    Fabricated (OAC) & Non-Compiling & Yes \\
-    Cart (CM)        & Non-Compiling & No \\
-    Cart (PF)        & Passing & Yes \\
-    Cart (PM)        & Non-Compiling & Yes \\
-    Antlr (PF)       & Non-Compiling & No \\
-    OkHttp (PM)      & Non-Compiling & No \\
-    Retrofit (PM/CM) & Non-Compiling & No \\
-    %\midrule
-    \bottomrule
-    \end{tabular}
-    \caption{Results for Prompt 1.\label{tab:results:rq3p1}}
-    \end{table}
+%\begin{table}[t]
+%    \centering
+%    \begin{tabular}{@{\extracolsep{\fill}} lrr} \toprule
+%                     & Test Results & Possible Identification \\
+%    \midrule
+%    Point (CM)       & Passing & No \\
+%    Fabricated (RO)  & Failing & Yes \\
+%    Fabricated (OAC) & Non-Compiling & Yes \\
+%    Cart (CM)        & Non-Compiling & No \\
+%    Cart (PF)        & Passing & Yes \\
+%    Cart (PM)        & Non-Compiling & Yes \\
+%    Antlr (PF)       & Non-Compiling & No \\
+%    OkHttp (PM)      & Non-Compiling & No \\
+%    Retrofit (PM/CM) & Non-Compiling & No \\
+%    %\midrule
+%    \bottomrule
+%    \end{tabular}
+%    \caption{Results for Prompt 1.\label{tab:results:rq3p1}}
+%\end{table}
+
+%\begin{table}[t]
+%    \centering
+%    \begin{tabular}{@{\extracolsep{\fill}} lrr} \toprule
+%                     & Test Results & Possible Identification \\
+%    \midrule
+%    Point (CM)       & Failing & Yes \\
+%    Fabricated (RO)  & Passing & No \\
+%    Fabricated (OAC) & Failing & Yes \\
+%    Cart (CM)        & Non-Compiling & Yes \\
+%    Cart (PF)        & Non-Compiling & No \\
+%    Cart (PM)        & Non-Compiling & Yes \\
+%    Antlr (PF)       & Non-Compiling & No \\
+%    OkHttp (PM)      & Non-Compiling & No \\
+%    Retrofit (PM/CM) & Non-Compiling & No \\
+%    %\midrule
+%    \bottomrule
+%    \end{tabular}
+%    \caption{Results for Prompt 2.\label{tab:results:rq3p2}}
+%    \end{table}
+
+%\begin{table}[t]
+%    \centering
+%    \begin{tabular}{@{\extracolsep{\fill}} lrr} \toprule
+%                     & Test Results & Possible Identification \\
+%    \midrule
+%    Point (CM)       & Runtime & No \\
+%    Fabricated (RO)  & Failing & No \\
+%    Fabricated (OAC) & Non-Compiling & No \\
+%    Cart (CM)        & Non-Compiling & No \\
+%    Cart (PF)        & Passing & Yes \\
+%    Cart (PM)        & Non-Compiling & Yes \\
+%    Antlr (PF)       & Non-Compiling & Yes \\
+%    OkHttp (PM)      & Non-Compiling & \todo{hostnameVerifier} \\
+%    Retrofit (PM/CM) & Non-Compiling & No \\
+%    %\midrule
+%    \bottomrule
+%    \end{tabular}
+%    \caption{Results for Prompt 3.\label{tab:results:rq3p3}}
+%    \end{table}
 
 \begin{table}[t]
     \centering
-    \begin{tabular}{@{\extracolsep{\fill}} lrr} \toprule
-                     & Test Results & Possible Identification \\
+    \begin{tabular}{@{\extracolsep{\fill}} l*{6}{r}} \toprule
+                      & \multicolumn{2}{c}{Prompt 1} & \multicolumn{2}{c}{Prompt 2} & \multicolumn{2}{c}{Prompt 3} \\
+                      & Compilation & Passing & Compilation & Passing & Compilation & Passing \\
     \midrule
-    Point (CM)       & Failing & Yes \\
-    Fabricated (RO)  & Passing & No \\
-    Fabricated (OAC) & Failing & Yes \\
-    Cart (CM)        & Non-Compiling & Yes \\
-    Cart (PF)        & Non-Compiling & No \\
-    Cart (PM)        & Non-Compiling & Yes \\
-    Antlr (PF)       & Non-Compiling & No \\
-    OkHttp (PM)      & Non-Compiling & No \\
-    Retrofit (PM/CM) & Non-Compiling & No \\
-    %\midrule
+    Point (CM)       & 3 & 0 & 0 & 0 & 0 & 0 \\
+    Fabricated (RO)  & 1 & 0 & 0 & 0 & 0 & 0 \\
+    Fabricated (OAC) & 2 & 0 & 0 & 0 & 0 & 0 \\
+    Cart (CM)        & 0 & 0 & 0 & 0 & 0 & 0 \\
+    Cart (PF)        & 2 & 2 & 0 & 0 & 0 & 0 \\
+    Cart (PM)        & 0 & 0 & 0 & 0 & 0 & 0 \\
+    Antlr (PF)       & 0 & 0 & 0 & 0 & 0 & 0 \\
+    OkHttp (PM)      & 0 & 0 & 0 & 0 & 0 & 0 \\
+    Retrofit (PM/CM) & 0 & 0 & 0 & 0 & 0 & 0 \\
     \bottomrule
     \end{tabular}
-    \caption{Results for Prompt 2.\label{tab:results:rq3p2}}
-    \end{table}
-
-\begin{table}[t]
-    \centering
-    \begin{tabular}{@{\extracolsep{\fill}} lrr} \toprule
-                     & Test Results & Possible Identification \\
-    \midrule
-    Point (CM)       & Runtime & No \\
-    Fabricated (RO)  & Failing & No \\
-    Fabricated (OAC) & Non-Compiling & No \\
-    Cart (CM)        & Non-Compiling & No \\
-    Cart (PF)        & Passing & Yes \\
-    Cart (PM)        & Non-Compiling & Yes \\
-    Antlr (PF)       & Non-Compiling & Yes \\
-    OkHttp (PM)      & Non-Compiling & \todo{hostnameVerifier} \\
-    Retrofit (PM/CM) & Non-Compiling & No \\
-    %\midrule
-    \bottomrule
-    \end{tabular}
-    \caption{Results for Prompt 3.\label{tab:results:rq3p3}}
-    \end{table}
+    \caption{Results for Prompt 1, 2, and 3.\label{tab:results:rq3p1}}
+\end{table}
+%compilation/runtime
 
 --still quite good results 
 
