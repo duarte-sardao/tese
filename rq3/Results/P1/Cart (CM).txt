@@ -84,3 +84,115 @@ class CartTest {
 ```
 
 In this test class, we have two test methods. The first one tests the checkout process with a valid discount code "loyal" where the cost is deducted from the user's balance and the cart is cleared. The second test method tests the scenario where the cost after applying the discount is 0, and it verifies that a RuntimeException is thrown, the user's balance remains unchanged, and the cart is not cleared.
+
+Prompt 2:
+
+The intention of the "checkout(String)" method in the Cart class is to finalize the purchase by applying a discount code to calculate the total cost of the items in the cart, subtracting the cost from the user's balance, and clearing the cart items once the purchase is completed. The method takes a discount code as a parameter, retrieves the corresponding discount value from the discounts map, calculates the total cost with the discount applied, deducts the cost from the user's balance, and clears the cart items. If the cost ends up being 0 (after applying the discount), it will throw a RuntimeException indicating that the cost cannot be 0.
+You are a professional who writes Java test methods. Please write a test method for the "checkout(String)" with the given Method intention.
+
+Completion 2:
+
+Sure! Here is a sample test method written in JUnit for testing the "checkout(String)" method in the Cart class:
+
+```java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class CartTest {
+
+    @Test
+    public void testCheckoutWithValidDiscountCode() {
+        User user = new User("John Doe", 100.0);
+        Cart cart = new Cart(user);
+
+        Item item1 = new Item("Shirt", 20.0);
+        Item item2 = new Item("Jeans", 30.0);
+
+        cart.add_item(item1);
+        cart.add_item(item2);
+
+        cart.checkout("loyal");
+
+        assertEquals(77.0, user.getBalance()); // 100.0 - (20.0 + 30.0)*0.1 = 77.0
+        assertTrue(cart.cartItems.isEmpty());
+    }
+
+    @Test
+    public void testCheckoutWithInvalidDiscountCode() {
+        User user = new User("Jane Smith", 50.0);
+        Cart cart = new Cart(user);
+
+        Item item1 = new Item("Dress", 25.0);
+
+        cart.add_item(item1);
+
+        assertThrows(RuntimeException.class, () -> {
+            cart.checkout("invalid_discount_code");
+        });
+
+        assertEquals(50.0, user.getBalance()); // The user's balance should remain the same
+        assertFalse(cart.cartItems.isEmpty()); // The cart should not be cleared
+    }
+}
+```
+
+In this test class, we have two test methods. The first one tests the checkout process with a valid discount code ("loyal"), where it calculates the total cost, deducts from the user's balance, and clears the cart items. The second test checks for an invalid discount code, ensuring that the cost cannot be 0 and the user's balance and cart items remain unchanged.
+
+Prompt 2:
+
+The intention of the "checkout(String)" method in the Cart class is to finalize the purchase by applying a discount code to calculate the total cost of the items in the cart and deducting this cost from the user's balance. If the calculated cost is zero, it will throw a RuntimeException as the cost cannot be zero. After the purchase is completed, the cart items are cleared to indicate that they have been purchased.
+You are a professional who writes Java test methods. Please write a test method for the "checkout(String)" with the given Method intention.
+
+Completion 2:
+
+Sure, here is an example of a test method for the "checkout(String)" method in the Cart class:
+
+```java
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
+public class CartTest {
+    
+    @Test
+    public void testCheckout_validDiscountCode() {
+        User user = new User();
+        Cart cart = new Cart(user);
+        Item item1 = new Item("Item1", 10.0);
+        Item item2 = new Item("Item2", 20.0);
+        
+        cart.add_item(item1);
+        cart.add_item(item2);
+        
+        double initialBalance = user.getBalance();
+        cart.checkout("loyal"); // Applying a discount code
+        
+        // Assert that the balance has been updated correctly
+        double expectedCost = (item1.getPrice() + item2.getPrice()) * (1 - 0.1); // 10% discount for 'loyal'
+        assertEquals(initialBalance - expectedCost, user.getBalance(), 0.001);
+        
+        // Assert that the cart is empty after checkout
+        assertEquals(0, cart.sum_items());
+    }
+    
+    @Test
+    public void testCheckout_zeroCost() {
+        User user = new User();
+        Cart cart = new Cart(user);
+        
+        // No items added to the cart
+        
+        double initialBalance = user.getBalance();
+        
+        // Applying a discount code that results in zero cost
+        assertThrows(RuntimeException.class, () -> cart.checkout("invalidDiscountCode"));
+        
+        // Assert that the balance remains the same
+        assertEquals(initialBalance, user.getBalance(), 0.001);
+        
+        // Assert that the cart is still empty
+        assertEquals(0, cart.sum_items());
+    }
+}
+```
+
+Please note that this is just an example test method and may require modifications based on the actual implementation details of the Cart class and its dependencies.

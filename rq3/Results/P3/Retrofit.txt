@@ -153,3 +153,133 @@ public class RequestBuilderTest {
     }
 }
 ```
+
+Completion:
+```java
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import retrofit.client.Header;
+import retrofit.client.Request;
+import retrofit.mime.TypedOutput;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
+public class RequestBuilderTest {
+
+    @Mock
+    Converter converter;
+
+    @Mock
+    RestMethodInfo methodInfo;
+
+    @Mock
+    retrofit.client.Header header1;
+
+    @Mock
+    retrofit.client.Header header2;
+
+    @Test
+    public void testBuild() throws UnsupportedEncodingException {
+        RequestBuilder requestBuilder = new RequestBuilder(converter);
+        requestBuilder.methodInfo(methodInfo);
+        requestBuilder.apiUrl("https://example.com/api");
+        requestBuilder.args(new Object[]{"param1", "param2"});
+        List<retrofit.client.Header> headers = new ArrayList<>();
+        headers.add(header1);
+        headers.add(header2);
+        requestBuilder.headers(headers);
+
+        when(methodInfo.hasQueryParams()).thenReturn(true);
+        when(methodInfo.getRequestQuery()).thenReturn("query");
+        when(methodInfo.getRequestQueryName()).thenReturn(new String[]{"param1", "param2"});
+        when(methodInfo.getHeaders()).thenReturn(new ArrayList<>());
+        when(methodInfo.getRequestParamHeader()).thenReturn(new String[]{"header1", "header2"});
+
+        when(converter.convert("param1")).thenReturn("param1");
+        when(converter.convert("param2")).thenReturn("param2");
+
+        Request request = requestBuilder.build();
+
+        assertEquals("GET", request.getMethod());
+        assertEquals("https://example.com/api?query&param1=param1&param2=param2", request.getUrl());
+        assertEquals(4, request.getHeaders().size());
+        assertEquals("header1", request.getHeaders().get(0).getName());
+        assertEquals("header2", request.getHeaders().get(1).getName());
+        assertEquals("param1", request.getHeaders().get(2).getValue());
+        assertEquals("param2", request.getHeaders().get(3).getValue());
+    }
+}
+```
+
+Completion:
+```java
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import retrofit.client.Header;
+import retrofit.client.Request;
+import retrofit.converter.Converter;
+import retrofit.mime.TypedOutput;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
+public class RequestBuilderTest {
+
+    @Mock
+    private Converter converter;
+
+    @Mock
+    private RestMethodInfo methodInfo;
+
+    @Mock
+    private Object[] args;
+
+    private String apiUrl = "https://api.example.com";
+
+    @Mock
+    private List<retrofit.client.Header> headers;
+
+    @Test
+    public void testBuild() throws UnsupportedEncodingException {
+        RequestBuilder requestBuilder = new RequestBuilder(converter);
+        requestBuilder.methodInfo(methodInfo);
+        requestBuilder.apiUrl(apiUrl);
+        requestBuilder.args(args);
+        requestBuilder.headers(headers);
+
+        // Mocking methodInfo details
+        when(methodInfo.hasQueryParams).thenReturn(true);
+        when(methodInfo.requestQuery).thenReturn("param1=value1");
+        when(methodInfo.requestQueryName).thenReturn(new String[]{"param1"});
+        when(methodInfo.headers).thenReturn(new ArrayList<Header>());
+
+        // Mocking args values
+        when(args[0]).thenReturn("value1");
+
+        Request request = requestBuilder.build();
+
+        assertEquals("GET", request.getMethod());
+        assertEquals("https://api.example.com?param1=value1", request.getUrl());
+        assertEquals(1, request.getHeaders().size());
+        assertEquals("param1", request.getHeaders().get(0).getName());
+        assertEquals("value1", request.getHeaders().get(0).getValue());
+    }
+}
+```

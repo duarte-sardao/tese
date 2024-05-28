@@ -43,5 +43,6 @@ for file in glob(path+"/*.txt"):
     ).choices[0].message.content
 
     f = open("Results/"+file, "a")
-    f.write("Prompt:\n\n"+prompt+"\n\nCompletion:\n\n"+chat_completion+"\n\nPrompt 2:\n\n"+prompt2+"\n\nCompletion 2:\n\n" +chat_completion2)
+    #f.write("Prompt:\n\n"+prompt+"\n\nCompletion:\n\n"+chat_completion+"\n\nPrompt 2:\n\n"+prompt2+"\n\nCompletion 2:\n\n" +chat_completion2)
+    f.write("\n\nPrompt 2:\n\n"+prompt2+"\n\nCompletion 2:\n\n" +chat_completion2)
     f.close()

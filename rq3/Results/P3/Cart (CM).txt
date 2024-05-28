@@ -82,3 +82,147 @@ public class CartTest {
     }
 }
 ```
+
+Completion:
+```java
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
+public class CartTest {
+
+    @Mock
+    private User user;
+
+    private Cart cart;
+
+    @Test
+    public void testCheckout_validCode() throws Exception {
+        cart = new Cart(user);
+        List<Item> items = new ArrayList<>();
+        items.add(new Item("Item1", 10.0));
+        items.add(new Item("Item2", 20.0));
+        cart.add_item(items.get(0));
+        cart.add_item(items.get(1));
+
+        Map<String, Double> discounts = new HashMap<>();
+        discounts.put("loyal", 0.1d);
+        discounts.put("superpromo", 0.25d);
+        discounts.put("30ff", 0.3d);
+        discounts.put("2024", 0.2d);
+
+        double totalCost = items.get(0).getPrice() + items.get(1).getPrice();
+        double discount = discounts.get("loyal");
+        double cost = totalCost * (1 - discount);
+
+        when(user.getBalance()).thenReturn(100.0);
+
+        cart.checkout("loyal");
+
+        assertEquals(100.0 - cost, user.getBalance(), 0.001);
+        assertEquals(0, cart.cartItems.size());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testCheckout_invalidCode() {
+        cart = new Cart(user);
+
+        when(user.getBalance()).thenReturn(100.0);
+
+        cart.checkout("invalid_code");
+    }
+}
+```
+
+Completion:
+```java
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Before;
+import org.junit.Test;
+
+public class CartTest {
+
+    private Cart cart;
+    private User user;
+
+    @Before
+    public void setUp() {
+        user = mock(User.class);
+        cart = new Cart(user);
+    }
+
+    @Test
+    public void testCheckout_validCode() {
+        Map<String, Double> discounts = new HashMap<>();
+        discounts.put("loyal", 0.1d);
+        when(user.getBalance()).thenReturn(100.0);
+        cart.add_item(new Item("item1", 50.0));
+        
+        cart.checkout("loyal");
+        
+        verify(user).setBalance(95.0);
+        assertTrue(cart.cartItems.isEmpty());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testCheckout_invalidCode() {
+        when(user.getBalance()).thenReturn(100.0);
+        
+        cart.checkout("invalidCode");
+    }
+    
+    @Test
+    public void testCheckout_zeroCost() {
+        when(user.getBalance()).thenReturn(100.0);
+        cart.add_item(new Item("item1", 0.0));
+        
+        try {
+            cart.checkout("loyal");
+            fail("Expected RuntimeException to be thrown");
+        } catch (RuntimeException e) {
+            assertEquals("Cost can't be 0", e.getMessage());
+        }
+    }
+    
+    // Additional test cases for branch coverage can be added here
+    
+    private class Item {
+        private String name;
+        private double price;
+        
+        public Item(String name, double price) {
+            this.name = name;
+            this.price = price;
+        }
+    }
+
+    private class User {
+        private double balance;
+        
+        public double getBalance() {
+            return balance;
+        }
+        
+        public void setBalance(double balance) {
+            this.balance = balance;
+        }
+    }
+}
+```

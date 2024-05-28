@@ -24,5 +24,6 @@ for file in glob(path+"/*.txt"):
 
 
     f = open("Results/"+file, "a")
-    f.write("Prompt:\n"+prompt+"\nCompletion:\n"+chat_completion)
+    #f.write("Prompt:\n"+prompt+"\nCompletion:\n"+chat_completion)
+    f.write("\n\nCompletion:\n"+chat_completion)
     f.close()

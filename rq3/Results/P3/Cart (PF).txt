@@ -68,3 +68,110 @@ public class CartTest {
     }
 }
 ```
+
+Completion:
+```java
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+@RunWith(MockitoJUnitRunner.class)
+public class CartTest {
+
+    @Mock
+    private User userMock;
+
+    @InjectMocks
+    private Cart cart;
+
+    @Test
+    public void testGetDiscountCodes() throws Exception {
+        // Setup
+        Map<String, Double> discounts = new HashMap<>();
+        discounts.put("loyal", 0.1d);
+        discounts.put("30ff", 0.3d);
+        discounts.put("2023", 0.3d);
+        discounts.put("throwback", 0.15d);
+        discounts.put("2024", 0.2d);
+        discounts.put("fun", 0.05d);
+
+        // Set private field using reflection
+        java.lang.reflect.Field field = Cart.class.getDeclaredField("discounts");
+        field.setAccessible(true);
+        field.set(null, Collections.unmodifiableMap(discounts));
+
+        // Execute
+        Set<String> result = cart.getDiscountCodes();
+
+        // Verify
+        assertEquals(6, result.size());
+        assertTrue(result.contains("loyal"));
+        assertTrue(result.contains("30ff"));
+        assertTrue(result.contains("2023"));
+        assertTrue(result.contains("throwback"));
+        assertTrue(result.contains("2024"));
+        assertTrue(result.contains("fun"));
+    }
+}
+```
+
+Completion:
+```java
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.junit.Test;
+
+public class CartTest {
+
+    @Test
+    public void testGetDiscountCodes() throws Exception {
+        // Create a Cart object with Mockito
+        User user = mock(User.class);
+        Cart cart = new Cart(user);
+        
+        // Use reflection to access private field 'discounts'
+        Map<String, Double> discounts = new HashMap<>();
+        discounts.put("loyal", 0.1d);
+        discounts.put("30ff", 0.3d);
+        discounts.put("2023", 0.3d);
+        discounts.put("throwback", 0.15d);
+        discounts.put("2024", 0.2d);
+        discounts.put("fun", 0.05d);
+        
+        // Set the private field 'discounts' in the Cart object
+        java.lang.reflect.Field field = Cart.class.getDeclaredField("discounts");
+        field.setAccessible(true);
+        field.set(null, Collections.unmodifiableMap(discounts));
+        
+        // Call the focal method
+        Set<String> discountCodes = cart.getDiscountCodes();
+        
+        // Verify the result
+        assertEquals(6, discountCodes.size());
+        assertTrue(discountCodes.contains("loyal"));
+        assertTrue(discountCodes.contains("30ff"));
+        assertTrue(discountCodes.contains("2023"));
+        assertTrue(discountCodes.contains("throwback"));
+        assertTrue(discountCodes.contains("2024"));
+        assertTrue(discountCodes.contains("fun"));
+    }
+}
+```

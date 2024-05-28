@@ -51,3 +51,68 @@ public class PointTest {
 ```
 
 This test method creates a Point object at coordinates (3,4), calculates the initial distance of the point from the origin, then calls the "move()" method to move the point and asserts that the new coordinates are correct based on the expected movement along the diagonal line passing through the origin.
+
+Prompt 2:
+
+The intention of the "move()" method is to move the Point object by a distance equal to its current distance from the origin. This means that the Point will be shifted by the same distance along both the x-axis and y-axis.
+You are a professional who writes Java test methods. Please write a test method for the "move()" with the given Method intention.
+
+Completion 2:
+
+Sure! Here is a test method for the "move()" method in the Point class:
+
+```java
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
+
+public class PointTest {
+
+    @Test
+    public void testMove() {
+        Point point = new Point(3, 4); // Creating a Point object at coordinates (3, 4)
+        
+        double initialDistance = point.distance(); // Getting the initial distance from the origin
+        
+        point.move(); // Moving the Point object
+        
+        // Asserting that the new coordinates are moved by the same distance along both axes
+        assertEquals(initialDistance, point.distance());
+    }
+}
+```
+
+In this test method, we first create a Point object at coordinates (3, 4). We then calculate the initial distance of this Point from the origin using the `distance()` method. Next, we call the `move()` method on the Point object to move it by a distance equal to its current distance from the origin. Finally, we assert that the new distance of the Point from the origin is equal to the initial distance, ensuring that the Point has been moved correctly.
+
+Prompt 2:
+
+The intention of the "move()" method in the Point class is to move the point by a distance equal to its current distance from the origin. This means that the coordinates of the point will be incremented by the distance between the point and the origin in both the x and y directions.
+You are a professional who writes Java test methods. Please write a test method for the "move()" with the given Method intention.
+
+Completion 2:
+
+Sure! Here is an example of a test method for the "move()" method in the Point class:
+
+```java
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
+
+public class PointTest {
+
+    @Test
+    public void testMove() {
+        // Arrange
+        Point point = new Point(3, 4);
+        
+        // Act
+        point.move();
+        
+        // Assert
+        assertEquals(5, point.getX());
+        assertEquals(5, point.getY());
+    }
+}
+```
+
+In this test method, we first create a Point object with initial coordinates (3, 4). We then call the `move()` method on this Point object. Finally, we use the `assertEquals` method from JUnit to verify that after calling `move()`, the coordinates of the Point object have been updated correctly to (5, 5).

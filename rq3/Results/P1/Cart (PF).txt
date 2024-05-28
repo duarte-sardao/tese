@@ -66,3 +66,79 @@ public class CartTest {
 ```
 
 In this test method, a new instance of the `Cart` class is created and then the `getDiscountCodes()` method is called to retrieve the set of discount codes. The test method then compares the expected discount codes with the actual discount codes obtained from the `getDiscountCodes()` method. If they match, the test passes.
+
+Prompt 2:
+
+The intention of the "getDiscountCodes()" method is to provide a way for other classes or components to access and retrieve the set of all available discount codes that can be applied to the items in the cart. This method returns a Set of Strings which represents the keys of the discounts Map, providing a list of all the discount codes that are currently available for use.
+You are a professional who writes Java test methods. Please write a test method for the "getDiscountCodes()" with the given Method intention.
+
+Completion 2:
+
+Sure, here is an example of a test method for the "getDiscountCodes()" method using JUnit:
+
+```java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class CartTest {
+
+    @Test
+    public void testGetDiscountCodes() {
+        Cart cart = new Cart(new User());
+        
+        Set<String> discountCodes = cart.getDiscountCodes();
+        
+        assertTrue(discountCodes.contains("loyal"));
+        assertTrue(discountCodes.contains("30ff"));
+        assertTrue(discountCodes.contains("2023"));
+        assertTrue(discountCodes.contains("throwback"));
+        assertTrue(discountCodes.contains("2024"));
+        assertTrue(discountCodes.contains("fun"));
+        assertEquals(6, discountCodes.size());
+    }
+}
+```
+
+In this test method, we create a new instance of the Cart class and then call the getDiscountCodes() method to retrieve the set of discount codes. We then use assertions to check if the set contains all the expected discount codes and validate the size of the set. If all assertions pass, the test will be successful.
+
+Prompt 2:
+
+The intention of the "getDiscountCodes()" method is to provide a way for external classes or modules to retrieve the available discount codes that can be applied to a cart. This method returns a set of strings representing the discount codes that are stored in the `discounts` map within the Cart class. This allows other parts of the program to access and display the available discount codes to the user or make decisions based on the available discounts.
+You are a professional who writes Java test methods. Please write a test method for the "getDiscountCodes()" with the given Method intention.
+
+Completion 2:
+
+Sure, here is an example test method for the "getDiscountCodes()" method:
+
+```java
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+public class CartTest {
+
+    @Test
+    public void testGetDiscountCodes() {
+        Cart cart = new Cart(new User("testUser"));
+        
+        Set<String> expectedDiscountCodes = new HashSet<>();
+        expectedDiscountCodes.add("loyal");
+        expectedDiscountCodes.add("30ff");
+        expectedDiscountCodes.add("2023");
+        expectedDiscountCodes.add("throwback");
+        expectedDiscountCodes.add("2024");
+        expectedDiscountCodes.add("fun");
+        
+        Set<String> actualDiscountCodes = cart.getDiscountCodes();
+        
+        assertEquals(expectedDiscountCodes.size(), actualDiscountCodes.size());
+        
+        for(String code : expectedDiscountCodes) {
+            assertTrue(actualDiscountCodes.contains(code));
+        }
+    }
+}
+```
+
+In this test method, we first create a Cart object and then define a set of expected discount codes that should be returned by the `getDiscountCodes()` method. We then call the method and compare the expected set of discount codes with the actual set returned by the method. The test checks if the size of both sets is the same and also verifies that each expected discount code is present in the actual set.

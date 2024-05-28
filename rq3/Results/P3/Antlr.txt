@@ -103,3 +103,94 @@ public class Python2TargetTest {
 }
 ```
 Please make sure to add the necessary imports for the classes used in the test.
+
+Completion:
+import org.antlr.v4.tool.GrammarAST;
+import org.antlr.v4.tool.CodeGenerator;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.StringRenderer;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
+public class Python2TargetTest {
+
+    @Mock
+    private CodeGenerator codeGenerator;
+
+    @Test
+    public void testGetBadWords() throws Exception {
+        Python2Target python2Target = new Python2Target(codeGenerator);
+
+        // Set up mock behavior
+        Set<String> mockSet = new HashSet<>();
+        mockSet.add("mockWord");
+        when(codeGenerator.getBadWords()).thenReturn(mockSet);
+
+        // Invoke the focal method using reflection
+        Set<String> result = (Set<String>) TestUtils.invokeMethod(python2Target, "getBadWords");
+
+        // Verify the result
+        assertEquals(mockSet, result);
+    }
+
+    // Other methods and fields in the class
+
+    // Utility class for invoking private methods using reflection
+    static class TestUtils {
+        public static Object invokeMethod(Object obj, String methodName) throws Exception {
+            java.lang.reflect.Method method = obj.getClass().getDeclaredMethod(methodName);
+            method.setAccessible(true);
+            return method.invoke(obj);
+        }
+    }
+}
+
+Completion:
+```java
+import org.antlr.v4.tool.GrammarAST;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
+public class Python2TargetTest {
+
+    @Mock
+    private CodeGenerator codeGenerator;
+
+    @Test
+    public void testGetBadWords() throws Exception {
+        Python2Target python2Target = new Python2Target(codeGenerator);
+
+        // Mock the addBadWords method to do nothing
+        when(python2Target.addBadWords()).thenCallRealMethod();
+
+        // Invoke the getBadWords method using reflection
+        Set<String> result = (Set<String>) python2Target.getClass()
+                .getDeclaredMethod("getBadWords")
+                .invoke(python2Target);
+
+        // Ensure that the badWords set is not empty after invoking getBadWords
+        assertEquals(false, result.isEmpty());
+    }
+
+    // Additional test cases for better branch coverage can be added here
+}
+```
+Make sure to replace `CodeGenerator` with the actual class name if it differs in your code. This test should provide good coverage for the `getBadWords()` method in the `Python2Target` class.

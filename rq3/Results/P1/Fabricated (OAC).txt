@@ -106,3 +106,74 @@ public class EventTest {
 ```
 
 In this test method, we create an Event object with a Producer, set a new registration number using the "setProducerNumber" method, and then verify that the registration number is updated correctly. We also test the scenario where the producer is null and verify that the method returns -1 in that case.
+
+Prompt 2:
+
+The intention of the "setProducerNumber(int)" method in the Event class seems to be to set the registration number of the producer associated with the event. The method takes an integer parameter representing the registration number and sets it for the producer. If the producer associated with the event is not null, the registration number is set for the producer and the method returns the registration number that was set. If the producer is null, the method returns -1. This method provides a way to set the registration number for the producer associated with the event.
+You are a professional who writes Java test methods. Please write a test method for the "setProducerNumber(int)" with the given Method intention.
+
+Completion 2:
+
+Sure, here is an example of a test method for the "setProducerNumber(int)" method in the Event class:
+
+```java
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+
+public class EventTest {
+
+    @Test
+    public void testSetProducerNumber() {
+        // Create a test Event object
+        Event event = new Event();
+        Producer producer = new Producer();
+        event.setProducer(producer);
+
+        // Set a registration number using setProducerNumber method
+        int registrationNumber = 12345;
+        int result = event.setProducerNumber(registrationNumber);
+
+        // Check if the registration number was set correctly for the producer
+        assertEquals(registrationNumber, result);
+        assertEquals(registrationNumber, producer.getRegistrationNumber());
+    }
+}
+```
+
+In this test method, we create an Event object and set a Producer object for it. We then set a registration number using the setProducerNumber method and check if it was set correctly by asserting that the returned value matches the registration number and that the producer's registration number matches the same value. This ensures that the setProducerNumber method functions as intended.
+
+Prompt 2:
+
+The intention of the "setProducerNumber(int)" method in the Event class is to set a registration number for the producer associated with the event. If the producer is not null, the method will set the registration number to the specified integer value and return the new registration number. If the producer is null, the method will return -1. This method provides a way to set the registration number for the producer of the event.
+You are a professional who writes Java test methods. Please write a test method for the "setProducerNumber(int)" with the given Method intention.
+
+Completion 2:
+
+Sure! Here is a test method for the "setProducerNumber(int)" method in the Event class:
+
+```java
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+
+public class EventTest {
+
+    @Test
+    public void testSetProducerNumber() {
+        // Create a producer
+        Producer producer = new Producer();
+        
+        // Create an event
+        Event event = new Event(producer, "EventName", "EventType", new ArrayList<>());
+        
+        // Set registration number for the producer
+        int newRegistrationNumber = 12345;
+        int result = event.setProducerNumber(newRegistrationNumber);
+        
+        // Assert that the registration number was set correctly
+        assertEquals(newRegistrationNumber, producer.getRegistrationNumber());
+        assertEquals(newRegistrationNumber, result);
+    }
+}
+```
+
+In this test method, we create a Producer and an Event, then we set a registration number for the producer using the "setProducerNumber" method of the Event class. Finally, we assert that the registration number was set correctly and that the method returns the correct value.

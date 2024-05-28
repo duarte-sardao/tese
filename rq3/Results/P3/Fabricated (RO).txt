@@ -59,3 +59,72 @@ public class InstalacaoAssentosTest {
 		assertEquals("testString".hashCode(), result);
 	}
 }
+
+Completion:
+import static org.junit.Assert.*;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import static org.mockito.Mockito.when;
+import java.util.ArrayList;
+import java.util.List;
+
+@RunWith(MockitoJUnitRunner.class)
+public class InstalacaoAssentosTest {
+    
+    @Mock
+    InstalacaoAssentos instalacaoAssentos;
+    
+    @Test
+    public void testHashString() throws Exception {
+        // Setup
+        List<Lugar> lugares = new ArrayList<>();
+        lugares.add(new Lugar());
+        
+        when(instalacaoAssentos.helpString()).thenReturn("testString");
+        when(instalacaoAssentos.getLugares()).thenReturn(lugares);
+        
+        // Invoke focal method using reflection
+        int result = (int) InstalacaoAssentos.class.getDeclaredMethod("hashString").invoke(instalacaoAssentos);
+        
+        // Verify
+        assertEquals("testString".hashCode(), result);
+    }
+}
+
+Completion:
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Test;
+
+public class InstalacaoAssentosTest {
+
+	@Test
+	public void testHashString() throws Exception {
+		// Create mock InstalacaoAssentos object
+		InstalacaoAssentos instalacaoAssentos = mock(InstalacaoAssentos.class);
+
+		// Create a mock List of Lugar objects
+		List<Lugar> lugares = new ArrayList<>();
+		lugares.add(new Lugar());
+		lugares.add(new Lugar());
+
+		// Stub the getLugares method to return the mock List of Lugar objects
+		when(instalacaoAssentos.getLugares()).thenReturn(lugares);
+
+		// Stub the helpString method to return a specific String
+		when(instalacaoAssentos.getClass().getDeclaredMethod("helpString").invoke(instalacaoAssentos)).thenReturn("testString");
+
+		// Call the hashString method using reflection
+		int result = (int) instalacaoAssentos.getClass().getDeclaredMethod("hashString").invoke(instalacaoAssentos);
+
+		// Verify the result
+		assertEquals("testString".hashCode(), result);
+	}
+}

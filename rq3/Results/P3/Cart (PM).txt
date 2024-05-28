@@ -106,3 +106,131 @@ public class CartTest {
     }
 }
 ```
+
+Completion:
+```java
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+import java.util.Arrays;
+import java.util.List;
+
+@RunWith(MockitoJUnitRunner.class)
+public class CartTest {
+
+    @Mock
+    private Item item1;
+
+    @Mock
+    private Item item2;
+
+    @Mock
+    private User user;
+
+    private Cart cart;
+
+    @Test
+    public void testSumItemsWithoutCoupon() {
+        when(item1.isCoupon()).thenReturn(false);
+        when(item1.getValue()).thenReturn(10.0);
+        when(item1.getAmount()).thenReturn(2);
+
+        when(item2.isCoupon()).thenReturn(false);
+        when(item2.getValue()).thenReturn(20.0);
+        when(item2.getAmount()).thenReturn(1);
+
+        cart = new Cart(user);
+        cart.add_item(item1);
+        cart.add_item(item2);
+
+        double expectedSum = 10.0*2 + 20.0*1;
+        assertEquals(expectedSum, cart.sum_items(), 0.001);
+    }
+
+    @Test
+    public void testSumItemsWithCoupon() {
+        when(item1.isCoupon()).thenReturn(true);
+        when(item1.getValue()).thenReturn(15.0);
+        when(item1.getAmount()).thenReturn(3);
+
+        when(item2.isCoupon()).thenReturn(true);
+        when(item2.getValue()).thenReturn(30.0);
+        when(item2.getAmount()).thenReturn(1);
+
+        cart = new Cart(user);
+        cart.add_item(item1);
+        cart.add_item(item2);
+
+        double expectedSum = -(15.0*3) + -(30.0*1);
+        assertEquals(expectedSum, cart.sum_items(), 0.001);
+    }
+
+    @Test
+    public void testSumItemsMixed() {
+        when(item1.isCoupon()).thenReturn(false);
+        when(item1.getValue()).thenReturn(10.0);
+        when(item1.getAmount()).thenReturn(2);
+
+        when(item2.isCoupon()).thenReturn(true);
+        when(item2.getValue()).thenReturn(20.0);
+        when(item2.getAmount()).thenReturn(1);
+
+        cart = new Cart(user);
+        cart.add_item(item1);
+        cart.add_item(item2);
+
+        double expectedSum = 10.0*2 + -(20.0*1);
+        assertEquals(expectedSum, cart.sum_items(), 0.001);
+    }
+}
+```
+
+Completion:
+```java
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
+
+import org.junit.Before;
+import org.junit.Test;
+
+public class CartTest {
+
+    private Cart cart;
+
+    @Before
+    public void setup() {
+        User user = mock(User.class);
+        cart = new Cart(user);
+    }
+
+    @Test
+    public void testSumItemsWithoutCoupon() {
+        Item item1 = new Item(10, 2, false);
+        Item item2 = new Item(20, 1, false);
+        
+        cart.add_item(item1);
+        cart.add_item(item2);
+        
+        double expectedSum = 10*2 + 20*1;
+        assertEquals(expectedSum, cart.sum_items(), 0.001);
+    }
+
+    @Test
+    public void testSumItemsWithCoupon() {
+        Item item1 = new Item(15, 3, true);
+        Item item2 = new Item(30, 1, true);
+        
+        cart.add_item(item1);
+        cart.add_item(item2);
+        
+        double expectedSum = -15*3 - 30*1;
+        assertEquals(expectedSum, cart.sum_items(), 0.001);
+    }
+
+    // Add more test cases for edge cases and boundary conditions
+
+}
+```

@@ -112,3 +112,94 @@ public class EventTest {
 	}
 
 }
+
+Completion:
+```java
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+@RunWith(MockitoJUnitRunner.class)
+public class EventTest {
+
+    @Mock
+    private Producer mockProducer;
+
+    @Test
+    public void testSetProducerNumber() throws Exception {
+        // Create an instance of Event
+        Event event = new Event();
+        
+        // Set up the mock producer
+        int registrationNumber = 12345;
+        when(mockProducer.getRegistrationNumber()).thenReturn(registrationNumber);
+        
+        // Set the mock producer to the event
+        event.setProducer(mockProducer);
+        
+        // Call the focal method using reflection
+        int n = 54321;
+        int result = (int) invokePrivateMethod(event, "setProducerNumber", int.class, n);
+        
+        // Verify that the mock producer's setRegistrationNumber method was called with the correct argument
+        verify(mockProducer).setRegistrationNumber(n);
+        
+        // Verify that the result matches the mock producer's registration number
+        assertEquals(registrationNumber, result);
+    }
+
+    // Helper method to invoke private methods using reflection
+    private Object invokePrivateMethod(Object object, String methodName, Class<?> parameterType, Object argument) throws Exception {
+        java.lang.reflect.Method method = object.getClass().getDeclaredMethod(methodName, parameterType);
+        method.setAccessible(true);
+        return method.invoke(object, argument);
+    }
+}
+```
+
+Completion:
+```java
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import org.junit.Before;
+import org.junit.Test;
+
+public class EventTest {
+
+    private Event event;
+
+    @Before
+    public void setUp() {
+        event = new Event();
+    }
+
+    @Test
+    public void testSetProducerNumber() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        // Create a mock Producer
+        Producer mockProducer = mock(Producer.class);
+        when(mockProducer.getRegistrationNumber()).thenReturn(123);
+
+        // Set the mock Producer to the Event
+        event.setProducer(mockProducer);
+
+        // Call the private method setProducerNumber using reflection
+        Method setProducerNumberMethod = Event.class.getDeclaredMethod("setProducerNumber", int.class);
+        setProducerNumberMethod.setAccessible(true);
+        int result = (int) setProducerNumberMethod.invoke(event, 456);
+
+        // Verify that the mock Producer's setRegistrationNumber method was called with the correct argument
+        verify(mockProducer).setRegistrationNumber(456);
+
+        // Verify that the result matches the mock Producer's registration number
+        assertEquals(123, result);
+    }
+}
+```

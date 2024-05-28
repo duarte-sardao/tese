@@ -100,3 +100,116 @@ public class InstalacaoAssentosTest {
   }
 }
 ```
+
+Completion:
+```java
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.Test;
+
+public class InstalacaoAssentosTest {
+
+  @Test
+  public void testCopyWithDefaults() throws Exception {
+    // Create a mock OkHttpClient instance
+    OkHttpClient mockClient = mock(OkHttpClient.class);
+
+    // Set up the fields of the mock client
+    Proxy proxy = new Proxy();
+    ProxySelector proxySelector = new ProxySelector();
+    CookieHandler cookieHandler = new CookieHandler();
+    ResponseCache responseCache = new ResponseCache();
+    SSLSocketFactory sslSocketFactory = new SSLSocketFactory();
+    HostnameVerifier hostnameVerifier = new HostnameVerifier();
+    OkAuthenticator authenticator = new OkAuthenticator();
+    ConnectionPool connectionPool = new ConnectionPool();
+    boolean followProtocolRedirects = true;
+    List<String> transports = Arrays.asList("http/1.1", "spdy/3");
+
+    // Set up the mock client fields
+    when(mockClient.getProxy()).thenReturn(proxy);
+    when(mockClient.getProxySelector()).thenReturn(proxySelector);
+    when(mockClient.getCookieHandler()).thenReturn(cookieHandler);
+    when(mockClient.getResponseCache()).thenReturn(responseCache);
+    when(mockClient.getSslSocketFactory()).thenReturn(sslSocketFactory);
+    when(mockClient.getHostnameVerifier()).thenReturn(hostnameVerifier);
+    when(mockClient.getAuthenticator()).thenReturn(authenticator);
+    when(mockClient.getConnectionPool()).thenReturn(connectionPool);
+    when(mockClient.getFollowProtocolRedirects()).thenReturn(followProtocolRedirects);
+    when(mockClient.getTransports()).thenReturn(transports);
+
+    // Invoke the private method using reflection
+    InstalacaoAssentos instalacaoAssentos = new InstalacaoAssentos();
+    java.lang.reflect.Method method = OkHttpClient.class.getDeclaredMethod("copyWithDefaults");
+    method.setAccessible(true);
+    OkHttpClient result = (OkHttpClient) method.invoke(instalacaoAssentos);
+
+    // Assert the result
+    assertEquals(proxy, result.getProxy());
+    assertEquals(proxySelector != null ? proxySelector : ProxySelector.getDefault(), result.getProxySelector());
+    assertEquals(cookieHandler != null ? cookieHandler : CookieHandler.getDefault(), result.getCookieHandler());
+    assertEquals(responseCache != null ? responseCache : ResponseCache.getDefault(), result.getResponseCache());
+    assertEquals(sslSocketFactory != null ? sslSocketFactory : HttpsURLConnection.getDefaultSSLSocketFactory(), result.getSslSocketFactory());
+    assertEquals(hostnameVerifier != null ? hostnameVerifier : new OkHostnameVerifier(), result.getHostnameVerifier());
+    assertEquals(authenticator != null ? authenticator : HttpAuthenticator.SYSTEM_DEFAULT, result.getAuthenticator());
+    assertEquals(connectionPool != null ? connectionPool : ConnectionPool.getDefault(), result.getConnectionPool());
+    assertTrue(result.getFollowProtocolRedirects());
+    assertEquals(transports != null ? transports : OkHttpClient.DEFAULT_TRANSPORTS, result.getTransports());
+  }
+}
+```
+
+Completion:
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import java.net.Proxy;
+import java.net.ProxySelector;
+import java.net.CookieHandler;
+import java.net.ResponseCache;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.HostnameVerifier;
+import java.util.List;
+import java.util.Arrays;
+
+@RunWith(MockitoJUnitRunner.class)
+public class OkHttpClientTest {
+
+    @Test
+    public void testCopyWithDefaults() throws Exception {
+        OkHttpClient okHttpClient = new OkHttpClient();
+        OkHttpClient spyClient = Mockito.spy(okHttpClient);
+
+        Proxy proxy = Mockito.mock(Proxy.class);
+        ProxySelector proxySelector = Mockito.mock(ProxySelector.class);
+        CookieHandler cookieHandler = Mockito.mock(CookieHandler.class);
+        ResponseCache responseCache = Mockito.mock(ResponseCache.class);
+        SSLSocketFactory sslSocketFactory = Mockito.mock(SSLSocketFactory.class);
+        HostnameVerifier hostnameVerifier = Mockito.mock(HostnameVerifier.class);
+        OkAuthenticator authenticator = Mockito.mock(OkAuthenticator.class);
+        ConnectionPool connectionPool = Mockito.mock(ConnectionPool.class);
+        List<String> transports = Arrays.asList("http/1.1");
+
+        Mockito.when(spyClient.getProxy()).thenReturn(proxy);
+        Mockito.when(spyClient.getProxySelector()).thenReturn(proxySelector);
+        Mockito.when(spyClient.getCookieHandler()).thenReturn(cookieHandler);
+        Mockito.when(spyClient.getResponseCache()).thenReturn(responseCache);
+        Mockito.when(spyClient.getSslSocketFactory()).thenReturn(sslSocketFactory);
+        Mockito.when(spyClient.getHostnameVerifier()).thenReturn(hostnameVerifier);
+        Mockito.when(spyClient.getAuthenticator()).thenReturn(authenticator);
+        Mockito.when(spyClient.getConnectionPool()).thenReturn(connectionPool);
+        Mockito.when(spyClient.getFollowProtocolRedirects()).thenReturn(true);
+        Mockito.when(spyClient.getTransports()).thenReturn(transports);
+
+        OkHttpClient result = spyClient.copyWithDefaults();
+
+        // Add assertions here to verify the behavior of the copyWithDefaults method
+    }
+}
