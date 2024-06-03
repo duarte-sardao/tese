@@ -6,7 +6,7 @@ Please help me generate a whole JUnit test for a focal method in a focal class. 
 4. Signatures of other methods and fields in the class.
 I need you to create a whole unit test using JUnit 4 and Mockito 3, ensuring optimal branch and line coverage. The test should include necessary imports for JUnit 4 andMockito 3, compile without errors, and use reflection to invoke private methods. No additional explanations required.
 
-The focal method is copyWithDefaults() in focal class InstalacaoAssentos, the information is public final class OkHttpClient {
+The focal method is copyWithDefaults() in focal class OkHttpClient, the information is public final class OkHttpClient {
   private static final List<String> DEFAULT_TRANSPORTS
       = Util.immutableList(Arrays.asList("spdy/3", "http/1.1"));
   private Proxy proxy;
@@ -66,103 +66,7 @@ The focal method is copyWithDefaults() in focal class InstalacaoAssentos, the in
     return result;
   }
 }
-Completion:
-```java
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
-import java.net.URL;
-import java.util.Arrays;
-
-import org.junit.Test;
-
-public class InstalacaoAssentosTest {
-
-  @Test
-  public void testCopyWithDefaults() throws Exception {
-    OkHttpClient okHttpClient = new OkHttpClient();
-    OkHttpClient spyClient = spy(okHttpClient);
-
-    OkHttpClient result = spyClient.copyWithDefaults();
-
-    assertNotNull(result);
-    assertNotSame(spyClient, result);
-    assertEquals(spyClient.getProxy(), result.getProxy());
-    assertEquals(spyClient.getProxySelector() != null ? spyClient.getProxySelector() : ProxySelector.getDefault(), result.getProxySelector());
-    assertEquals(spyClient.getCookieHandler() != null ? spyClient.getCookieHandler() : CookieHandler.getDefault(), result.getCookieHandler());
-    assertEquals(spyClient.getResponseCache() != null ? spyClient.getResponseCache() : ResponseCache.getDefault(), result.getResponseCache());
-    assertEquals(spyClient.getSslSocketFactory() != null ? spyClient.getSslSocketFactory() : HttpsURLConnection.getDefaultSSLSocketFactory(), result.getSslSocketFactory());
-    assertEquals(spyClient.getHostnameVerifier() != null ? spyClient.getHostnameVerifier() : new OkHostnameVerifier(), result.getHostnameVerifier());
-    assertEquals(spyClient.getAuthenticator() != null ? spyClient.getAuthenticator() : HttpAuthenticator.SYSTEM_DEFAULT, result.getAuthenticator());
-    assertEquals(spyClient.getConnectionPool() != null ? spyClient.getConnectionPool() : ConnectionPool.getDefault(), result.getConnectionPool());
-    assertEquals(spyClient.getFollowProtocolRedirects(), result.getFollowProtocolRedirects());
-    assertEquals(spyClient.getTransports() != null ? spyClient.getTransports() : OkHttpClient.DEFAULT_TRANSPORTS, result.getTransports());
-  }
-}
-```
-
-Completion:
-```java
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
-import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
-
-import org.junit.Test;
-
-public class InstalacaoAssentosTest {
-
-  @Test
-  public void testCopyWithDefaults() throws Exception {
-    // Create a mock OkHttpClient instance
-    OkHttpClient mockClient = mock(OkHttpClient.class);
-
-    // Set up the fields of the mock client
-    Proxy proxy = new Proxy();
-    ProxySelector proxySelector = new ProxySelector();
-    CookieHandler cookieHandler = new CookieHandler();
-    ResponseCache responseCache = new ResponseCache();
-    SSLSocketFactory sslSocketFactory = new SSLSocketFactory();
-    HostnameVerifier hostnameVerifier = new HostnameVerifier();
-    OkAuthenticator authenticator = new OkAuthenticator();
-    ConnectionPool connectionPool = new ConnectionPool();
-    boolean followProtocolRedirects = true;
-    List<String> transports = Arrays.asList("http/1.1", "spdy/3");
-
-    // Set up the mock client fields
-    when(mockClient.getProxy()).thenReturn(proxy);
-    when(mockClient.getProxySelector()).thenReturn(proxySelector);
-    when(mockClient.getCookieHandler()).thenReturn(cookieHandler);
-    when(mockClient.getResponseCache()).thenReturn(responseCache);
-    when(mockClient.getSslSocketFactory()).thenReturn(sslSocketFactory);
-    when(mockClient.getHostnameVerifier()).thenReturn(hostnameVerifier);
-    when(mockClient.getAuthenticator()).thenReturn(authenticator);
-    when(mockClient.getConnectionPool()).thenReturn(connectionPool);
-    when(mockClient.getFollowProtocolRedirects()).thenReturn(followProtocolRedirects);
-    when(mockClient.getTransports()).thenReturn(transports);
-
-    // Invoke the private method using reflection
-    InstalacaoAssentos instalacaoAssentos = new InstalacaoAssentos();
-    java.lang.reflect.Method method = OkHttpClient.class.getDeclaredMethod("copyWithDefaults");
-    method.setAccessible(true);
-    OkHttpClient result = (OkHttpClient) method.invoke(instalacaoAssentos);
-
-    // Assert the result
-    assertEquals(proxy, result.getProxy());
-    assertEquals(proxySelector != null ? proxySelector : ProxySelector.getDefault(), result.getProxySelector());
-    assertEquals(cookieHandler != null ? cookieHandler : CookieHandler.getDefault(), result.getCookieHandler());
-    assertEquals(responseCache != null ? responseCache : ResponseCache.getDefault(), result.getResponseCache());
-    assertEquals(sslSocketFactory != null ? sslSocketFactory : HttpsURLConnection.getDefaultSSLSocketFactory(), result.getSslSocketFactory());
-    assertEquals(hostnameVerifier != null ? hostnameVerifier : new OkHostnameVerifier(), result.getHostnameVerifier());
-    assertEquals(authenticator != null ? authenticator : HttpAuthenticator.SYSTEM_DEFAULT, result.getAuthenticator());
-    assertEquals(connectionPool != null ? connectionPool : ConnectionPool.getDefault(), result.getConnectionPool());
-    assertTrue(result.getFollowProtocolRedirects());
-    assertEquals(transports != null ? transports : OkHttpClient.DEFAULT_TRANSPORTS, result.getTransports());
-  }
-}
-```
 
 Completion:
 import org.junit.Test;
@@ -172,12 +76,16 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.net.Proxy;
 import java.net.ProxySelector;
-import java.net.CookieHandler;
 import java.net.ResponseCache;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.HostnameVerifier;
-import java.util.List;
+import java.net.CookieHandler;
+import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSocketFactory;
+
+import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OkHttpClientTest {
@@ -195,7 +103,8 @@ public class OkHttpClientTest {
         HostnameVerifier hostnameVerifier = Mockito.mock(HostnameVerifier.class);
         OkAuthenticator authenticator = Mockito.mock(OkAuthenticator.class);
         ConnectionPool connectionPool = Mockito.mock(ConnectionPool.class);
-        List<String> transports = Arrays.asList("http/1.1");
+
+        List<String> transports = Arrays.asList("spdy/3", "http/1.1");
 
         Mockito.when(spyClient.getProxy()).thenReturn(proxy);
         Mockito.when(spyClient.getProxySelector()).thenReturn(proxySelector);
@@ -210,6 +119,134 @@ public class OkHttpClientTest {
 
         OkHttpClient result = spyClient.copyWithDefaults();
 
-        // Add assertions here to verify the behavior of the copyWithDefaults method
+        assertEquals(proxy, result.getProxy());
+        assertEquals(proxySelector != null ? proxySelector : ProxySelector.getDefault(), result.getProxySelector());
+        assertEquals(cookieHandler != null ? cookieHandler : CookieHandler.getDefault(), result.getCookieHandler());
+        assertEquals(responseCache != null ? responseCache : ResponseCache.getDefault(), result.getResponseCache());
+        assertEquals(sslSocketFactory != null ? sslSocketFactory : HttpsURLConnection.getDefaultSSLSocketFactory(), result.getSslSocketFactory());
+        assertEquals(hostnameVerifier != null ? hostnameVerifier : new OkHostnameVerifier(), result.getHostnameVerifier());
+        assertEquals(authenticator != null ? authenticator : HttpAuthenticator.SYSTEM_DEFAULT, result.getAuthenticator());
+        assertEquals(connectionPool != null ? connectionPool : ConnectionPool.getDefault(), result.getConnectionPool());
+        assertEquals(true, result.getFollowProtocolRedirects());
+        assertEquals(transports != null ? transports : OkHttpClient.DEFAULT_TRANSPORTS, result.getTransports());
+    }
+}
+
+Completion:
+```java
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import org.junit.Before;
+import org.junit.Test;
+
+public class OkHttpClientTest {
+
+  private OkHttpClient client;
+
+  @Before
+  public void setUp() {
+    client = new OkHttpClient();
+  }
+
+  @Test
+  public void testCopyWithDefaults() throws Exception {
+    OkHttpClient originalClient = mock(OkHttpClient.class);
+    when(originalClient.getProxy()).thenReturn(mock(Proxy.class));
+    when(originalClient.getProxySelector()).thenReturn(null);
+    when(originalClient.getCookieHandler()).thenReturn(null);
+    when(originalClient.getResponseCache()).thenReturn(null);
+    when(originalClient.getSslSocketFactory()).thenReturn(null);
+    when(originalClient.getHostnameVerifier()).thenReturn(null);
+    when(originalClient.getAuthenticator()).thenReturn(null);
+    when(originalClient.getConnectionPool()).thenReturn(null);
+    when(originalClient.getFollowProtocolRedirects()).thenReturn(true);
+    when(originalClient.getTransports()).thenReturn(null);
+
+    OkHttpClient result = Whitebox.invokeMethod(originalClient, "copyWithDefaults");
+
+    assertNotNull(result);
+    assertEquals(originalClient.getProxy(), result.getProxy());
+    assertEquals(ProxySelector.getDefault(), result.getProxySelector());
+    assertEquals(CookieHandler.getDefault(), result.getCookieHandler());
+    assertEquals(ResponseCache.getDefault(), result.getResponseCache());
+    assertEquals(HttpsURLConnection.getDefaultSSLSocketFactory(), result.getSslSocketFactory());
+    assertEquals(new OkHostnameVerifier(), result.getHostnameVerifier());
+    assertEquals(HttpAuthenticator.SYSTEM_DEFAULT, result.getAuthenticator());
+    assertEquals(ConnectionPool.getDefault(), result.getConnectionPool());
+    assertTrue(result.getFollowProtocolRedirects());
+    assertEquals(OkHttpClient.DEFAULT_TRANSPORTS, result.getTransports());
+  }
+}
+```
+
+Completion:
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
+public class OkHttpClientTest {
+
+    @Mock
+    private Proxy proxy;
+    @Mock
+    private ProxySelector proxySelector;
+    @Mock
+    private CookieHandler cookieHandler;
+    @Mock
+    private ResponseCache responseCache;
+    @Mock
+    private SSLSocketFactory sslSocketFactory;
+    @Mock
+    private HostnameVerifier hostnameVerifier;
+    @Mock
+    private OkAuthenticator authenticator;
+    @Mock
+    private ConnectionPool connectionPool;
+
+    private OkHttpClient okHttpClient;
+
+    @Test
+    public void testCopyWithDefaults() throws Exception {
+        OkHttpClient okHttpClient = new OkHttpClient();
+        okHttpClient.setProxy(proxy);
+        okHttpClient.setProxySelector(proxySelector);
+        okHttpClient.setCookieHandler(cookieHandler);
+        okHttpClient.setResponseCache(responseCache);
+        okHttpClient.setSSLSocketFactory(sslSocketFactory);
+        okHttpClient.setHostnameVerifier(hostnameVerifier);
+        okHttpClient.setAuthenticator(authenticator);
+        okHttpClient.setConnectionPool(connectionPool);
+        okHttpClient.setFollowProtocolRedirects(true);
+        List<String> transports = Arrays.asList("http/1.1", "spdy/3");
+        okHttpClient.setTransports(transports);
+
+        OkHttpClient result = invokePrivateMethod(okHttpClient, "copyWithDefaults");
+
+        assertEquals(proxy, result.getProxy());
+        assertEquals(proxySelector, result.getProxySelector());
+        assertEquals(cookieHandler, result.getCookieHandler());
+        assertEquals(responseCache, result.getResponseCache());
+        assertEquals(sslSocketFactory, result.getSslSocketFactory());
+        assertEquals(hostnameVerifier, result.getHostnameVerifier());
+        assertEquals(authenticator, result.getAuthenticator());
+        assertEquals(connectionPool, result.getConnectionPool());
+        assertEquals(true, result.getFollowProtocolRedirects());
+        assertEquals(transports, result.getTransports());
+    }
+
+    private OkHttpClient invokePrivateMethod(OkHttpClient object, String methodName) throws Exception {
+        java.lang.reflect.Method method = OkHttpClient.class.getDeclaredMethod(methodName);
+        method.setAccessible(true);
+        return (OkHttpClient) method.invoke(object);
     }
 }

@@ -1,5 +1,5 @@
 copyWithDefaults()
-InstalacaoAssentos
+OkHttpClient
 public final class OkHttpClient {
   private static final List<String> DEFAULT_TRANSPORTS
       = Util.immutableList(Arrays.asList("spdy/3", "http/1.1"));
