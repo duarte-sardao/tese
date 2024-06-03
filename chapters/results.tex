@@ -552,7 +552,7 @@ private methods. But it has to be understood that these sort of issues are a pos
                       & \multicolumn{2}{c}{Prompt 1} & \multicolumn{2}{c}{Prompt 2} & \multicolumn{2}{c}{Prompt 3} \\
                       & Compilation & Passing & Compilation & Passing & Compilation & Passing \\
     \midrule
-    Point (CM)       & 3 & 0 & Yes & No & 0 & 0 \\
+    Point (CM)       & 3 & 2 & Yes & No & 0 & 0 \\
     Fabricated (RO)  & 1 & 0 & Yes & Yes & 3 & 0 \\ 
     Fabricated (OAC) & 2 & 0 & Yes & No & 0 & 0 \\
     Cart (CM)        & 0 & 0 & No & No & 0 & 0 \\
@@ -566,6 +566,24 @@ private methods. But it has to be understood that these sort of issues are a pos
     \caption{Results for Prompt 1, 2, and 3.\label{tab:results:rq3p1}}
 \end{table}
 %compilation/runtime
+
+\Cref{tab:results:rq3p1} allows us to observe that issues relating to compilation and correct assertions remain
+a problem for these prompts, confirming this is not necessarily just a issue with the prompt we developed. 
+
+Particular prominent issues, like the issue of incorrect constructors such as in the case of Item remained relevant
+and more prevalent as more test cases were generated for each prompt. 
+
+Of note is the case of Prompt 3: while it prompted the LLM to use mocks and reflection when possible, it used these features
+for all cases, even though these were unnecessary for the vast majority of cases. It did however generate one passing test for OkHttp,
+which so far we had failed to do and where other prompts failed too, as they all sought to access the private method copyWithDefaults().
+Of note, however, the 2 compilation failures for OkHttp in prompt 3 also dealt with private access, but to a field rather than a method.
+
+\todo{short}
+
+
+
+
+
 
 --still quite good results 
 
