@@ -563,11 +563,11 @@ private methods. But it has to be understood that these sort of issues are a pos
     Retrofit (PM/CM) & 0 & 0 & No & No & 0 & 0 \\
     \bottomrule
     \end{tabular}
-    \caption{Results for Prompt 1, 2, and 3.\label{tab:results:rq3p1}}
+    \caption{Results for Prompt 1, 2, and 3.\label{tab:results:rq3t1}}
 \end{table}
 %compilation/runtime
 
-\Cref{tab:results:rq3p1} allows us to observe that issues relating to compilation and correct assertions remain
+\Cref{tab:results:rq3t1} allows us to observe that issues relating to compilation and correct assertions remain
 a problem for these prompts, confirming this is not necessarily just a issue with the prompt we developed. 
 
 Particular prominent issues, like the issue of incorrect constructors such as in the case of Item remained relevant
@@ -580,21 +580,189 @@ Of note, however, the 2 compilation failures for OkHttp in prompt 3 also dealt w
 
 \todo{short}
 
+\begin{table}[t]
+    \centering
+    \begin{tabular}{@{\extracolsep{\fill}} lrrr} \toprule
+                     & Prompt 1 & Prompt 2 & Prompt 3 \\
+    \midrule
+    Point (CM)       & 1 & Yes & 0 \\
+    Fabricated (RO)  & 1 & No  & 0 \\
+    Fabricated (OAC) & 3 & Yes & 0 \\
+    Cart (CM)        & 0 & Yes & 0 \\
+    Cart (PF)        & 3 & Yes  & 1 \\
+    Cart (PM)        & 2 & No & 2 \\
+    Antlr (PF)       & 1 & No  & 0 \\
+    OkHttp (PM)      & 0 & No  & 0 \\
+    Retrofit (PM/CM) & 0 & No  & 0 \\
+    %\midrule
+    \bottomrule
+    \end{tabular}
+    \caption{Ammendable tests.\label{tab:results:rq3t2}}
+\end{table}
 
+With \Cref{tab:results:rq3t2} we can observe that by applying the same correction process we carried out in
+RQ2, we can achieve a meaningful number of tests that not only pass, but also identify the semantic conflict.
 
+It is however notable that these are fewer in number. While we find failures for the same reason as in RQ2, where
+after correction tests pass, but do not identify the conflict, the characteristics of these prompts also introduced
+new issues.
 
+One of these relates to Change Method type conflicts: given Prompt 1 and 3 only carry method signatures for non-focal methods,
+the relationship between the affected methods is hidden. Thus, for example, no test is generated for Cart (CM) that investigates
+checkout with an admin type user as there is not even information that users can have that characteristic. In other cases, it either
+calls or mocks methods to ascertain the appropriate assert. This is the case with Point, for example for Prompt 1:
+\begin{answer}
+    @Test
+    public void testMove() {
+        Point point = new Point(3, 4); // Create a Point object at coordinates (3,4)
+        
+        double initialDistance = point.distance(); // Calculate initial distance from origin
+        point.move(); // Move the point
+        
+        // Assert that the new coordinates are equal to the initial coordinates plus the initial distance
+        assertEquals(3 + initialDistance, point.getX(), 0.0001); 
+        assertEquals(4 + initialDistance, point.getY(), 0.0001);
+    }
+\end{answer}
+As well as for Prompt 3:
+\begin{answer}
+    @Test
+    public void testMove() throws Exception {
+        // Mocking distance method
+        when(point.distance()).thenReturn(5.0);
 
+        // Using reflection to invoke private method move()
+        Point.class.getDeclaredMethod("move").invoke(point);
 
---still quite good results 
+        // Verifying the new values of x and y after calling move()
+        assertEquals(5.0, point.getX(), 0.0);
+        assertEquals(5.0, point.getY(), 0.0);
+    }
+\end{answer}
+The former does not identify the conflict because the assert, rather than being fixed on the merge behaviour,
+varies depending on the result of distance. The latter does not identify it because the behaviour of distance is 
+obscured.
 
---higher randomess (PF testing for size, Cart CM testing with admin)
+Prompt 3 specifically suffer from this degree of excessive mocking when not necessary, either obscuring the behaviour of 
+the actual code under test or generating tests that cannot be corrected easily, without reworking the test in general.
 
---randomness offset but more tests, but more corrective work then
+The most significant difference, if we dismiss the specific case of Prompt 3, is that while we can achieve succesful results,
+there is much higher variability: in most cases for RQ2, if one trial could be ammended, all 3 could be, while here we observe much
+higher variability. For example, Prompt 1, for Antlr, generates:
+\begin{answer}
+    @Test
+    public void testGetBadWords() {
+        Python2Target python2Target = new Python2Target(new CodeGenerator());
+        Set<String> badWords = python2Target.getBadWords();
 
---in prompt repair framework, not only edit distance to consider edit amount
-(ie many tests will require many more promptings, which translates to time and
-money)
+        assertNotNull(badWords);
+        assertFalse(badWords.isEmpty());
 
---prompts with only method signatures are naturally worse at CM type conflicts
+        // Check some known bad words
+        assertTrue(badWords.contains("print"));
+        assertTrue(badWords.contains("execfile"));
+        assertTrue(badWords.contains("lambda"));
 
---excessive mocking in RQ3
+        // Since the set is populated, call getBadWords() again should return the same set
+        Set<String> badWordsSecondCall = python2Target.getBadWords();
+        assertEquals(badWords, badWordsSecondCall);
+    }
+\end{answer}
+This is a perfectly valid test and it verifies several importants features of the getBadWords method: it should
+return a non-null, non-empty set, that contains some words we know and should be constant. However to identify the semantic
+conflict we need to check the size.
+
+A way to offset this higher variability is simply to generate more tests. Indeed, Prompt 2 specifically indicates the number of
+tests to generate, which we specified at 10 as was done before. While it did not always generate the right number, it generated many
+tests and often the correct one for our purposes came later. For Cart (CM), the test we want is the 4th:
+\begin{answer}
+    class CartTest {
+
+    private Cart cart;
+    private User user;
+
+    @BeforeEach
+    void setUp() {
+        user = new User("John", false, 100.0);
+        cart = new Cart(user);
+    }
+
+    @Test
+    void testCheckoutWithValidCode() {
+        Item item = new Item("Item1", 10.0, 2);
+        cart.add_item(item);
+        cart.checkout("loyal");
+        assertEquals(80.0, user.balance);
+    }
+
+    @Test
+    void testCheckoutWithInvalidCode() {
+        Item item = new Item("Item2", 20.0, 1);
+        cart.add_item(item);
+        assertThrows(NullPointerException.class, () -> cart.checkout("invalid"));
+    }
+
+    @Test
+    void testCheckoutWithZeroCost() {
+        Item item = new Item("Item3", 30.0, 1);
+        cart.add_item(item);
+        assertThrows(RuntimeException.class, () -> cart.checkout("30ff"));
+    }
+
+    @Test
+    void testCheckoutWithAdminUser() {
+        user.setAdmin(true);
+        Item item = new Item("Item4", 40.0, 1);
+        cart.add_item(item);
+        cart.checkout("superpromo");
+        assertEquals(100.0, user.balance);
+    }
+
+    @Test
+    void testCheckoutWithMultipleItems() {
+        Item item1 = new Item("Item5", 10.0, 2);
+        Item item2 = new Item("Item6", 20.0, 1);
+        cart.add_item(item1);
+        cart.add_item(item2);
+        cart.checkout("2024");
+        assertEquals(50.0, user.balance);
+    }
+
+    @Test
+    void testCheckoutWithEmptyCart() {
+        assertThrows(RuntimeException.class, () -> cart.checkout("superpromo"));
+    }
+
+    @Test
+    void testSumItems() {
+        Item item1 = new Item("Item7", 10.0, 2);
+        Item item2 = new Item("Item8", 20.0, 1);
+        cart.add_item(item1);
+        cart.add_item(item2);
+        assertEquals(40.0, cart.sum_items());
+    }
+
+    @Test
+    void testTotalCost() {
+        Item item = new Item("Item9", 10.0, 2);
+        cart.add_item(item);
+        assertEquals(18.0, cart.total_cost(0.1));
+    }
+
+    @Test
+    void testTotalCostWithAdminUser() {
+        user.setAdmin(true);
+        Item item = new Item("Item10", 20.0, 1);
+        cart.add_item(item);
+        assertEquals(0.0, cart.total_cost(0.25));
+    }
+}
+\end{answer}
+By increasing the number of tests generate we increase the odds of generating the test we are looking for,
+but these come at higher costs: more tokens need to be generated, more time is spent generating and a lot more
+correction is required. The monetary and time costs are thus much higher.
+
+We verify then that yes, while existing prompts can produce similar results to the prompt developed for RQ2
+and can in some cases test the emergent behaviour, this comes with higher randomness and thus associated effort.
+By prompting with the explanation of the conflict provided, we can achieve positive results more reliably as the
+LLM is given the exact information required on what behaviour needs to be verified.
