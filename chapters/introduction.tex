@@ -5,9 +5,9 @@ The purpose of this chapter is to introduce the motivation for the work, briefly
 \section{Motivation} \label{sec:motivation}
 
 Collective software development requires the handling of merge conflicts, as conflicts between parallel work arise. Called merge conflicts, as they arise when this parallel work is merged, they vary in their difficulty of detection.
-Common textual conflicts, where the same line is altered by multiple people, are automatically detected by version control systems, allowing amendments to be easily made. However not all conflicts are this easily detected and their introduction bring with it the addition of software bugs to the system. Semantic merge conflicts, in particular, are hard to detect, both by software and human review and remain a hard to solve situation. Given that around 30\% of developers do not even actively monitor for merge conflicts and of those who do, mostly do it with reactive strategies~\cite{kn:lifecycle}, the ability to automatically detect these would be a great boon for the field of software development, especially as by developers own admissions, the longer a merge conflict is left unsolved, the harder it becomes to resolve it: ``Untangling takes days instead of minutes when it gets too out of hand.''~\cite{kn:lifecycle}.
+Common textual conflicts, where the same line is altered by multiple people, are automatically detected by version control systems, allowing amendments to be easily made. However not all conflicts are so easily detected and their occurence can bring with it the addition of software bugs to the system. Semantic merge conflicts, in particular, are hard to detect, both by software and human review and remain a hard to solve situation. Given that around 30\% of developers do not even actively monitor for merge conflicts and of those who do, mostly do it with reactive strategies~\cite{kn:lifecycle}, the ability to automatically detect these would be a great boon for the field of software development, especially as by developers own admissions, the longer a merge conflict is left unsolved, the harder it becomes to resolve it: ``Untangling takes days instead of minutes when it gets too out of hand.''~\cite{kn:lifecycle}.
 
-The recent revolution in the field of Large Language Models (LLMs) may prove to add a valuable tool in tackling this.
+The recent revolution in the field of Large Language Models (LLMs) may prove to add a valuable tool in tackling this, given their ability to describe the functioning of code snippets as well as generate them. These capabalities may allow us, with the correct development and prompting, to not only describe the semantic conflict present in a specific merge commit, but also to generate the appropriate unit test that identifies the lost or emergent behaviour associated with it.
 
 
 \section{Problem} \label{sec:problem}
@@ -15,23 +15,27 @@ The recent revolution in the field of Large Language Models (LLMs) may prove to 
 To manage the concurrent work of several developers in software projects, it is common to employ \emph{version control systems} (hereby referred as \emph{VCS}), which can be defined as ``a system that manages the development of an evolving object. In other words, it is a system that records any changes made by the software developers.''~\cite{kn:vers_review}.
 
 A significant task of version control is managing access to shared resources.
-In the ``classic scenario'' a lock-modify-unlock paradigm was adopted, where a given file would be locked for modification while it is being modified, thus ensuring each resource can only be handled by one actor at a time. VCS's however, generally implement a copy-modify-merge mechanism: concurrent work can done on a resource, with joining the parallel work together handled by merges afterwards, with two ``branches'' of work merged into one~\cite{kn:vers_ott}.
+With ``pessimistic locking'' a lock-modify-unlock paradigm was adopted, where a given file would be locked for modification while it is being modified, thus ensuring each resource can only be handled by one actor at a time. VCS's however, generally implement a copy-modify-merge mechanism: concurrent work can done on a resource, with joining the parallel work together handled by merges afterwards, with two ``branches'' of work merged into one~\cite{kn:vers_ott}.
 
-Merge conflicts arise when parallel work cannot be clearly merged. Of this, several different types exist, as summarized by \citet{kn:tmens}:
+Merge conflicts arise when parallel work cannot be automatically merged. Of this, several different types exist, as summarized by \citet{kn:tmens}:
 
 Textual conflicts occur when the same textual elements of code are modified in both branches of a merge. For example, when the same line of code is modified by two people in their respective branches.
 
-Syntactic conflicts arise from parallel changes that when merged do not generate textual conflicts, but the resulting merge creates code that is invalid given the languages rules. For example, programmer A renames a variable, while programmer B uses the variable somewhere (with the original name). There is no textual code, but the code will not compile due to the usage of an uninitialized variable.
+Syntactic conflicts arise from parallel changes that when merged do not generate textual conflicts, but the resulting merge creates code that is invalid given the languages rules. For example, programmer A renames a variable, while programmer B uses the variable somewhere (with the original name). There is no textual conflict, but the code will not compile due to the usage of an uninitialized variable.
 
-Finally semantic conflicts occur when parallel changes do not trigger any conflict and are syntactically valid, but the resulting code doesn not behave as expected, or exhibits lost or new unexpected behaviour.
+Finally semantic conflicts occur when parallel changes do not have any textual conflict and their merge is syntactically valid, but the resulting code does not behave as expected, or exhibits lost or new unexpected behaviour.
 
-Most VCS's, such as Git, implement textual merge tools (ergo, they can only identify textual conflicts), however there are specialized tools that handle other types of merges: for example Turbomixer for syntactic merges~\cite{kn:tmens}. This focus on textual merging is generally fine as around 90\% of conflicts are textual~\cite{kn:lcsd} and syntactic conflicts are easy to identify after merges, as errors will be clearly indicated and programs will not compile.
-Semantic conflicts remain as both undetected by VCS's and hard to detect after merges. Thus, identifying methods to automatically identify and highlight semantic conflicts in merge commits has been a persistent problem and a source of study in this field~\cite{kn:nuno,kn:leuson,kn:leuson2}.
+Most VCS's, such as Git, implement textual merge tools (ergo, they can only identify textual conflicts). However there are specialized tools that handle other types of merges. for instance Turbomixer is also able to handle syntactic merges~\cite{kn:tmens}. The focus on textual merging is unsurprising as around 90\% of conflicts are textual~\cite{kn:lcsd} and syntactic conflicts are easy to identify after merging, as errors will be clearly indicated and programs will not compile.
+Semantic conflicts remain as both undetected by VCS's and hard to detect after merges. Thus, finding methods to automatically identify and highlight semantic conflicts in merge commits has been a persistent problem and a source of study in the field~\cite{kn:nuno,kn:leuson,kn:leuson2}.
 
+As a simple example of a merge conflict, consider a class ``Cart'' of a shopping app, subject to concurrent changes in two branches, as shown in \Cref{fig:conflict}.
+Initially Cart just has a method total\_cost that calculates the total cost given a percentage of discount.
+In branch A the existing method is modified to take both tax and discount as parameters and the method is overloaded by a new version that only takes the tax parameter.
+In branch B, a checkout method is added, which calls the original total\_cost method. After merging, no error appears, but the checkout function will be running the total\_cost tax method, expecting the calculation of a discount. The example is shown in \Cref{fig:conflict}.
 
-A motivating example of a merge conflict can be seen in a class ``Cart'', for a shopping app. Initially having just a method total\_cost that calculates the total cost given a percentage of discount, it is modified in branch A: a additional parameter for tax and the method is overloaded with another implementation that just calculates tax and not discount. Then, in branch B, a checkout method is added, which calls the original total\_cost method. After merging, no error appears, but the checkout function will be running the total\_cost tax method, expecting the calculation of a discount. The example is shown in \Cref{fig:conflict}.
-
-From here the conflict arises, as after merging the behaviour is altered: the checkout function which would calculate the cost with a discount, now instead uses the value given for discount to calculate tax. To identify this conflict, we would need to generate a test that would find evidence of this alteration: in this case finding that the checkout function is charging more money than expected.
+From here the conflict arises, as after merging the behaviour of the checkout function is not the intended one: instead of calculating the cost with a discount, it now uses the value given for discount as a tax.
+To identify this conflict, we would need to generate a test that would find evidence of this emergent behaviour: in this case with a test for checkout that calculates the expected cost with tax. This test would pass on the merge commit and fail in Branch B and not compile in A (as checkout is not introduced),
+certifying that due to the semantic conflict, new unexpected behaviour has been introduced.
 
 \begin{figure}[t]
     \includegraphics[width=0.86\textwidth]{conflict}
@@ -44,7 +48,7 @@ From here the conflict arises, as after merging the behaviour is altered: the ch
 The goal of this research project is to assess to what extent existing Large Language Models can be used to identify semantic conflicts, both textually and through the generation
 of appropriate unit tests. By comparing our results to existing prompts for unit test generation, we will assess to what extent, if any, we improved on and how to further develop
 unit test generation for semantic conflicts using LLMs.
-
+\todo{review}
 \section{Approach} \label{sec:approach}
 
 Following an initial exploratory phase, where different prompts, techniques and models were experimented with, our work approaches the issue by answering
@@ -55,7 +59,7 @@ Following an initial exploratory phase, where different prompts, techniques and 
 2. To what extent can a LLM generate appropriate unit tests, given a textual explanation of the semantic conflict. 
 
 3. To what extent do existing prompts generate appropriate unit tests and how do they compare to the prompt we developed. 
-
+\todo{review}
 
 \section{Thesis Structure} \label{sec:struct}
 
