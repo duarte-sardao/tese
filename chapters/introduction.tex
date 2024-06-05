@@ -41,15 +41,20 @@ From here the conflict arises, as after merging the behaviour is altered: the ch
 
 \section{Goal} \label{sec:goal}
 
-The goal of the presented project is to develop an automated system that can detect possible merge conflicts in a merge and generate the necessary unit tests to identify it using a LLM, allowing for easier detection of this type of conflicts to be integrated into the version control workflow of developers.
+The goal of this research project is to assess to what extent existing Large Language Models can be used to identify semantic conflicts, both textually and through the generation
+of appropriate unit tests. By comparing our results to existing prompts for unit test generation, we will assess to what extent, if any, we improved on and how to further develop
+unit test generation for semantic conflicts using LLMs.
 
 \section{Approach} \label{sec:approach}
 
-In previously developed work, a Domain-Specific Language was designed which describes the changes made in a three-way merge~\cite{kn:nuno}. This DSL provides a summarized report of a three-way merge. We will feed the DSL reports into ChatGPT and induce it to generate unit tests based on them which should help assess the presence of a semantic conflict originating from the merge.
+Following an initial exploratory phase, where different prompts, techniques and models were experimented with, our work approaches the issue by answering
+3 research questions:
 
+1. To what extent can a LLM textually explain a semantic conflict present in a merge.
 
+2. To what extent can a LLM generate appropriate unit tests, given a textual explanation of the semantic conflict. 
 
-
+3. To what extent do existing prompts generate appropriate unit tests and how do they compare to the prompt we developed. 
 
 
 \section{Thesis Structure} \label{sec:struct}
