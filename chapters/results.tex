@@ -552,16 +552,16 @@ private methods. But it has to be understood that these sort of issues are a pos
                       & \multicolumn{2}{c}{Prompt 1} & \multicolumn{2}{c}{Prompt 2} & \multicolumn{2}{c}{Prompt 3} \\
                       & Compilation & Passing & Compilation & Passing & Compilation & Passing \\
     \midrule
-    Point (CM)       & 3 & 2 & Yes & No & 0 & 0 \\
-    Fabricated (RO)  & 1 & 0 & Yes & Yes & 3 & 0 \\ 
-    Fabricated (OAC) & 2 & 0 & Yes & No & 0 & 0 \\
-    Cart (CM)        & 0 & 0 & No & No & 0 & 0 \\
-    Cart (PF)        & 2 & 2 & No & No & 0 & 0 \\
-    Cart (PM)        & 0 & 0 & No & No & 1 & 1 \\
-    Antlr (PF)       & 0 & 0 & No & No & 0 & 0 \\
-    OkHttp (PM)      & 0 & 0 & No & No & 1 & 1 \\
-    Retrofit (PM/CM) & 0 & 0 & No & No & 0 & 0 \\
-    \todo{Trials}    & 3 & 3  & 1 & 1  & 3 & 3 \\
+    Point (CM)       & 3 & 2 & 1 & 0 & 0 & 0 \\
+    Fabricated (RO)  & 1 & 0 & 1 & 1 & 3 & 0 \\ 
+    Fabricated (OAC) & 2 & 0 & 1 & 0 & 0 & 0 \\
+    Cart (CM)        & 0 & 0 & 0 & 0 & 0 & 0 \\
+    Cart (PF)        & 2 & 2 & 0 & 0 & 0 & 0 \\
+    Cart (PM)        & 0 & 0 & 0 & 0 & 1 & 1 \\
+    Antlr (PF)       & 0 & 0 & 0 & 0 & 0 & 0 \\
+    OkHttp (PM)      & 0 & 0 & 0 & 0 & 1 & 1 \\
+    Retrofit (PM/CM) & 0 & 0 & 0 & 0 & 0 & 0 \\
+    \todo{Trials}    & 3 & 3 & 1 & 1 & 3 & 3 \\
     \bottomrule
     \end{tabular}
     \caption{Results for Prompt 1, 2, and 3.\label{tab:results:rq3t1}}
@@ -574,12 +574,30 @@ a problem for these prompts, confirming this is not necessarily just a issue wit
 Particular prominent issues, like the issue of incorrect constructors such as in the case of Item remained relevant
 and more prevalent as more test cases were generated for each prompt. 
 
+Some new issues with the usage of non-existent methods arose. Whereas before these largely happened with the classes that were not present
+in the prompt, we observed the adaptation of the add_item(Item) method into one that took an list input, in Prompt 3:
+\begin{answer}
+    @Before
+    public void setup() {
+        user = new User("John Doe");
+        cart = new Cart(user);
+        cartItems = Arrays.asList(new Item("Item1", 10.0, 2, false),
+                                  new Item("Item2", 20.0, 1, true));
+        cart.add_items(cartItems);
+    }
+\end{answer}
+It is possible the reason for this is that the prompt only shows the method signature, which makes it less impactful and thus the LLM may be
+more prone to adapt or use it incorrectly. In this case, it is likely a method to add items in this manner was very common on the training dataset,
+which goes in line with our previous assessments that issues often arise when our implementation deviates from what is common or expected.
+
 Of note is the case of Prompt 3: while it prompted the LLM to use mocks and reflection when possible, it used these features
 for all cases, even though these were unnecessary for the vast majority of cases. It did however generate one passing test for OkHttp,
 which so far we had failed to do and where other prompts failed too, as they all sought to access the private method copyWithDefaults().
 Of note, however, the 2 compilation failures for OkHttp in prompt 3 also dealt with private access, but to a field rather than a method.
 
-\todo{short}
+While we have several passing tests, few are useful in accurately identifying the conflict.
+These were Cart (PF) for Prompt 1 as well as Cart (PM) for Prompt 3.
+
 
 \begin{table}[t]
     \centering

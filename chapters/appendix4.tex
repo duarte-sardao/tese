@@ -1,0 +1,674 @@
+\section{Selected Examples of RQ3 outputs}
+
+\subsection{Cart (PF), Prompt 1, Trial 1}
+
+\begin{prompt}
+  public class Cart {
+    private List<Item> cartItems;
+    private final User user;
+    private static final Map<String, Double> discounts = Collections.unmodifiableMap(new HashMap<>() {{
+        put("loyal", 0.1d);
+        put("30ff", 0.3d); put("2023", 0.3d);
+        put("throwback", 0.15d); put("2024", 0.2d);
+        put("fun", 0.05d);
+    }});
+    public boolean checkForDiscountRenewal();
+    public Cart(User);
+    public double sum_items();
+    public double total_cost(double);
+    public void add_item(Item);
+    public void checkout(String);
+    //Focal Method
+    public Set<String> getDiscountCodes() {
+        return discounts.keySet();
+    }
+}
+Please infer the intention of the "getDiscountCodes()"
+\end{prompt}
+
+\begin{answer}
+The "getDiscountCodes()" method is intended to return a set of all available discount codes that can be applied to the items in the cart. This method allows the user to see the available discount codes and choose which one to apply during checkout.
+\end{answer}
+
+\begin{prompt}
+The "getDiscountCodes()" method is intended to return a set of all available discount codes that can be applied to the items in the cart. This method allows the user to see the available discount codes and choose which one to apply during checkout.
+You are a professional who writes Java test methods. Please write a test method for the "getDiscountCodes()" with the given Method intention.  
+\end{prompt}
+
+\begin{answer}
+Sure, here is an example of a test method written in JUnit for the "getDiscountCodes()" method:
+
+```java
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
+public class CartTest {
+
+    @Test
+    public void testGetDiscountCodes() {
+        Cart cart = new Cart(new User());
+        
+        Set<String> expectedDiscountCodes = new HashSet<>();
+        expectedDiscountCodes.add("loyal");
+        expectedDiscountCodes.add("30ff");
+        expectedDiscountCodes.add("2023");
+        expectedDiscountCodes.add("throwback");
+        expectedDiscountCodes.add("2024");
+        expectedDiscountCodes.add("fun");
+        
+        Set<String> actualDiscountCodes = cart.getDiscountCodes();
+        
+        assertEquals(expectedDiscountCodes.size(), actualDiscountCodes.size());
+        for (String code : actualDiscountCodes) {
+            assertTrue(expectedDiscountCodes.contains(code));
+        }
+    }
+}
+```
+
+In this test method, a new instance of the `Cart` class is created and then the `getDiscountCodes()` method is called to retrieve the set of discount codes. The test method then compares the expected discount codes with the actual discount codes obtained from the `getDiscountCodes()` method. If they match, the test passes.  
+\end{answer}
+
+\subsection{Cart (PM), Prompt 1, Trial 1}
+
+\begin{prompt}
+  public class Cart {
+    private List<Item> cartItems;
+    private final User user;
+    private static final Map<String, Double> discounts = Collections.unmodifiableMap(new HashMap<>() {{
+        put("loyal", 0.1d);
+        put("superpromo", 0.25d);
+        put("30ff", 0.3d);
+        put("2024", 0.2d);
+    }});
+    public Cart(User);
+    public double sum_items();
+    public double total_cost(double);
+    public void add_item(Item);
+    //Focal Method
+    public void checkout(String code) {
+        double cost = total_cost(discounts.get(code));
+        if(cost==0)
+            throw new RuntimeException("Cost can't be 0");
+        user.balance -= cost;
+        cartItems.clear();
+    }
+}
+Please infer the intention of the "checkout(String)"
+\end{prompt}
+
+\begin{answer}
+The intention of the "checkout(String)" method in the Cart class is to process the checkout of the items in the cart for a specific user with a given discount code. The method calculates the total cost of the items in the cart after applying the discount specified by the code, subtracts this cost from the user's balance, and then clears the cart items. If the cost after applying the discount is 0, it will throw a RuntimeException indicating that the cost cannot be 0.
+\end{answer}
+
+\begin{prompt}
+The intention of the "checkout(String)" method in the Cart class is to process the checkout of the items in the cart for a specific user with a given discount code. The method calculates the total cost of the items in the cart after applying the discount specified by the code, subtracts this cost from the user's balance, and then clears the cart items. If the cost after applying the discount is 0, it will throw a RuntimeException indicating that the cost cannot be 0.
+You are a professional who writes Java test methods. Please write a test method for the "checkout(String)" with the given Method intention.  
+\end{prompt}
+
+\begin{answer}
+Sure, here is a test method for the "checkout(String)" method in the Cart class:
+
+```java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class CartTest {
+
+    @Test
+    void testCheckout_withValidDiscountCode() {
+        User user = new User("John", 100.0);
+        Cart cart = new Cart(user);
+        Item item1 = new Item("Product1", 10.0);
+        Item item2 = new Item("Product2", 20.0);
+        cart.add_item(item1);
+        cart.add_item(item2);
+
+        cart.checkout("loyal");
+
+        // Check user's balance after checkout
+        assertEquals(69.0, user.balance);
+
+        // Check cart is cleared after checkout
+        assertTrue(cart.cartItems.isEmpty());
+    }
+
+    @Test
+    void testCheckout_withZeroCostAfterDiscountCode() {
+        User user = new User("Jane", 50.0);
+        Cart cart = new Cart(user);
+        Item item = new Item("Product", 40.0);
+        cart.add_item(item);
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            cart.checkout("superpromo");
+        });
+
+        assertEquals("Cost can't be 0", exception.getMessage());
+
+        // Check user's balance is unchanged
+        assertEquals(50.0, user.balance);
+
+        // Check cart is not cleared
+        assertFalse(cart.cartItems.isEmpty());
+    }
+}
+\end{answer}
+
+\subsection{Fabricated (OAC), Prompt 2}
+
+\begin{prompt}
+  //Event.java
+  package business.event;
+  
+  
+  
+  import java.time.LocalDate;
+  import java.time.LocalTime;
+  import java.util.ArrayList;
+  import java.util.List;
+  
+  import javax.persistence.CascadeType;
+  import javax.persistence.Column;
+  import javax.persistence.Convert;
+  import javax.persistence.Entity;
+  import javax.persistence.EnumType;
+  import javax.persistence.Enumerated;
+  import javax.persistence.GeneratedValue;
+  import javax.persistence.GenerationType;
+  import javax.persistence.Id;
+  import javax.persistence.ManyToOne;
+  import javax.persistence.NamedQueries;
+  import javax.persistence.NamedQuery;
+  import javax.persistence.OneToMany;
+  
+  import business.util.Triplet;
+  
+  import business.producer.Producer;
+  import business.ticket.Ticket;
+  
+  /**
+   * 
+   * An Event
+   */
+  @Entity
+  @NamedQueries({
+      @NamedQuery(name = Event.FIND_BY_NAME, query = "SELECT e FROM Event e WHERE e.name = :" + Event.STRING_NAME),
+      @NamedQuery(name = Event.DATES_WITH_TICKETS_BY_STATE, query = "SELECT DISTINCT ed FROM SingleTicket t JOIN t.date ed WHERE ed.event.name = :"
+          + Event.STRING_NAME + " AND ed.date > :" + Event.DATE_DATE
+          + " AND t.state=:" + Event.ENUM_TICKET_STATE + " ORDER BY ed.date ASC"),
+      @NamedQuery(name = Event.SEATS_FOR_EVENT_DATE_BY_STATE, query = "SELECT DISTINCT s FROM SingleTicket t JOIN t.date ed JOIN t.seat s WHERE ed.event.name = :"
+          + Event.STRING_NAME + " AND ed.date = :" + Event.DATE_DATE
+          + " AND t.state=:" + Event.ENUM_TICKET_STATE + " ORDER BY s.rowLetters ASC, s.seatNumber ASC"),
+      @NamedQuery(name= Event._TICKETS, query= "SELECT e.tickets FROM Event e WHERE e.name = :" + Event.STRING_NAME),
+      })
+  
+  public class Event {
+  
+    // Named query name constants
+    public static final String FIND_BY_NAME = "Event.findByName";
+    public static final String DATES_WITH_TICKETS_BY_STATE = "Event.datesWithTicketsByState";
+    public static final String SEATS_FOR_EVENT_DATE_BY_STATE = "Event.seatsForEventDateByState";
+    public static final String STRING_NAME = "name";
+    public static final String DATE_DATE = "date";
+    public static final String _TICKETS = "tickets";
+    public static final String ENUM_TICKET_STATE = "ticket_state";
+  
+    /**
+     * 
+     */
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+  
+    /**
+     * Event name
+     */
+    @Column(nullable = false, unique = true, name="Name")
+    private String name;
+  
+    /**
+     * the starting date when the tickets of the Event are available
+     */
+    @Convert(converter = LocalDateAttributeConverter.class)
+    private LocalDate ticketStartSellingDate;
+  
+    /**
+     * the type of the Event
+     */
+    @Enumerated(EnumType.STRING)
+    private String type;
+  
+    /**
+     * the dates of the Event
+     */
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EventDate> dates;
+  
+    /**
+     * the tickets of the Event
+     */
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Ticket> tickets;
+  
+    /**
+     * the venue where the Event will occur 
+     */
+    @ManyToOne
+    private EventVenue venue;
+  
+    /**
+     * the producer responsible for the Event
+     */
+    @ManyToOne
+    private Producer producer;
+  
+  
+    public Event() {
+      this.dates = new ArrayList<>();
+      this.tickets = new ArrayList<>();
+    }
+    
+    /**
+     * Constructor of the Event
+     * @param producer producer of the event
+     * @param eventType type of the Event
+     * @param eventName name of the Event
+     * @param eventDates dates of the Event
+     */
+    public Event(Producer producer, String eventType, String eventName, List<Triplet<LocalDate, LocalTime, LocalTime>> eventDates) {
+  
+  
+      this.producer = producer;
+      this.type = eventType;
+      this.dates = new ArrayList<>();
+      this.name = eventName;
+      this.tickets = new ArrayList<>();
+      for (Triplet<LocalDate, LocalTime, LocalTime> triple : eventDates) {
+        dates.add(new EventDate(triple.getValue0(),triple.getValue1(),triple.getValue2(),this));
+      }
+    }
+    
+    
+    // Getters and Setters
+    
+    public int getId() {
+      return id;
+    }
+    
+    /**
+     * gets the starting date of the tickets
+     * @return the starting date of the tickets
+     */
+    public LocalDate getStartSellingDate() {
+      return ticketStartSellingDate;
+    }
+  
+    /**
+     * sets the starting date of the tickets
+     * @param startSellingDate
+     */
+    public void setStartSellingDate(LocalDate startSellingDate) {
+      this.ticketStartSellingDate = startSellingDate;
+    }
+    
+    /**
+     * gets the venue of the Event
+     * @return the venue of the Event
+     */
+    public EventVenue getVenue() {
+      return venue;
+    }
+    /**
+     * sets the venue of the Event
+     * @param venue of the event
+     */
+    public void setVenue(EventVenue venue) {
+      this.venue = venue;
+    }
+    /**
+     * gets the name of the Event
+     * @return the name of the Event
+     */
+    public String getName() {
+      return name;
+    }
+    /**
+     * gets the type of the Event
+     * @return the type of the Event
+     */
+    public String getType() {
+      return type;
+    }
+    /**
+     * get the tickets of the Event
+     * @return the tickets
+     */
+    public List<Ticket> getTickets() {
+      return tickets;
+    }
+    /**
+     * gets the producer responsible of the Event
+     * @return the producer of the Event
+     */
+    public Producer getProducer() {
+      return producer;
+    }
+  
+    public void setProducer(Producer p){
+      producer = p;
+    }
+  
+    public int setProducerNumber(int n){
+      if(producer != null){
+        producer.setResgistrationNumber(n);
+        return producer.getRegistrationNumber();
+      }
+      return -1;
+    }
+    
+    /**
+     * sets the tickets of the Event
+     * @param tickets
+     */
+    public void setTickets(List<Ticket> tickets) {
+      this.tickets = tickets;
+    }
+    
+    /**
+     * sets the name of the Event
+     * @param name of the Event
+     */
+    public void setName(String name) {
+      this.name = name;
+    }
+  
+    /**
+     * @return list of EventDate sorted by EventDate.date
+     */
+    public List<EventDate> getDates() {
+      dates.sort(EventDate.ED_ASC);
+      return dates;
+    }
+  }
+  
+  //EventTest.java
+  package business.event;
+  
+  
+  
+  import java.time.LocalDate;
+  import java.time.LocalTime;
+  import java.util.ArrayList;
+  import java.util.List;
+  
+  import javax.persistence.CascadeType;
+  import javax.persistence.Column;
+  import javax.persistence.Convert;
+  import javax.persistence.Entity;
+  import javax.persistence.EnumType;
+  import javax.persistence.Enumerated;
+  import javax.persistence.GeneratedValue;
+  import javax.persistence.GenerationType;
+  import javax.persistence.Id;
+  import javax.persistence.ManyToOne;
+  import javax.persistence.NamedQueries;
+  import javax.persistence.NamedQuery;
+  import javax.persistence.OneToMany;
+  
+  import business.util.Triplet;
+  
+  import business.producer.Producer;
+  import business.ticket.Ticket;
+  
+  import org.junit.jupiter.api.Test;
+  import static org.junit.jupiter.api.Assertions.*;
+  
+  
+  /**
+   * Test class of Event.
+   * It contains 10 unit test cases for the
+   * setProducerNumber(int) method.
+   */
+   class EventTest {
+\end{prompt}
+
+\begin{answer}
+  public class EventTest {
+
+  @Test
+  void testSetProducerNumber_WhenProducerIsNull_ExpectNegativeOne() {
+      Event event = new Event();
+      int result = event.setProducerNumber(123);
+      assertEquals(-1, result);
+  }
+
+  @Test
+  void testSetProducerNumber_WhenProducerIsNotNull_ExpectProducerRegistrationNumber() {
+      Producer producer = new Producer();
+      Event event = new Event();
+      event.setProducer(producer);
+      int result = event.setProducerNumber(456);
+      assertEquals(456, result);
+  }
+
+  @Test
+  void testSetProducerNumber_WhenProducerIsNotNullAndRegistrationNumberIsAlreadySet_ExpectUpdatedProducerRegistrationNumber() {
+      Producer producer = new Producer();
+      producer.setRegistrationNumber(789);
+      Event event = new Event();
+      event.setProducer(producer);
+      int result = event.setProducerNumber(101112);
+      assertEquals(101112, result);
+  }
+
+  @Test
+  void testSetProducerNumber_WhenProducerIsNotNullAndRegistrationNumberIsZero_ExpectUpdatedProducerRegistrationNumber() {
+      Producer producer = new Producer();
+      producer.setRegistrationNumber(0);
+      Event event = new Event();
+      event.setProducer(producer);
+      int result = event.setProducerNumber(131415);
+      assertEquals(131415, result);
+  }
+
+  @Test
+  void testSetProducerNumber_WhenProducerIsNotNullAndRegistrationNumberIsNegative_ExpectUpdatedProducerRegistrationNumber() {
+      Producer producer = new Producer();
+      producer.setRegistrationNumber(-1);
+      Event event = new Event();
+      event.setProducer(producer);
+      int result = event.setProducerNumber(161718);
+      assertEquals(161718, result);
+  }
+
+  @Test
+  void testSetProducerNumber_WhenProducerIsNotNullAndRegistrationNumberIsPositive_ExpectUpdatedProducerRegistrationNumber() {
+      Producer producer = new Producer();
+      producer.setRegistrationNumber(192021);
+      Event event = new Event();
+      event.setProducer(producer);
+      int result = event.setProducerNumber(222324);
+      assertEquals(222324, result);
+  }
+
+  @Test
+  void testSetProducerNumber_WhenProducerIsNotNullAndRegistrationNumberIsMaxInt_ExpectUpdatedProducerRegistrationNumber() {
+      Producer producer = new Producer();
+      producer.setRegistrationNumber(Integer.MAX_VALUE);
+      Event event = new Event();
+      event.setProducer(producer);
+      int result = event.setProducerNumber(123456);
+      assertEquals(123456, result);
+  }
+
+  @Test
+  void testSetProducerNumber_WhenProducerIsNotNullAndRegistrationNumberIsMinInt_ExpectUpdatedProducerRegistrationNumber() {
+      Producer producer = new Producer();
+      producer.setRegistrationNumber(Integer.MIN_VALUE);
+      Event event = new Event();
+      event.setProducer(producer);
+      int result = event.setProducerNumber(7891011);
+      assertEquals(7891011, result);
+  }
+
+  @Test
+  void testSetProducerNumber_WhenProducerIsNotNullAndRegistrationNumberIsZero_ExpectZero() {
+      Producer producer = new Producer();
+      producer.setRegistrationNumber(0);
+      Event event = new Event();
+      event.setProducer(producer);
+      int result = event.setProducerNumber(0);
+      assertEquals(0, result);
+  }
+
+  @Test
+  void testSetProducerNumber_WhenProducerIsNotNullAndRegistrationNumberIsNegative_ExpectNegativeNumber() {
+      Producer producer = new Producer();
+      producer.setRegistrationNumber(-123);
+      Event event = new Event();
+      event.setProducer(producer);
+      int result = event.setProducerNumber(-456);
+      assertEquals(-456, result);
+  }
+}
+\end{answer}
+
+\subsection{OkHttp, Prompt 3, Trial 1}
+
+\begin{prompt}
+  Please help me generate a whole JUnit test for a focal method in a focal class. I will provide the following information: 
+  1. Required dependencies to import.
+  2. The focal class signature.
+  3. Source code of the focal method.
+  4. Signatures of other methods and fields in the class.
+  I need you to create a whole unit test using JUnit 4 and Mockito 3, ensuring optimal branch and line coverage. The test should include necessary imports for JUnit 4 andMockito 3, compile without errors, and use reflection to invoke private methods. No additional explanations required.
+  
+  The focal method is copyWithDefaults() in focal class OkHttpClient, the information is public final class OkHttpClient {
+    private static final List<String> DEFAULT_TRANSPORTS
+        = Util.immutableList(Arrays.asList("spdy/3", "http/1.1"));
+    private Proxy proxy;
+    private List<String> transports;
+    private final Set<Route> failedRoutes;
+    private ProxySelector proxySelector;
+    private CookieHandler cookieHandler;
+    private ResponseCache responseCache;
+    private SSLSocketFactory sslSocketFactory;
+    private HostnameVerifier hostnameVerifier;
+    private OkAuthenticator authenticator;
+    private ConnectionPool connectionPool;
+    private boolean followProtocolRedirects = true;
+    public OkHttpClient();
+    private OkHttpClient(OkHttpClient);
+    public OkHttpClient setProxy(Proxy);
+    public Proxy getProxy();
+    public OkHttpClient setProxySelector(ProxySelector);
+    public ProxySelector getProxySelector();
+    public OkHttpClient setCookieHandler(CookieHandler);
+    public CookieHandler getCookieHandler();
+    public OkHttpClient setResponseCache(ResponseCache);
+    public ResponseCache getResponseCache();
+    private OkResponseCache okResponseCache();
+    public OkHttpClient setSSLSocketFactory(SSLSocketFactory);
+    public SSLSocketFactory getSslSocketFactory();
+    public OkHttpClient setHostnameVerifier(HostnameVerifier);
+    public HostnameVerifier getHostnameVerifier();
+    public OkHttpClient setAuthenticator(OkAuthenticator);
+    public OkAuthenticator getAuthenticator();
+    public OkHttpClient setConnectionPool(ConnectionPool);
+    public ConnectionPool getConnectionPool();
+    public OkHttpClient setFollowProtocolRedirects(boolean);
+    public boolean getFollowProtocolRedirects();
+    public OkHttpClient setTransports(List<String>);
+    public List<String> getTransports();
+    public HttpURLConnection open(URL);
+    //Focal Method
+    private OkHttpClient copyWithDefaults() {
+      OkHttpClient result = new OkHttpClient(this);
+      result.proxy = proxy;
+      result.proxySelector = proxySelector != null ? proxySelector : ProxySelector.getDefault();
+      result.cookieHandler = cookieHandler != null ? cookieHandler : CookieHandler.getDefault();
+      result.responseCache = responseCache != null ? responseCache : ResponseCache.getDefault();
+      result.sslSocketFactory = sslSocketFactory != null
+          ? sslSocketFactory
+          : HttpsURLConnection.getDefaultSSLSocketFactory();
+      result.hostnameVerifier = hostnameVerifier != null
+          ? hostnameVerifier
+          : new OkHostnameVerifier();
+      result.authenticator = authenticator != null
+          ? authenticator
+          : HttpAuthenticator.SYSTEM_DEFAULT;
+      result.connectionPool = connectionPool != null ? connectionPool : ConnectionPool.getDefault();
+      result.followProtocolRedirects = followProtocolRedirects;
+      result.transports = transports != null ? transports : DEFAULT_TRANSPORTS;
+      return result;
+    }
+  }
+\end{prompt}
+
+\begin{answer}
+  import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import java.net.Proxy;
+import java.net.ProxySelector;
+import java.net.ResponseCache;
+import java.net.CookieHandler;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSocketFactory;
+
+import static org.junit.Assert.assertEquals;
+
+@RunWith(MockitoJUnitRunner.class)
+public class OkHttpClientTest {
+
+    @Test
+    public void testCopyWithDefaults() throws Exception {
+        OkHttpClient okHttpClient = new OkHttpClient();
+        OkHttpClient spyClient = Mockito.spy(okHttpClient);
+
+        Proxy proxy = Mockito.mock(Proxy.class);
+        ProxySelector proxySelector = Mockito.mock(ProxySelector.class);
+        CookieHandler cookieHandler = Mockito.mock(CookieHandler.class);
+        ResponseCache responseCache = Mockito.mock(ResponseCache.class);
+        SSLSocketFactory sslSocketFactory = Mockito.mock(SSLSocketFactory.class);
+        HostnameVerifier hostnameVerifier = Mockito.mock(HostnameVerifier.class);
+        OkAuthenticator authenticator = Mockito.mock(OkAuthenticator.class);
+        ConnectionPool connectionPool = Mockito.mock(ConnectionPool.class);
+
+        List<String> transports = Arrays.asList("spdy/3", "http/1.1");
+
+        Mockito.when(spyClient.getProxy()).thenReturn(proxy);
+        Mockito.when(spyClient.getProxySelector()).thenReturn(proxySelector);
+        Mockito.when(spyClient.getCookieHandler()).thenReturn(cookieHandler);
+        Mockito.when(spyClient.getResponseCache()).thenReturn(responseCache);
+        Mockito.when(spyClient.getSslSocketFactory()).thenReturn(sslSocketFactory);
+        Mockito.when(spyClient.getHostnameVerifier()).thenReturn(hostnameVerifier);
+        Mockito.when(spyClient.getAuthenticator()).thenReturn(authenticator);
+        Mockito.when(spyClient.getConnectionPool()).thenReturn(connectionPool);
+        Mockito.when(spyClient.getFollowProtocolRedirects()).thenReturn(true);
+        Mockito.when(spyClient.getTransports()).thenReturn(transports);
+
+        OkHttpClient result = spyClient.copyWithDefaults();
+
+        assertEquals(proxy, result.getProxy());
+        assertEquals(proxySelector != null ? proxySelector : ProxySelector.getDefault(), result.getProxySelector());
+        assertEquals(cookieHandler != null ? cookieHandler : CookieHandler.getDefault(), result.getCookieHandler());
+        assertEquals(responseCache != null ? responseCache : ResponseCache.getDefault(), result.getResponseCache());
+        assertEquals(sslSocketFactory != null ? sslSocketFactory : HttpsURLConnection.getDefaultSSLSocketFactory(), result.getSslSocketFactory());
+        assertEquals(hostnameVerifier != null ? hostnameVerifier : new OkHostnameVerifier(), result.getHostnameVerifier());
+        assertEquals(authenticator != null ? authenticator : HttpAuthenticator.SYSTEM_DEFAULT, result.getAuthenticator());
+        assertEquals(connectionPool != null ? connectionPool : ConnectionPool.getDefault(), result.getConnectionPool());
+        assertEquals(true, result.getFollowProtocolRedirects());
+        assertEquals(transports != null ? transports : OkHttpClient.DEFAULT_TRANSPORTS, result.getTransports());
+    }
+}
+\end{answer}
+
