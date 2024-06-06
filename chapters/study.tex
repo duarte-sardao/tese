@@ -74,6 +74,11 @@ Its fields correspond to a dictionary of discounts, with string associated to do
 and the associated user.
 It has the appropriate methods to add items to the cart, calculate the cart value, and checkout with a given discount code,
 subtracting the value from the user's balance.
+Cart has some pecularities which may differ from real-world classes of the same type. These include the fact that checkout 
+requires a discont code as an argument (there is no checkout without discount)and that items can only be added one by one, without
+any way to add a collection all at once. Notably their auxiliary classes contained only public fields, with no getters and setters, as
+well as lacking expected fields such as String type ``name'' fields. These divergences from the norm came to matter when it came to
+test generation.
 
 \textbf{Conflict Type: Parallel Field}
 
@@ -428,13 +433,18 @@ taken all reasonable steps to mitigate the effect of potential threats, which
 are described in detail in this section.
 
 \subsection{Threats to construct validity}
-%
-\todo{Are associated with the correspondence between theory and observation.}
+
+We recognize the threat to construct validity played by the prompts we developed, as it is possible they were not appropriate for the research questions
+we defined. We mitigated this by exploring several techniques before settling on the prompts we defined, but other techniques might have yielded better
+results.
 
 \subsection{Threats to internal validity}
-%
-\todo{Are associated with uncontrollable internal factors that may influence our results.}
+
+Internal validity may have influenced by human errors, such as minor errors in prompts or mistakes in the collection and writing down of results.
+We mitigated this with frequent revisions and several mistakes were caught.
 
 \subsection{Threats to external validity}
-%
-\todo{Are associated with the generalization of the results reported.}
+
+A main threat to external validity was our reliance to ChatGPT-3.5 Turbo \todo{and GitHub Copilot}. While we made efforts to investigate other LLMs
+we were constrained by hardware and financial limitations. Thus these results are not necessarily generalizable and further study would be required
+to see how other models compare.
