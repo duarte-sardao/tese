@@ -122,7 +122,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
- * Test class of Point.
+ * Test class of Python2Target.
  * It contains 10 unit test cases for the
  * getBadWords() method.
  */
@@ -161,6 +161,19 @@ Completion:
     void testGetBadWordsContainsParserRule() {
         Set<String> badWords = python2Target.getBadWords();
         assertTrue(badWords.contains("parserRule"));
+    }
+
+    @Test
+    void testGetBadWordsSize() {
+        Set<String> badWords = python2Target.getBadWords();
+        assertEquals(Python2Target.python2Keywords.length + 2, badWords.size());
+    }
+
+    @Test
+    void testAddBadWords() {
+        python2Target.addBadWords();
+        Set<String> badWords = python2Target.getBadWords();
+        assertEquals(Python2Target.python2Keywords.length + 2, badWords.size());
     }
 
     @Test

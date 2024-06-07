@@ -1,0 +1,34 @@
+package com.squareup.okhttp;
+
+import com.squareup.okhttp.internal.Util;
+import com.squareup.okhttp.internal.http.HttpAuthenticator;
+import com.squareup.okhttp.internal.http.HttpURLConnectionImpl;
+import com.squareup.okhttp.internal.http.HttpsURLConnectionImpl;
+import com.squareup.okhttp.internal.http.OkResponseCache;
+import com.squareup.okhttp.internal.http.OkResponseCacheAdapter;
+import com.squareup.okhttp.internal.tls.OkHostnameVerifier;
+import java.net.CookieHandler;
+import java.net.HttpURLConnection;
+import java.net.Proxy;
+import java.net.ProxySelector;
+import java.net.ResponseCache;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSocketFactory;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+
+/**
+ * Test class of OkHttpClient.
+ * It contains 10 unit test cases for the
+ * copyWithDefaults() method.
+ */
+ class OkHttpClientTest {

@@ -121,7 +121,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
- * Test class of Point.
+ * Test class of Python2Target.
  * It contains 10 unit test cases for the
  * getBadWords() method.
  */

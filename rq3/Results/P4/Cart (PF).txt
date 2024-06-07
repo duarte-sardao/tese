@@ -1,0 +1,15 @@
+import java.util.*;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+
+/**
+ * Test class of Cart.
+ * It contains 10 unit test cases for the
+ * getDiscountCodes() method.
+ */
+ class CartTest {
+
+Completion:
+

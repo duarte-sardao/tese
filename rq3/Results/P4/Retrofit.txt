@@ -1,0 +1,23 @@
+package retrofit;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+import retrofit.client.Header;
+import retrofit.client.Request;
+import retrofit.converter.Converter;
+import retrofit.mime.FormUrlEncodedTypedOutput;
+import retrofit.mime.MultipartTypedOutput;
+import retrofit.mime.TypedOutput;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+
+/**
+ * Test class of RequestBuilder.
+ * It contains 10 unit test cases for the
+ * build() method.
+ */
+ class RequestBuilderTest {

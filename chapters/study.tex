@@ -410,17 +410,17 @@ asserting the behaviour present in merge that was not present before, ie, emerge
 \subsection{RQ3}
 
 Research Question 3 seeks to assess the relevance of our developed work by assessing the generative abilities of previous state-of-the-art prompts,
-which just generate tests for methods, with no conflict information. This will allow us to consider to what extent this feature affects test generation.
+which just generate tests for methods, with no conflict information, as well as Github Copilot. This will allow us to consider to what extent this feature affects test generation.
 
-We took three prompts:
+We took four prompts:
 \begin{itemize}
   \item Prompt 1, from ``No More Manual Tests? Evaluating and Improving ChatGPT for Unit Test Generation''by ~\citet{kn:chattester}
   \item Prompt 2, from ``Using Large Language Models to Generate JUnit Tests: An Empirical Study''by ~\citet{kn:siddiq2023empirical}
   \item Prompt 3, from ``ChatUniTest: A Framework for LLM-Based Test Generation''by~\citet{kn:chatunitest}
+  \item Prompt 4 also took the second part of Prompt 2, the test skeleton, but instead used Github Copilot (Version 1.5.6.5692) for completion.
 \end{itemize}
 
-Only one test was generated per subject, as the focus was more on the behaviour throughout the whole suite instead of evaluation on a subject by subject basis.
-Furthermore, Prompt 2 has a temperature of 0, making repeated trials redundant.
+3 trials were run for Prompt 1 and Prompt 3, whereas Prompt 2 and 4 only had one as they showed no variation (due to temperature).
 \todo{metrics}
 
 \section{Threats to validity}

@@ -1,0 +1,17 @@
+package business;
+
+import java.io.Serializable;
+import java.util.List;
+import javax.persistence.*;
+import javax.persistence.DiscriminatorValue;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+
+/**
+ * Test class of InstalacaoAssentos.
+ * It contains 10 unit test cases for the
+ * hashString() method.
+ */
+ class InstalacaoAssentosTest {

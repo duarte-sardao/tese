@@ -1,0 +1,93 @@
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+
+/**
+ * Test class of Point.
+ * It contains 10 unit test cases for the
+ * move() method.
+ */
+ class PointTest {
+
+Completion:
+
+   @Test
+    void testMoveNorth() {
+        Point p = new Point(0, 0);
+        p.move(Direction.NORTH);
+        assertEquals(0, p.getX());
+        assertEquals(1, p.getY());
+    }
+
+    @Test
+    void testMoveSouth() {
+        Point p = new Point(0, 0);
+        p.move(Direction.SOUTH);
+        assertEquals(0, p.getX());
+        assertEquals(-1, p.getY());
+    }
+
+    @Test
+    void testMoveEast() {
+        Point p = new Point(0, 0);
+        p.move(Direction.EAST);
+        assertEquals(1, p.getX());
+        assertEquals(0, p.getY());
+    }
+
+    @Test
+    void testMoveWest() {
+        Point p = new Point(0, 0);
+        p.move(Direction.WEST);
+        assertEquals(-1, p.getX());
+        assertEquals(0, p.getY());
+    }
+
+    @Test
+    void testMoveNorthEast() {
+        Point p = new Point(0, 0);
+        p.move(Direction.NORTH_EAST);
+        assertEquals(1, p.getX());
+        assertEquals(1, p.getY());
+    }
+
+    @Test
+    void testMoveNorthWest() {
+        Point p = new Point(0, 0);
+        p.move(Direction.NORTH_WEST);
+        assertEquals(-1, p.getX());
+        assertEquals(1, p.getY());
+    }
+
+    @Test
+    void testMoveSouthEast() {
+        Point p = new Point(0, 0);
+        p.move(Direction.SOUTH_EAST);
+        assertEquals(1, p.getX());
+        assertEquals(-1, p.getY());
+    }
+
+    @Test
+    void testMoveSouthWest() {
+        Point p = new Point(0, 0);
+        p.move(Direction.SOUTH_WEST);
+        assertEquals(-1, p.getX());
+        assertEquals(-1, p.getY());
+    }
+
+    @Test
+    void testMoveNull() {
+        Point p = new Point(0, 0);
+        p.move(null);
+        assertEquals(0, p.getX());
+        assertEquals(0, p.getY());
+    }
+
+    @Test
+    void testMoveNorthNull() {
+        Point p = new Point(0, 0);
+        p.move(Direction.NORTH);
+        p.move(null);
+        assertEquals(0, p.getX());
+        assertEquals(1, p.getY());
+    }

@@ -1,0 +1,23 @@
+package org.antlr.v4.codegen.target;
+
+import org.antlr.v4.codegen.CodeGenerator;
+import org.antlr.v4.codegen.Target;
+import org.antlr.v4.tool.ast.GrammarAST;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.StringRenderer;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+
+/**
+ * Test class of Point.
+ * It contains 10 unit test cases for the
+ * getBadWords() method.
+ */
+ class Python2TargetTest {
