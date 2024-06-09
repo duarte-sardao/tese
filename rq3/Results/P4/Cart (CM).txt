@@ -15,86 +15,69 @@ import static org.junit.jupiter.api.Assertions.*;
  class CartTest {
 
 Completion:
-
-
     @Test
-    void testCheckout1() {
-        User user = new User();
+    void testCheckout() {
+        User user = new User("John", 1000, false);
         Cart cart = new Cart(user);
-        Item item = new Item(1, 10);
+        Item item = new Item("item1", 10, 1);
         cart.add_item(item);
-        user.balance = 100;
         cart.checkout("loyal");
-        assertEquals(90, user.balance);
+        assertEquals(990, user.balance);
     }
 
     @Test
     void testCheckout2() {
-        User user = new User();
+        User user = new User("John", 1000, false);
         Cart cart = new Cart(user);
-        Item item = new Item(1, 10);
+        Item item = new Item("item1", 10, 1);
         cart.add_item(item);
-        user.balance = 100;
         cart.checkout("superpromo");
-        assertEquals(75, user.balance);
+        assertEquals(985, user.balance);
     }
 
     @Test
     void testCheckout3() {
-        User user = new User();
+        User user = new User("John", 1000, false);
         Cart cart = new Cart(user);
-        Item item = new Item(1, 10);
+        Item item = new Item("item1", 10, 1);
         cart.add_item(item);
-        user.balance = 100;
         cart.checkout("30ff");
-        assertEquals(70, user.balance);
+        assertEquals(980, user.balance);
     }
 
     @Test
     void testCheckout4() {
-        User user = new User();
+        User user = new User("John", 1000, false);
         Cart cart = new Cart(user);
-        Item item = new Item(1, 10);
+        Item item = new Item("item1", 10, 1);
         cart.add_item(item);
-        user.balance = 100;
         cart.checkout("2024");
-        assertEquals(80, user.balance);
+        assertEquals(990, user.balance);
     }
 
     @Test
     void testCheckout5() {
-        User user = new User();
+        User user = new User("John", 1000, false);
         Cart cart = new Cart(user);
-        Item item = new Item(1, 10);
+        Item item = new Item("item1", 10, 1);
         cart.add_item(item);
-        user.balance = 100;
         cart.checkout("invalid");
-        assertEquals(100, user.balance);
+        assertEquals(1000, user.balance);
     }
 
     @Test
     void testCheckout6() {
-        User user = new User();
+        User user = new User("John", 1000, false);
         Cart cart = new Cart(user);
-        Item item = new Item(1, 10);
+        Item item = new Item("item1", 10, 1);
         cart.add_item(item);
-        user.balance = 100;
-        cart.checkout(null);
-        assertEquals(100, user.balance);
+        cart.checkout("loyal");
+        assertEquals(990, user.balance);
     }
 
     @Test
     void testCheckout7() {
-        User user = new User();
+        User user = new User("John", 1000, false);
         Cart cart = new Cart(user);
-        Item item = new Item(1, 10);
+        Item item = new Item("item1", 10, 1);
         cart.add_item(item);
-        user.balance = 100;
-        cart.checkout("");
-        assertEquals(100, user.balance);
-    }
-
-    @Test
-    void testCheckout8() {
-        User user = new User();
-        Cart cart =

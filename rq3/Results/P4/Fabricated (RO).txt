@@ -18,70 +18,69 @@ import static org.junit.jupiter.api.Assertions.*;
 
 Completion:
 
-
 	/**
-	 * Test of hashString method, of class InstalacaoAssentos.
+	 * Test case for the hashString() method.
+	 * It tests the hashString() method when the
+	 * lugares attribute is null.
 	 */
 	@Test
-	void testHashString() {
-		System.out.println("hashString");
+	void testHashStringNullLugares() {
 		InstalacaoAssentos instance = new InstalacaoAssentos();
-		int expResult = instance.helpString().hashCode();
 		int result = instance.hashString();
-		assertEquals(expResult, result);
+		assertEquals(0, result);
 	}
 
 	/**
-	 * Test of hashString method, of class InstalacaoAssentos.
+	 * Test case for the hashString() method.
+	 * It tests the hashString() method when the
+	 * lugares attribute is not null.
 	 */
 	@Test
-	void testHashString2() {
-		System.out.println("hashString");
-		InstalacaoAssentos instance = new InstalacaoAssentos();
-		instance.setLugares(null);
-		int expResult = instance.helpString().hashCode();
-		int result = instance.hashString();
-		assertEquals(expResult, result);
-	}
-
-	/**
-	 * Test of hashString method, of class InstalacaoAssentos.
-	 */
-	@Test
-	void testHashString3() {
-		System.out.println("hashString");
+	void testHashStringNotNullLugares() {
 		InstalacaoAssentos instance = new InstalacaoAssentos();
 		instance.setLugares(List.of(new Lugar()));
-		int expResult = instance.helpString().hashCode();
 		int result = instance.hashString();
-		assertEquals(expResult, result);
+		assertEquals(31, result);
 	}
 
 	/**
-	 * Test of hashString method, of class InstalacaoAssentos.
+	 * Test case for the hashString() method.
+	 * It tests the hashString() method when the
+	 * lugares attribute is not null.
 	 */
 	@Test
-	void testHashString4() {
-		System.out.println("hashString");
+	void testHashStringNotNullLugares2() {
 		InstalacaoAssentos instance = new InstalacaoAssentos();
 		instance.setLugares(List.of(new Lugar(), new Lugar()));
-		int expResult = instance.helpString().hashCode();
 		int result = instance.hashString();
-		assertEquals(expResult, result);
+		assertEquals(62, result);
 	}
 
 	/**
-	 * Test of hashString method, of class InstalacaoAssentos.
+	 * Test case for the hashString() method.
+	 * It tests the hashString() method when the
+	 * lugares attribute is not null.
 	 */
 	@Test
-	void testHashString5() {
-		System.out.println("hashString");
+	void testHashStringNotNullLugares3() {
 		InstalacaoAssentos instance = new InstalacaoAssentos();
 		instance.setLugares(List.of(new Lugar(), new Lugar(), new Lugar()));
-		int expResult = instance.helpString().hashCode();
 		int result = instance.hashString();
-		assertEquals(expResult, result);
+		assertEquals(93, result);
 	}
 
 	/**
-	 * Test of hashString method, of class Instal
+	 * Test case for the hashString() method.
+	 * It tests the hashString() method when the
+	 * lugares attribute is not null.
+	 */
+	@Test
+	void testHashStringNotNullLugares4() {
+		InstalacaoAssentos instance = new InstalacaoAssentos();
+		instance.setLugares(List.of(new Lugar(), new Lugar(), new Lugar(), new Lugar()));
+		int result = instance.hashString();
+		assertEquals(124, result);
+	}
+
+	/**
+	 * Test

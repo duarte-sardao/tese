@@ -16,59 +16,55 @@ import static org.junit.jupiter.api.Assertions.*;
 
 Completion:
 
-
     @Test
     void testSumItems() {
         Cart cart = new Cart(new User("John", 1000));
-        Item item1 = new Item("item1", 10, 1, false);
-        Item item2 = new Item("item2", 20, 2, false);
-        Item item3 = new Item("item3", 30, 3, false);
-        cart.add_item(item1);
-        cart.add_item(item2);
-        cart.add_item(item3);
-        assertEquals(140, cart.sum_items());
+        cart.add_item(new Item("item1", 10, 1, false));
+        cart.add_item(new Item("item2", 20, 2, false));
+        cart.add_item(new Item("item3", 30, 3, false));
+        cart.add_item(new Item("item4", 40, 4, false));
+        cart.add_item(new Item("item5", 50, 5, false));
+        assertEquals(550, cart.sum_items());
     }
 
     @Test
     void testSumItemsWithCoupon() {
         Cart cart = new Cart(new User("John", 1000));
-        Item item1 = new Item("item1", 10, 1, true);
-        Item item2 = new Item("item2", 20, 2, true);
-        Item item3 = new Item("item3", 30, 3, true);
-        cart.add_item(item1);
-        cart.add_item(item2);
-        cart.add_item(item3);
-        assertEquals(-140, cart.sum_items());
+        cart.add_item(new Item("item1", 10, 1, true));
+        cart.add_item(new Item("item2", 20, 2, true));
+        cart.add_item(new Item("item3", 30, 3, true));
+        cart.add_item(new Item("item4", 40, 4, true));
+        cart.add_item(new Item("item5", 50, 5, true));
+        assertEquals(-550, cart.sum_items());
     }
 
     @Test
-    void testSumItemsWithEmptyCart() {
+    void testSumItemsEmptyCart() {
         Cart cart = new Cart(new User("John", 1000));
         assertEquals(0, cart.sum_items());
     }
 
     @Test
-    void testSumItemsWithOneItem() {
+    void testSumItemsOneItem() {
         Cart cart = new Cart(new User("John", 1000));
-        Item item1 = new Item("item1", 10, 1, false);
-        cart.add_item(item1);
+        cart.add_item(new Item("item1", 10, 1, false));
         assertEquals(10, cart.sum_items());
     }
 
     @Test
-    void testSumItemsWithOneItemAndCoupon() {
+    void testSumItemsOneItemWithCoupon() {
         Cart cart = new Cart(new User("John", 1000));
-        Item item1 = new Item("item1", 10, 1, true);
-        cart.add_item(item1);
+        cart.add_item(new Item("item1", 10, 1, true));
         assertEquals(-10, cart.sum_items());
     }
 
     @Test
-    void testSumItemsWithTwoItems() {
+    void testSumItemsNegativeValue() {
         Cart cart = new Cart(new User("John", 1000));
-        Item item1 = new Item("item1", 10, 1, false);
-        Item item2 = new Item("item2", 20, 2, false);
-        cart.add_item(item1);
-        cart.add_item(item2);
-        assertEquals(50, cart.sum_items());
+        cart.add_item(new Item("item1", -10, 1, false));
+        assertEquals(-10, cart.sum_items());
     }
+
+    @Test
+    void testSumItemsNegativeValueWithCoupon() {
+        Cart cart = new Cart(new User("John", 1000));

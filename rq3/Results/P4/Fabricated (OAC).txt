@@ -42,21 +42,10 @@ Completion:
 
     /**
      * Test case for setProducerNumber(int) method.
-     * It tests the case when the producer number is positive.
+     * It tests the case where the producer number is 0.
      */
     @Test
-    void testSetProducerNumberPositive() {
-        Event event = new Event();
-        event.setProducerNumber(1);
-        assertEquals(1, event.getProducerNumber());
-    }
-    
-    /**
-     * Test case for setProducerNumber(int) method.
-     * It tests the case when the producer number is zero.
-     */
-    @Test
-    void testSetProducerNumberZero() {
+    void testSetProducerNumber0() {
         Event event = new Event();
         event.setProducerNumber(0);
         assertEquals(0, event.getProducerNumber());
@@ -64,55 +53,70 @@ Completion:
     
     /**
      * Test case for setProducerNumber(int) method.
-     * It tests the case when the producer number is negative.
+     * It tests the case where the producer number is 1.
      */
     @Test
-    void testSetProducerNumberNegative() {
+    void testSetProducerNumber1() {
         Event event = new Event();
-        event.setProducerNumber(-1);
-        assertEquals(-1, event.getProducerNumber());
+        event.setProducerNumber(1);
+        assertEquals(1, event.getProducerNumber());
     }
     
     /**
      * Test case for setProducerNumber(int) method.
-     * It tests the case when the producer number is the maximum value.
+     * It tests the case where the producer number is 2.
      */
     @Test
-    void testSetProducerNumberMax() {
+    void testSetProducerNumber2() {
         Event event = new Event();
-        event.setProducerNumber(Integer.MAX_VALUE);
-        assertEquals(Integer.MAX_VALUE, event.getProducerNumber());
+        event.setProducerNumber(2);
+        assertEquals(2, event.getProducerNumber());
     }
     
     /**
      * Test case for setProducerNumber(int) method.
-     * It tests the case when the producer number is the minimum value.
+     * It tests the case where the producer number is 3.
      */
     @Test
-    void testSetProducerNumberMin() {
+    void testSetProducerNumber3() {
         Event event = new Event();
-        event.setProducerNumber(Integer.MIN_VALUE);
-        assertEquals(Integer.MIN_VALUE, event.getProducerNumber());
+        event.setProducerNumber(3);
+        assertEquals(3, event.getProducerNumber());
     }
     
     /**
      * Test case for setProducerNumber(int) method.
-     * It tests the case when the producer number is the maximum value.
+     * It tests the case where the producer number is 4.
      */
     @Test
-    void testSetProducerNumberMaxPlusOne() {
+    void testSetProducerNumber4() {
         Event event = new Event();
-        assertThrows(IllegalArgumentException.class, () -> {
-            event.setProducerNumber(Integer.MAX_VALUE + 1);
-        });
+        event.setProducerNumber(4);
+        assertEquals(4, event.getProducerNumber());
     }
     
     /**
      * Test case for setProducerNumber(int) method.
-     * It tests the case when the producer number is the minimum value.
+     * It tests the case where the producer number is 5.
      */
     @Test
-    void testSetProducerNumberMinMinusOne() {
+    void testSetProducerNumber5() {
         Event event = new Event();
-        assertThrows(IllegalArgumentException.class, () -> {
-            event.setProducerNumber(Integer.MIN_VALUE - 1
+        event.setProducerNumber(5);
+        assertEquals(5, event.getProducerNumber());
+    }
+    
+    /**
+     * Test case for setProducerNumber(int) method.
+     * It tests the case where the producer number is 6.
+     */
+    @Test
+    void testSetProducerNumber6() {
+        Event event = new Event();
+        event.setProducerNumber(6);
+        assertEquals(6, event.getProducerNumber());
+    }
+    
+    /**
+     * Test case for setProducerNumber(int) method.
+     *

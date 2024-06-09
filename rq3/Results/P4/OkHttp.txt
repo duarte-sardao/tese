@@ -35,7 +35,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 Completion:
 
-
   /**
    * Test case 1: Test copyWithDefaults() method.
    * The method is called with a new OkHttpClient object.
@@ -61,8 +60,7 @@ Completion:
     assertEquals(client.getAuthenticator(), copy.getAuthenticator());
     assertEquals(client.getCache(), copy.getCache());
     assertEquals(client.getCookieHandler(), copy.getCookieHandler());
-    assertEquals(client.getFollowRedirects(), copy.getFollowRedirects());
-    assertEquals(client.getFollowSslRedirects(), copy.getFollowSslRedirects());
+    assertEquals(client.getFollowProtocolRedirects(), copy.getFollowProtocolRedirects());
     assertEquals(client.getHostnameVerifier(), copy.getHostnameVerifier());
     assertEquals(client.getProxy(), copy.getProxy());
     assertEquals(client.getProxySelector(), copy.getProxySelector());
@@ -85,10 +83,14 @@ Completion:
     assertEquals(client.getAuthenticator(), copy.getAuthenticator());
     assertEquals(client.getCache(), copy.getCache());
     assertEquals(client.getCookieHandler(), copy.getCookieHandler());
-    assertEquals(client.getFollowRedirects(), copy.getFollowRedirects());
-    assertEquals(client.getFollowSslRedirects(), copy.getFollowSslRedirects());
+    assertEquals(client.getFollowProtocolRedirects(), copy.getFollowProtocolRedirects());
     assertEquals(client.getHostnameVerifier(), copy.getHostnameVerifier());
     assertEquals(client.getProxy(), copy.getProxy());
     assertEquals(client.getProxySelector(), copy.getProxySelector());
     assertEquals(client.getResponseCache(), copy.getResponseCache());
-    assertEquals(client.getSslSocket
+    assertEquals(client.getSslSocketFactory(), copy.getSslSocketFactory());
+  }
+
+  /**
+   * Test case 4: Test copyWithDefaults() method.
+   * The method is called

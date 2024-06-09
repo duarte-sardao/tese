@@ -13,51 +13,64 @@ import static org.junit.jupiter.api.Assertions.*;
 
 Completion:
 
-
     @Test
-    void testGetDiscountCodes1() {
-        Cart cart = new Cart(new User("John", 100));
-        Set<String> expected = new HashSet<>(Arrays.asList("loyal", "30ff", "2023", "throwback", "2024", "fun"));
-        assertEquals(expected, cart.getDiscountCodes());
+    void testGetDiscountCodes() {
+        Cart cart = new Cart(new User("test"));
+        Set<String> discountCodes = cart.getDiscountCodes();
+        assertEquals(6, discountCodes.size());
+        assertTrue(discountCodes.contains("loyal"));
+        assertTrue(discountCodes.contains("30ff"));
+        assertTrue(discountCodes.contains("2023"));
+        assertTrue(discountCodes.contains("throwback"));
+        assertTrue(discountCodes.contains("2024"));
+        assertTrue(discountCodes.contains("fun"));
     }
 
     @Test
-    void testGetDiscountCodes2() {
-        Cart cart = new Cart(new User("John", 100));
-        Set<String> expected = new HashSet<>(Arrays.asList("loyal", "30ff", "2023", "throwback", "2024", "fun"));
-        assertEquals(expected, cart.getDiscountCodes());
+    void testGetDiscountCodesEmpty() {
+        Cart cart = new Cart(new User("test"));
+        cart.getDiscountCodes().clear();
+        Set<String> discountCodes = cart.getDiscountCodes();
+        assertEquals(6, discountCodes.size());
+        assertTrue(discountCodes.contains("loyal"));
+        assertTrue(discountCodes.contains("30ff"));
+        assertTrue(discountCodes.contains("2023"));
+        assertTrue(discountCodes.contains("throwback"));
+        assertTrue(discountCodes.contains("2024"));
+        assertTrue(discountCodes.contains("fun"));
     }
 
     @Test
-    void testGetDiscountCodes3() {
-        Cart cart = new Cart(new User("John", 100));
-        Set<String> expected = new HashSet<>(Arrays.asList("loyal", "30ff", "2023", "throwback", "2024", "fun"));
-        assertEquals(expected, cart.getDiscountCodes());
+    void testGetDiscountCodesAdd() {
+        Cart cart = new Cart(new User("test"));
+        Set<String> discountCodes = cart.getDiscountCodes();
+        discountCodes.add("new");
+        discountCodes = cart.getDiscountCodes();
+        assertEquals(6, discountCodes.size());
+        assertTrue(discountCodes.contains("loyal"));
+        assertTrue(discountCodes.contains("30ff"));
+        assertTrue(discountCodes.contains("2023"));
+        assertTrue(discountCodes.contains("throwback"));
+        assertTrue(discountCodes.contains("2024"));
+        assertTrue(discountCodes.contains("fun"));
     }
 
     @Test
-    void testGetDiscountCodes4() {
-        Cart cart = new Cart(new User("John", 100));
-        Set<String> expected = new HashSet<>(Arrays.asList("loyal", "30ff", "2023", "throwback", "2024", "fun"));
-        assertEquals(expected, cart.getDiscountCodes());
+    void testGetDiscountCodesRemove() {
+        Cart cart = new Cart(new User("test"));
+        Set<String> discountCodes = cart.getDiscountCodes();
+        discountCodes.remove("loyal");
+        discountCodes = cart.getDiscountCodes();
+        assertEquals(6, discountCodes.size());
+        assertTrue(discountCodes.contains("loyal"));
+        assertTrue(discountCodes.contains("30ff"));
+        assertTrue(discountCodes.contains("2023"));
+        assertTrue(discountCodes.contains("throwback"));
+        assertTrue(discountCodes.contains("2024"));
+        assertTrue(discountCodes.contains("fun"));
     }
 
     @Test
-    void testGetDiscountCodes5() {
-        Cart cart = new Cart(new User("John", 100));
-        Set<String> expected = new HashSet<>(Arrays.asList("loyal", "30ff", "2023", "throwback", "2024", "fun"));
-        assertEquals(expected, cart.getDiscountCodes());
-    }
-
-    @Test
-    void testGetDiscountCodes6() {
-        Cart cart = new Cart(new User("John", 100));
-        Set<String> expected = new HashSet<>(Arrays.asList("loyal", "30ff", "2023", "throwback", "2024", "fun"));
-        assertEquals(expected, cart.getDiscountCodes());
-    }
-
-    @Test
-    void testGetDiscountCodes7() {
-        Cart cart = new Cart(new User("John", 100));
-        Set<String> expected = new HashSet<>(Arrays.asList("loyal", "30ff", "2023", "throwback", "2024", "fun"));
-        assertEquals(expected, cart.get
+    void testGetDiscountCodesAddAll() {
+        Cart cart = new Cart(new User("test"));
+        Set<String> discountCodes = cart.getDiscount

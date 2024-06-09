@@ -24,18 +24,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 Completion:
 
-
     /**
      * Test case 1 of getBadWords method of Python2Target.
      * It tests the case when the badWords set is empty.
      */
     @Test
     void testGetBadWords1() {
-        // Create a Python2Target object
-        Python2Target python2Target = new Python2Target(new CodeGenerator());
-        // Get the badWords set
-        Set<String> badWords = python2Target.getBadWords();
-        // Check if the set is empty
+        CodeGenerator gen = new CodeGenerator();
+        Python2Target target = new Python2Target(gen);
+        Set<String> badWords = target.getBadWords();
         assertTrue(badWords.isEmpty());
     }
 
@@ -45,15 +42,11 @@ Completion:
      */
     @Test
     void testGetBadWords2() {
-        // Create a Python2Target object
-        Python2Target python2Target = new Python2Target(new CodeGenerator());
-        // Add an element to the badWords set
-        python2Target.getBadWords().add("test");
-        // Get the badWords set
-        Set<String> badWords = python2Target.getBadWords();
-        // Check if the set contains one element
+        CodeGenerator gen = new CodeGenerator();
+        Python2Target target = new Python2Target(gen);
+        target.getBadWords().add("test");
+        Set<String> badWords = target.getBadWords();
         assertEquals(1, badWords.size());
-        // Check if the set contains the element "test"
         assertTrue(badWords.contains("test"));
     }
 
@@ -63,21 +56,33 @@ Completion:
      */
     @Test
     void testGetBadWords3() {
-        // Create a Python2Target object
-        Python2Target python2Target = new Python2Target(new CodeGenerator());
-        // Add two elements to the badWords set
-        python2Target.getBadWords().add("test1");
-        python2Target.getBadWords().add("test2");
-        // Get the badWords set
-        Set<String> badWords = python2Target.getBadWords();
-        // Check if the set contains two elements
+        CodeGenerator gen = new CodeGenerator();
+        Python2Target target = new Python2Target(gen);
+        target.getBadWords().add("test1");
+        target.getBadWords().add("test2");
+        Set<String> badWords = target.getBadWords();
         assertEquals(2, badWords.size());
-        // Check if the set contains the element "test1"
         assertTrue(badWords.contains("test1"));
-        // Check if the set contains the element "test2"
         assertTrue(badWords.contains("test2"));
     }
 
     /**
      * Test case 4 of getBadWords method of Python2Target.
-     * It tests the case when the badWords
+     * It tests the case when the badWords set contains three elements.
+     */
+    @Test
+    void testGetBadWords4() {
+        CodeGenerator gen = new CodeGenerator();
+        Python2Target target = new Python2Target(gen);
+        target.getBadWords().add("test1");
+        target.getBadWords().add("test2");
+        target.getBadWords().add("test3");
+        Set<String> badWords = target.getBadWords();
+        assertEquals(3, badWords.size());
+        assertTrue(badWords.contains("test1"));
+        assertTrue(badWords.contains("test2"));
+        assertTrue(badWords.contains("test3"));
+    }
+
+    /**
+     * Test case 5 of get

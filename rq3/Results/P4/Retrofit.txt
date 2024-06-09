@@ -24,79 +24,63 @@ import static org.junit.jupiter.api.Assertions.*;
 
 Completion:
 
-  /**
-   * Test case for the build() method.
-   * It tests the case when the apiUrl is null.
-   * The expected result is an IllegalArgumentException.
-   */
   @Test
-  void testBuildApiUrlNull() {
-    RequestBuilder requestBuilder = new RequestBuilder(null);
-    requestBuilder.apiUrl(null);
-    requestBuilder.methodInfo(new RestMethodInfo());
-    requestBuilder.args(new Object[0]);
-    requestBuilder.headers(new ArrayList<Header>());
-    assertThrows(IllegalArgumentException.class, () -> {
-      requestBuilder.build();
-    });
-  }
+  void testBuild() throws UnsupportedEncodingException {
+    // Create a RequestBuilder object
+    RequestBuilder requestBuilder = new RequestBuilder(new Converter());
 
-  /**
-   * Test case for the build() method.
-   * It tests the case when the methodInfo is null.
-   * The expected result is an IllegalArgumentException.
-   */
-  @Test
-  void testBuildMethodInfoNull() {
-    RequestBuilder requestBuilder = new RequestBuilder(null);
-    requestBuilder.apiUrl("apiUrl");
-    requestBuilder.methodInfo(null);
-    requestBuilder.args(new Object[0]);
-    requestBuilder.headers(new ArrayList<Header>());
-    assertThrows(IllegalArgumentException.class, () -> {
-      requestBuilder.build();
-    });
-  }
+    // Create a RestMethodInfo object
+    RestMethodInfo restMethodInfo = new RestMethodInfo();
+    restMethodInfo.method = RestMethodInfo.Method.GET;
+    restMethodInfo.requestMethod = "GET";
+    restMethodInfo.requestUrl = "http://localhost:8080";
+    restMethodInfo.requestQuery = "query";
+    restMethodInfo.requestHeaders = new String[] {"header1", "header2"};
+    restMethodInfo.requestContentType = "application/json";
+    restMethodInfo.requestContent = "content";
+    restMethodInfo.requestHasBody = true;
+    restMethodInfo.requestBody = new TypedOutput() {
+      @Override
+      public String fileName() {
+        return null;
+      }
 
-  /**
-   * Test case for the build() method.
-   * It tests the case when the args is null.
-   * The expected result is an IllegalArgumentException.
-   */
-  @Test
-  void testBuildArgsNull() {
-    RequestBuilder requestBuilder = new RequestBuilder(null);
-    requestBuilder.apiUrl("apiUrl");
-    requestBuilder.methodInfo(new RestMethodInfo());
-    requestBuilder.args(null);
-    requestBuilder.headers(new ArrayList<Header>());
-    assertThrows(IllegalArgumentException.class, () -> {
-      requestBuilder.build();
-    });
-  }
+      @Override
+      public String mimeType() {
+        return null;
+      }
 
-  /**
-   * Test case for the build() method.
-   * It tests the case when the headers is null.
-   * The expected result is an IllegalArgumentException.
-   */
-  @Test
-  void testBuildHeadersNull() {
-    RequestBuilder requestBuilder = new RequestBuilder(null);
-    requestBuilder.apiUrl("apiUrl");
-    requestBuilder.methodInfo(new RestMethodInfo());
-    requestBuilder.args(new Object[0]);
-    requestBuilder.headers(null);
-    assertThrows(IllegalArgumentException.class, () -> {
-      requestBuilder.build();
-    });
-  }
+      @Override
+      public long length() {
+        return 0;
+      }
 
-  /**
-   * Test case for the build() method.
-   * It tests the case when the headers is empty.
-   * The expected result is an IllegalArgumentException.
-   */
-  @Test
-  void testBuildHeadersEmpty() {
-    RequestBuilder requestBuilder = new RequestBuilder(null);
+      @Override
+      public void writeTo(java.io.OutputStream out) {
+      }
+    };
+    restMethodInfo.responseObjectType = Object.class;
+    restMethodInfo.isSynchronous = true;
+    restMethodInfo.isObservable = false;
+    restMethodInfo.isStreaming = false;
+    restMethodInfo.isSingle = false;
+    restMethodInfo.isDynamic = false;
+    restMethodInfo.isMultipart = false;
+    restMethodInfo.isFormEncoded = false;
+    restMethodInfo.isKotlinSuspendFunction = false;
+    restMethodInfo.isKotlinFunction = false;
+    restMethodInfo.isKotlinSuspend = false;
+    restMethodInfo.isKotlinNoArgFunction = false;
+    restMethodInfo.isKotlinUnit = false;
+    restMethodInfo.isKotlinUnitSuspend = false;
+    restMethodInfo.isKotlinUnitSuspendFunction = false;
+    restMethodInfo.isKotlinUnitFunction = false;
+    restMethodInfo.isKotlinUnitNoArgFunction = false;
+    restMethodInfo.isKotlinUnitSuspendFunctionWithUnit = false;
+    restMethodInfo.isKotlinUnitFunctionWithUnit = false;
+    restMethodInfo.isKotlinUnitNoArgFunctionWithUnit = false;
+    restMethodInfo.isKotlinUnitSuspendFunctionWithUnitNullable = false;
+    restMethodInfo.isKotlinUnitFunctionWithUnitNullable = false;
+    restMethodInfo.isKotlinUnitNoArgFunctionWithUnitNullable = false;
+    restMethodInfo.isKotlinUnitSuspendFunctionWithUnitNullableNullable = false;
+    restMethodInfo.isK
