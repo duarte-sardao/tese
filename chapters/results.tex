@@ -552,15 +552,15 @@ private methods. But it has to be understood that these sort of issues are a pos
                       & \multicolumn{2}{c}{Prompt 1} & \multicolumn{2}{c}{Prompt 2} & \multicolumn{2}{c}{Prompt 3} \\
                       & Compilation & Passing & Compilation & Passing & Compilation & Passing \\
     \midrule
-    Point (CM)       & 3 & 2 & 1 & 0 & 0 & 0 &  &  \\
-    Fabricated (RO)  & 1 & 0 & 1 & 1 & 3 & 0 &  &  \\ 
-    Fabricated (OAC) & 2 & 0 & 1 & 0 & 0 & 0 &  &  \\
-    Cart (CM)        & 0 & 0 & 0 & 0 & 0 & 0 &  &  \\
-    Cart (PF)        & 2 & 2 & 0 & 0 & 0 & 0 &  &  \\
-    Cart (PM)        & 0 & 0 & 0 & 0 & 1 & 1 &  &  \\
-    Antlr (PF)       & 0 & 0 & 0 & 0 & 0 & 0 &  &  \\
-    OkHttp (PM)      & 0 & 0 & 0 & 0 & 1 & 1 &  &  \\
-    Retrofit (PM/CM) & 0 & 0 & 0 & 0 & 0 & 0 &  &  \\
+    Point (CM)       & 3 & 2 & 1 & 0 & 0 & 0 & 1 & 1 \\
+    Fabricated (RO)  & 1 & 0 & 1 & 1 & 3 & 0 & 1 & 0 \\ 
+    Fabricated (OAC) & 2 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+    Cart (CM)        & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    Cart (PF)        & 2 & 2 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    Cart (PM)        & 0 & 0 & 0 & 0 & 1 & 1 & 0 & 0 \\
+    Antlr (PF)       & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    OkHttp (PM)      & 0 & 0 & 0 & 0 & 1 & 1 & 0 & 0 \\
+    Retrofit (PM/CM) & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
     \todo{Trials}    & 3 & 3 & 1 & 1 & 3 & 3 & 1 & 1 \\
     \bottomrule
     \end{tabular}
@@ -571,7 +571,7 @@ private methods. But it has to be understood that these sort of issues are a pos
 \Cref{tab:results:rq3t1} allows us to observe that issues relating to compilation and correct assertions remain
 a problem for these prompts, confirming this is not necessarily just a issue with the prompt we developed. 
 
-Particular prominent issues, like the issue of incorrect constructors such as in the case of Item remained relevant
+Particular prominent issues like the issue of incorrect constructors, such as in the case of Item, remained relevant
 and more prevalent as more test cases were generated for each prompt. 
 
 Some new issues with the usage of non-existent methods arose. Whereas before these largely happened with the classes that were not present
@@ -595,7 +595,9 @@ for all cases, even though these were unnecessary for the vast majority of cases
 which so far we had failed to do and where other prompts failed too, as they all sought to access the private method copyWithDefaults().
 Of note, however, the 2 compilation failures for OkHttp in prompt 3 also dealt with private access, but to a field rather than a method.
 
-\todo{often copilot methods have extra parameters}
+Prompt 4 suffered from limitations of generation and it would often stop generating midtest. For our purposes these were cropped and not counted for the analysis.
+This limitation makes sense, as Copilot is primarily targeted at helping developers complete code, as an auxiliary tool, not as a tool to generate very large
+code blocks without developer interference.
 
 While we have several passing tests, few are useful in accurately identifying the conflict.
 These were Cart (PF) for Prompt 1 as well as Cart (PM) for Prompt 3.
@@ -607,14 +609,14 @@ These were Cart (PF) for Prompt 1 as well as Cart (PM) for Prompt 3.
                      & Prompt 1 & Prompt 2 & Prompt 3 & Prompt 4 \\
     \midrule
     Point (CM)       & 1 & 1 & 0 & 1 \\
-    Fabricated (RO)  & 1 & 0 & 0 &  \\
-    Fabricated (OAC) & 3 & 1 & 0 &  \\
-    Cart (CM)        & 0 & 1 & 0 &  \\
-    Cart (PF)        & 3 & 1 & 1 &  \\
-    Cart (PM)        & 2 & 0 & 2 &  \\
-    Antlr (PF)       & 1 & 1 & 0 &  \\
-    OkHttp (PM)      & 0 & 0 & 0 &  \\
-    Retrofit (PM/CM) & 0 & 0 & 0 &  \\
+    Fabricated (RO)  & 1 & 0 & 0 & 1 \\
+    Fabricated (OAC) & 3 & 1 & 0 & 1 \\
+    Cart (CM)        & 0 & 1 & 0 & 0 \\
+    Cart (PF)        & 3 & 1 & 1 & 1 \\
+    Cart (PM)        & 2 & 0 & 2 & 1 \\
+    Antlr (PF)       & 1 & 1 & 0 & 1 \\
+    OkHttp (PM)      & 0 & 0 & 0 & 0 \\
+    Retrofit (PM/CM) & 0 & 0 & 0 & 0 \\
     Trials           & 3 & 1 & 3 & 1 \\
     %\midrule
     \bottomrule
@@ -625,9 +627,9 @@ These were Cart (PF) for Prompt 1 as well as Cart (PM) for Prompt 3.
 With \Cref{tab:results:rq3t2} we can observe that by applying the same correction process we carried out in
 RQ2, we can achieve a meaningful number of tests that not only pass, but also identify the semantic conflict.
 
-It is however notable that these are fewer in number. While we find failures for the same reason as in RQ2, where
-after correction tests pass, but do not identify the conflict, the characteristics of these prompts also introduced
-new issues.
+It is however notable that these are fewer in number, except maybe Prompt 4, which can be corrected for 6 subjects.
+While we find failures for the same reason as in RQ2, where after correction tests pass, but do not identify the conflict,
+the characteristics of these prompts also introduced new issues.
 
 One of these relates to Change Method type conflicts: given Prompt 1 and 3 only carry method signatures for non-focal methods,
 the relationship between the affected methods is hidden. Thus, for example, no test is generated for Cart (CM) that investigates
@@ -780,11 +782,89 @@ tests and often the correct one for our purposes came later. For Cart (CM), the 
     }
 }
 \end{response}
-By increasing the number of tests generate we increase the odds of generating the test we are looking for,
+
+By increasing the number of tests generated we increase the odds of generating the test we are looking for,
 but these come at higher costs: more tokens need to be generated, more time is spent generating and a lot more
 correction is required. The monetary and time costs are thus much higher.
 
-We verify then that yes, while existing prompts can produce similar results to the prompt developed for RQ2
+Prompt 4 also indicated the generation of 10 tests, but Copilot showed to be limited in how much it would generate at once,
+leading to less tests per generation. Furthermore tests showed less variance, with variation being mostly on values, not the
+test logic. For example, for the same subject:
+\begin{response}
+    @Test
+    void testCheckout() {
+        User user = new User("John", 1000, false);
+        Cart cart = new Cart(user);
+        Item item = new Item("item1", 10, 1);
+        cart.add_item(item);
+        cart.checkout("loyal");
+        assertEquals(990, user.balance);
+    }
+
+    @Test
+    void testCheckout2() {
+        User user = new User("John", 1000, false);
+        Cart cart = new Cart(user);
+        Item item = new Item("item1", 10, 1);
+        cart.add_item(item);
+        cart.checkout("superpromo");
+        assertEquals(985, user.balance);
+    }
+
+    @Test
+    void testCheckout3() {
+        User user = new User("John", 1000, false);
+        Cart cart = new Cart(user);
+        Item item = new Item("item1", 10, 1);
+        cart.add_item(item);
+        cart.checkout("30ff");
+        assertEquals(980, user.balance);
+    }
+
+    @Test
+    void testCheckout4() {
+        User user = new User("John", 1000, false);
+        Cart cart = new Cart(user);
+        Item item = new Item("item1", 10, 1);
+        cart.add_item(item);
+        cart.checkout("2024");
+        assertEquals(990, user.balance);
+    }
+
+    @Test
+    void testCheckout5() {
+        User user = new User("John", 1000, false);
+        Cart cart = new Cart(user);
+        Item item = new Item("item1", 10, 1);
+        cart.add_item(item);
+        cart.checkout("invalid");
+        assertEquals(1000, user.balance);
+    }
+
+    @Test
+    void testCheckout6() {
+        User user = new User("John", 1000, false);
+        Cart cart = new Cart(user);
+        Item item = new Item("item1", 10, 1);
+        cart.add_item(item);
+        cart.checkout("loyal");
+        assertEquals(990, user.balance);
+    }
+
+    @Test
+    void testCheckout7() {
+        User user = new User("John", 1000, false);
+        Cart cart = new Cart(user);
+        Item item = new Item("item1", 10, 1);
+        cart.add_item(item);
+\end{response}
+It is worth nothing for this comparison we closely followed Prompt 2's format for 4, with the main variable being the usage of Copilot
+instead of ChatGPT. While in this case the metrics between these two were comparable, we have to note that better results, particularly 
+in regards to compilation, might have been achieved if we had some adopted some known good practices for Copilot generation, such as giving
+context of existing tests \citet{kn:githubcopilot}. But it is also true that test context might also be applicable to our ChatGPT prompts,
+after adaptation. The downside is this requires existing tests, which should usually be the case but not always.
+
+In general we verify then that yes, while existing prompts can produce similar results to the prompt developed for RQ2
 and can in some cases test the emergent behaviour, this comes with higher randomness and thus associated effort.
 By prompting with the explanation of the conflict provided, we can achieve positive results more reliably as the
 LLM is given the exact information required on what behaviour needs to be verified.
