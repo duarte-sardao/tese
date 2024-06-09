@@ -13,3 +13,88 @@ import static org.junit.jupiter.api.Assertions.*;
  * checkout() method.
  */
  class CartTest {
+
+Completion:
+
+
+    @Test
+    void testCheckout1() {
+        User user = new User();
+        Cart cart = new Cart(user);
+        Item item = new Item(1, 10);
+        cart.add_item(item);
+        user.balance = 100;
+        cart.checkout("loyal");
+        assertEquals(90, user.balance);
+    }
+
+    @Test
+    void testCheckout2() {
+        User user = new User();
+        Cart cart = new Cart(user);
+        Item item = new Item(1, 10);
+        cart.add_item(item);
+        user.balance = 100;
+        cart.checkout("superpromo");
+        assertEquals(75, user.balance);
+    }
+
+    @Test
+    void testCheckout3() {
+        User user = new User();
+        Cart cart = new Cart(user);
+        Item item = new Item(1, 10);
+        cart.add_item(item);
+        user.balance = 100;
+        cart.checkout("30ff");
+        assertEquals(70, user.balance);
+    }
+
+    @Test
+    void testCheckout4() {
+        User user = new User();
+        Cart cart = new Cart(user);
+        Item item = new Item(1, 10);
+        cart.add_item(item);
+        user.balance = 100;
+        cart.checkout("2024");
+        assertEquals(80, user.balance);
+    }
+
+    @Test
+    void testCheckout5() {
+        User user = new User();
+        Cart cart = new Cart(user);
+        Item item = new Item(1, 10);
+        cart.add_item(item);
+        user.balance = 100;
+        cart.checkout("invalid");
+        assertEquals(100, user.balance);
+    }
+
+    @Test
+    void testCheckout6() {
+        User user = new User();
+        Cart cart = new Cart(user);
+        Item item = new Item(1, 10);
+        cart.add_item(item);
+        user.balance = 100;
+        cart.checkout(null);
+        assertEquals(100, user.balance);
+    }
+
+    @Test
+    void testCheckout7() {
+        User user = new User();
+        Cart cart = new Cart(user);
+        Item item = new Item(1, 10);
+        cart.add_item(item);
+        user.balance = 100;
+        cart.checkout("");
+        assertEquals(100, user.balance);
+    }
+
+    @Test
+    void testCheckout8() {
+        User user = new User();
+        Cart cart =

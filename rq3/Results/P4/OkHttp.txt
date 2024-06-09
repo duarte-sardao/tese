@@ -32,3 +32,63 @@ import static org.junit.jupiter.api.Assertions.*;
  * copyWithDefaults() method.
  */
  class OkHttpClientTest {
+
+Completion:
+
+
+  /**
+   * Test case 1: Test copyWithDefaults() method.
+   * The method is called with a new OkHttpClient object.
+   * The method should return a new OkHttpClient object.
+   */
+  @Test
+  void testCopyWithDefaults1() {
+    OkHttpClient client = new OkHttpClient();
+    OkHttpClient copy = client.copyWithDefaults();
+    assertNotSame(client, copy);
+  }
+
+  /**
+   * Test case 2: Test copyWithDefaults() method.
+   * The method is called with a new OkHttpClient object.
+   * The method should return a new OkHttpClient object
+   * with the same values as the original object.
+   */
+  @Test
+  void testCopyWithDefaults2() {
+    OkHttpClient client = new OkHttpClient();
+    OkHttpClient copy = client.copyWithDefaults();
+    assertEquals(client.getAuthenticator(), copy.getAuthenticator());
+    assertEquals(client.getCache(), copy.getCache());
+    assertEquals(client.getCookieHandler(), copy.getCookieHandler());
+    assertEquals(client.getFollowRedirects(), copy.getFollowRedirects());
+    assertEquals(client.getFollowSslRedirects(), copy.getFollowSslRedirects());
+    assertEquals(client.getHostnameVerifier(), copy.getHostnameVerifier());
+    assertEquals(client.getProxy(), copy.getProxy());
+    assertEquals(client.getProxySelector(), copy.getProxySelector());
+    assertEquals(client.getResponseCache(), copy.getResponseCache());
+    assertEquals(client.getSslSocketFactory(), copy.getSslSocketFactory());
+  }
+
+  /**
+   * Test case 3: Test copyWithDefaults() method.
+   * The method is called with a new OkHttpClient object
+   * with a custom authenticator.
+   * The method should return a new OkHttpClient object
+   * with the same values as the original object.
+   */
+  @Test
+  void testCopyWithDefaults3() {
+    OkHttpClient client = new OkHttpClient();
+    client.setAuthenticator(new HttpAuthenticator());
+    OkHttpClient copy = client.copyWithDefaults();
+    assertEquals(client.getAuthenticator(), copy.getAuthenticator());
+    assertEquals(client.getCache(), copy.getCache());
+    assertEquals(client.getCookieHandler(), copy.getCookieHandler());
+    assertEquals(client.getFollowRedirects(), copy.getFollowRedirects());
+    assertEquals(client.getFollowSslRedirects(), copy.getFollowSslRedirects());
+    assertEquals(client.getHostnameVerifier(), copy.getHostnameVerifier());
+    assertEquals(client.getProxy(), copy.getProxy());
+    assertEquals(client.getProxySelector(), copy.getProxySelector());
+    assertEquals(client.getResponseCache(), copy.getResponseCache());
+    assertEquals(client.getSslSocket

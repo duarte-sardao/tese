@@ -21,3 +21,82 @@ import static org.junit.jupiter.api.Assertions.*;
  * build() method.
  */
  class RequestBuilderTest {
+
+Completion:
+
+  /**
+   * Test case for the build() method.
+   * It tests the case when the apiUrl is null.
+   * The expected result is an IllegalArgumentException.
+   */
+  @Test
+  void testBuildApiUrlNull() {
+    RequestBuilder requestBuilder = new RequestBuilder(null);
+    requestBuilder.apiUrl(null);
+    requestBuilder.methodInfo(new RestMethodInfo());
+    requestBuilder.args(new Object[0]);
+    requestBuilder.headers(new ArrayList<Header>());
+    assertThrows(IllegalArgumentException.class, () -> {
+      requestBuilder.build();
+    });
+  }
+
+  /**
+   * Test case for the build() method.
+   * It tests the case when the methodInfo is null.
+   * The expected result is an IllegalArgumentException.
+   */
+  @Test
+  void testBuildMethodInfoNull() {
+    RequestBuilder requestBuilder = new RequestBuilder(null);
+    requestBuilder.apiUrl("apiUrl");
+    requestBuilder.methodInfo(null);
+    requestBuilder.args(new Object[0]);
+    requestBuilder.headers(new ArrayList<Header>());
+    assertThrows(IllegalArgumentException.class, () -> {
+      requestBuilder.build();
+    });
+  }
+
+  /**
+   * Test case for the build() method.
+   * It tests the case when the args is null.
+   * The expected result is an IllegalArgumentException.
+   */
+  @Test
+  void testBuildArgsNull() {
+    RequestBuilder requestBuilder = new RequestBuilder(null);
+    requestBuilder.apiUrl("apiUrl");
+    requestBuilder.methodInfo(new RestMethodInfo());
+    requestBuilder.args(null);
+    requestBuilder.headers(new ArrayList<Header>());
+    assertThrows(IllegalArgumentException.class, () -> {
+      requestBuilder.build();
+    });
+  }
+
+  /**
+   * Test case for the build() method.
+   * It tests the case when the headers is null.
+   * The expected result is an IllegalArgumentException.
+   */
+  @Test
+  void testBuildHeadersNull() {
+    RequestBuilder requestBuilder = new RequestBuilder(null);
+    requestBuilder.apiUrl("apiUrl");
+    requestBuilder.methodInfo(new RestMethodInfo());
+    requestBuilder.args(new Object[0]);
+    requestBuilder.headers(null);
+    assertThrows(IllegalArgumentException.class, () -> {
+      requestBuilder.build();
+    });
+  }
+
+  /**
+   * Test case for the build() method.
+   * It tests the case when the headers is empty.
+   * The expected result is an IllegalArgumentException.
+   */
+  @Test
+  void testBuildHeadersEmpty() {
+    RequestBuilder requestBuilder = new RequestBuilder(null);

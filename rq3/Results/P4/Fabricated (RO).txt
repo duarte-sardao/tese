@@ -15,3 +15,73 @@ import static org.junit.jupiter.api.Assertions.*;
  * hashString() method.
  */
  class InstalacaoAssentosTest {
+
+Completion:
+
+
+	/**
+	 * Test of hashString method, of class InstalacaoAssentos.
+	 */
+	@Test
+	void testHashString() {
+		System.out.println("hashString");
+		InstalacaoAssentos instance = new InstalacaoAssentos();
+		int expResult = instance.helpString().hashCode();
+		int result = instance.hashString();
+		assertEquals(expResult, result);
+	}
+
+	/**
+	 * Test of hashString method, of class InstalacaoAssentos.
+	 */
+	@Test
+	void testHashString2() {
+		System.out.println("hashString");
+		InstalacaoAssentos instance = new InstalacaoAssentos();
+		instance.setLugares(null);
+		int expResult = instance.helpString().hashCode();
+		int result = instance.hashString();
+		assertEquals(expResult, result);
+	}
+
+	/**
+	 * Test of hashString method, of class InstalacaoAssentos.
+	 */
+	@Test
+	void testHashString3() {
+		System.out.println("hashString");
+		InstalacaoAssentos instance = new InstalacaoAssentos();
+		instance.setLugares(List.of(new Lugar()));
+		int expResult = instance.helpString().hashCode();
+		int result = instance.hashString();
+		assertEquals(expResult, result);
+	}
+
+	/**
+	 * Test of hashString method, of class InstalacaoAssentos.
+	 */
+	@Test
+	void testHashString4() {
+		System.out.println("hashString");
+		InstalacaoAssentos instance = new InstalacaoAssentos();
+		instance.setLugares(List.of(new Lugar(), new Lugar()));
+		int expResult = instance.helpString().hashCode();
+		int result = instance.hashString();
+		assertEquals(expResult, result);
+	}
+
+	/**
+	 * Test of hashString method, of class InstalacaoAssentos.
+	 */
+	@Test
+	void testHashString5() {
+		System.out.println("hashString");
+		InstalacaoAssentos instance = new InstalacaoAssentos();
+		instance.setLugares(List.of(new Lugar(), new Lugar(), new Lugar()));
+		int expResult = instance.helpString().hashCode();
+		int result = instance.hashString();
+		assertEquals(expResult, result);
+	}
+
+	/**
+	 * Test of hashString method, of class Instal

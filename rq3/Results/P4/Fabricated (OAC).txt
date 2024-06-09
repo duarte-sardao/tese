@@ -36,3 +36,83 @@ import static org.junit.jupiter.api.Assertions.*;
  * setProducerNumber(int) method.
  */
  class EventTest {
+
+Completion:
+
+
+    /**
+     * Test case for setProducerNumber(int) method.
+     * It tests the case when the producer number is positive.
+     */
+    @Test
+    void testSetProducerNumberPositive() {
+        Event event = new Event();
+        event.setProducerNumber(1);
+        assertEquals(1, event.getProducerNumber());
+    }
+    
+    /**
+     * Test case for setProducerNumber(int) method.
+     * It tests the case when the producer number is zero.
+     */
+    @Test
+    void testSetProducerNumberZero() {
+        Event event = new Event();
+        event.setProducerNumber(0);
+        assertEquals(0, event.getProducerNumber());
+    }
+    
+    /**
+     * Test case for setProducerNumber(int) method.
+     * It tests the case when the producer number is negative.
+     */
+    @Test
+    void testSetProducerNumberNegative() {
+        Event event = new Event();
+        event.setProducerNumber(-1);
+        assertEquals(-1, event.getProducerNumber());
+    }
+    
+    /**
+     * Test case for setProducerNumber(int) method.
+     * It tests the case when the producer number is the maximum value.
+     */
+    @Test
+    void testSetProducerNumberMax() {
+        Event event = new Event();
+        event.setProducerNumber(Integer.MAX_VALUE);
+        assertEquals(Integer.MAX_VALUE, event.getProducerNumber());
+    }
+    
+    /**
+     * Test case for setProducerNumber(int) method.
+     * It tests the case when the producer number is the minimum value.
+     */
+    @Test
+    void testSetProducerNumberMin() {
+        Event event = new Event();
+        event.setProducerNumber(Integer.MIN_VALUE);
+        assertEquals(Integer.MIN_VALUE, event.getProducerNumber());
+    }
+    
+    /**
+     * Test case for setProducerNumber(int) method.
+     * It tests the case when the producer number is the maximum value.
+     */
+    @Test
+    void testSetProducerNumberMaxPlusOne() {
+        Event event = new Event();
+        assertThrows(IllegalArgumentException.class, () -> {
+            event.setProducerNumber(Integer.MAX_VALUE + 1);
+        });
+    }
+    
+    /**
+     * Test case for setProducerNumber(int) method.
+     * It tests the case when the producer number is the minimum value.
+     */
+    @Test
+    void testSetProducerNumberMinMinusOne() {
+        Event event = new Event();
+        assertThrows(IllegalArgumentException.class, () -> {
+            event.setProducerNumber(Integer.MIN_VALUE - 1

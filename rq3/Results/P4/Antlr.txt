@@ -21,3 +21,63 @@ import static org.junit.jupiter.api.Assertions.*;
  * getBadWords() method.
  */
  class Python2TargetTest {
+
+Completion:
+
+
+    /**
+     * Test case 1 of getBadWords method of Python2Target.
+     * It tests the case when the badWords set is empty.
+     */
+    @Test
+    void testGetBadWords1() {
+        // Create a Python2Target object
+        Python2Target python2Target = new Python2Target(new CodeGenerator());
+        // Get the badWords set
+        Set<String> badWords = python2Target.getBadWords();
+        // Check if the set is empty
+        assertTrue(badWords.isEmpty());
+    }
+
+    /**
+     * Test case 2 of getBadWords method of Python2Target.
+     * It tests the case when the badWords set contains one element.
+     */
+    @Test
+    void testGetBadWords2() {
+        // Create a Python2Target object
+        Python2Target python2Target = new Python2Target(new CodeGenerator());
+        // Add an element to the badWords set
+        python2Target.getBadWords().add("test");
+        // Get the badWords set
+        Set<String> badWords = python2Target.getBadWords();
+        // Check if the set contains one element
+        assertEquals(1, badWords.size());
+        // Check if the set contains the element "test"
+        assertTrue(badWords.contains("test"));
+    }
+
+    /**
+     * Test case 3 of getBadWords method of Python2Target.
+     * It tests the case when the badWords set contains two elements.
+     */
+    @Test
+    void testGetBadWords3() {
+        // Create a Python2Target object
+        Python2Target python2Target = new Python2Target(new CodeGenerator());
+        // Add two elements to the badWords set
+        python2Target.getBadWords().add("test1");
+        python2Target.getBadWords().add("test2");
+        // Get the badWords set
+        Set<String> badWords = python2Target.getBadWords();
+        // Check if the set contains two elements
+        assertEquals(2, badWords.size());
+        // Check if the set contains the element "test1"
+        assertTrue(badWords.contains("test1"));
+        // Check if the set contains the element "test2"
+        assertTrue(badWords.contains("test2"));
+    }
+
+    /**
+     * Test case 4 of getBadWords method of Python2Target.
+     * It tests the case when the badWords
