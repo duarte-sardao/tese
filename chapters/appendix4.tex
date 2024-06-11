@@ -672,3 +672,191 @@ public class OkHttpClientTest {
 }
 \end{response}
 
+\subsection{Point, Prompt 4}
+
+\begin{prompt}
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+
+/**
+ * Test class of Point.
+ * It contains 10 unit test cases for the
+ * move() method.
+ */
+ class PointTest {
+\end{prompt}
+
+\begin{response}
+  
+  @Test
+  void testMove1() {
+      Point p = new Point(1, 1);
+      p.move();
+      assertEquals(2, p.getX());
+      assertEquals(2, p.getY());
+  }
+
+  @Test
+  void testMove2() {
+      Point p = new Point(-1, -1);
+      p.move();
+      assertEquals(0, p.getX());
+      assertEquals(0, p.getY());
+  }
+
+  @Test
+  void testMove3() {
+      Point p = new Point(0, 0);
+      p.move();
+      assertEquals(0, p.getX());
+      assertEquals(0, p.getY());
+  }
+
+  @Test
+  void testMove4() {
+      Point p = new Point(1, -1);
+      p.move();
+      assertEquals(2, p.getX());
+      assertEquals(0, p.getY());
+  }
+
+  @Test
+  void testMove5() {
+      Point p = new Point(-1, 1);
+      p.move();
+      assertEquals(0, p.getX());
+      assertEquals(2, p.getY());
+  }
+
+  @Test
+  void testMove6() {
+      Point p = new Point(1, 0);
+      p.move();
+      assertEquals(2, p.getX());
+      assertEquals(1, p.getY());
+  }
+
+  @Test
+  void testMove7() {
+      Point p = new Point(0, 1);
+      p.move();
+      assertEquals(1, p.getX());
+      assertEquals(2, p.getY());
+  }
+
+  @Test
+  void testMove8() {
+      Point p = new Point(-1, 0);
+      p.move();
+      assertEquals(0, p.getX());
+      assertEquals(1, p.getY());
+  }
+
+  @Test
+  void testMove9() {
+      Point p = new Point(0, -1);
+      p.move();
+      assertEquals(1, p.getX());
+      assertEquals(0, p.getY());
+  }
+
+  @Test
+  void testMove10() {
+      Point p = new Point(1, 1);
+      p.move();
+      p.move();
+      assertEquals(3, p.getX());
+      assertEquals(3, p.getY());
+  }
+}
+\end{response}
+
+\subsection{Cart (CM), Prompt 4}
+
+\begin{prompt}
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+
+/**
+ * Test class of Cart.
+ * It contains 10 unit test cases for the
+ * checkout() method.
+ */
+ class CartTest {
+\end{prompt}
+
+\begin{response}
+  @Test
+  void testCheckout() {
+      User user = new User("John", 1000, false);
+      Cart cart = new Cart(user);
+      Item item = new Item("item1", 10, 1);
+      cart.add_item(item);
+      cart.checkout("loyal");
+      assertEquals(990, user.balance);
+  }
+
+  @Test
+  void testCheckout2() {
+      User user = new User("John", 1000, false);
+      Cart cart = new Cart(user);
+      Item item = new Item("item1", 10, 1);
+      cart.add_item(item);
+      cart.checkout("superpromo");
+      assertEquals(985, user.balance);
+  }
+
+  @Test
+  void testCheckout3() {
+      User user = new User("John", 1000, false);
+      Cart cart = new Cart(user);
+      Item item = new Item("item1", 10, 1);
+      cart.add_item(item);
+      cart.checkout("30ff");
+      assertEquals(980, user.balance);
+  }
+
+  @Test
+  void testCheckout4() {
+      User user = new User("John", 1000, false);
+      Cart cart = new Cart(user);
+      Item item = new Item("item1", 10, 1);
+      cart.add_item(item);
+      cart.checkout("2024");
+      assertEquals(990, user.balance);
+  }
+
+  @Test
+  void testCheckout5() {
+      User user = new User("John", 1000, false);
+      Cart cart = new Cart(user);
+      Item item = new Item("item1", 10, 1);
+      cart.add_item(item);
+      cart.checkout("invalid");
+      assertEquals(1000, user.balance);
+  }
+
+  @Test
+  void testCheckout6() {
+      User user = new User("John", 1000, false);
+      Cart cart = new Cart(user);
+      Item item = new Item("item1", 10, 1);
+      cart.add_item(item);
+      cart.checkout("loyal");
+      assertEquals(990, user.balance);
+  }
+
+  @Test
+  void testCheckout7() {
+      User user = new User("John", 1000, false);
+      Cart cart = new Cart(user);
+      Item item = new Item("item1", 10, 1);
+      cart.add_item(item);
+\end{response}
