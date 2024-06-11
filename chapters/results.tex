@@ -1,7 +1,7 @@
     \chapter{Experimental results}\label{chap:results}
 
 This chapters answers \textbf{RQ1 – RQ3}, which study ChatGPT's ability to identify and generate tests for semantic conflict, the latter
-with both our prompt, which provides an explanation, and state-of-the-art prompts, which don't.
+with both our prompt, which provides an explanation, and state-of-the-art prompts, which do not.
 
 \section{RQ1}\label{sec:results:rq1}
 
@@ -51,7 +51,7 @@ Better results were observed when doing more manual, ad-hoc experiments, as we c
 
 As we proceeded testing the ``Cart'' scenario, we observed a reversal of a trend of very low results for the E metric, particularly for CM and PM.
 Indeed for these examples, not only did the LLM identify the origins of the conflict, but exactly the result of this, such as:
-``Now, in the merged version, both changes are included. So, when an admin user proceeds to checkout (assuming the admin check in version A evaluates to true), the cost will be set to 0. But immediately after, the checkout method checks if the cost is 0 and throws an exception if it is. This leads to a contradictory behavior: the system sets the cost to 0 for admin users but then doesn't allow them to proceed with checkout due to the cost being 0.''
+``Now, in the merged version, both changes are included. So, when an admin user proceeds to checkout (assuming the admin check in version A evaluates to true), the cost will be set to 0. But immediately after, the checkout method checks if the cost is 0 and throws an exception if it is. This leads to a contradictory behavior: the system sets the cost to 0 for admin users but then does not allow them to proceed with checkout due to the cost being 0.''
 It is possible this is due to the very straighforward logic of the CM example in particular. What is surprising is that due to some minor changes in the Cart class, we re-ran these tests and originally these values were much lower. Why there was such an improvement is unknown but it is evidence of the variability of these tools.
 
 In a scenario where detection failed we see an example of the LLM providing a grossly wrong explanation: ``If the user is an admin and a discount code that results in a cost of 0 is applied, the exception will never be thrown because the `checkout` method will not be called.''. As regards the conflict itself, this was only completely wrong assertion of its kind: in general where answers failed they were either vague or omitted, not present. The only other major example of a factually incorrect answer came with OkHttp:
@@ -403,10 +403,10 @@ in the diff section of the prompt. This led to the creation of tests using (Valu
     }
 }
 \end{response}
-Notably these constructors don't set the amount field, which is thus 0, rendering the items useless for any value calculations.
+Notably these constructors don not set the amount field, which is thus 0, rendering the items useless for any value calculations.
 Rectification would require understanding this logic error and thus is liable to be more difficult to achieve. It is for these representations
 we have so few successes for Cart (PM): while we corrected the asserts to get passing tests in merge (in this case, setting them to 0, as no
-value is subtracted), these corrections don't aid in identifying the conflict.
+value is subtracted), these corrections do not aid in identifying the conflict.
 
 The other case where the conflict is rarely identified despite our corrections is RO, as it often generated asserts which always passed:
 \begin{response}
