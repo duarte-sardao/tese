@@ -2,18 +2,37 @@
 
 \section{Conclusion}
 
+\todo{
 In our preparation for dissertation we explored and presented the problem of software merges, more specifically, the difficulty in establishing an automated method to detect, identify and highlight semantic conflicts that arise.
 
 We explored related work that can provide avenues of study and structures to guide the development of our solution. Specifically, previous work on test generation to identify semantic conflicts, the state of the art of automated test generation and the usage of Large Language Models for test generation, with specific focus on the important of appropriate prompting as well as output correction.
 
 Forward, we will apply this knowledge in developing a solution that can hopefully aid developer workflows by identifying and generating tests for semantic conflicts.
-
+}
 \section{Future Work}
 
+During the course of our research we found many possible future avenues of research based both on our own work and existing research. Future work which explores these could improve
+the quality of our prompting techniques and eventually developed a solution to automatically generate appropriate unit tests when a semantic merge conflict is detected in a commit.
+
+Future improvements to prompting inclue:
+
+- Improving understanding of semantic conflicts: As the LLM demonstrated an association between unintended software faults and conflicts, simple conflicts were ignored.
+Possible work could focus on providing k-shot learning to improve this capability, or avoid the usage of ``conflict'' in favour of more direct or neutral terms, such as prompting
+for the existence of lost or emergent behaviour.
+
+- Test generation with context: Throughout all our test generations, compilations tended to fail due to small errors, particularly with constructors, field access and method calls.
+Providing context by prompting with an existing suite has shown to be a reliable solution and would also aid in following stylistically conventions a project may be using.
+This could also be helpful with other issues, such as using mocking and more complex techniques when and only when it is necessary.
+
+- Integration with Changes-Matcher\Citet{kn:nuno}: Changes-Matcher detects semantic conflicts by comparing merges to common patterns, such as Change Method, Parallel Field and others
+seen throughout our work. Integrating these, possibly with a prompt to explain the specific type of conflict present could be helpful in conflict explanation.
+Furthermore, Changes-Matcher outputs a DSL which provides information on how to test the conflict (indicating which methods should be called directly and indirectly). This could possibly
+also improve test generation.
+
 \subsection{Development Plan and Tool Functioning}
-
+todo{
 Development of the solution will go through several stages. Firstly, the process which has already been in progress, is the initial evaluation of LLM's and prompt techniques. After acquiring the list of subjects to test and deciding on the LLM, we can systematize this to develop the prototype solution. From here we start developing a tool that can automatically generate a prompt, get a test from the LLM and then run it. This prototype tool can then be further augmented, by applying corrections for tests that may fail to compile. \Cref{fig:tool} details the expected functioning of the tool once completed. A final period of evaluation and observations will compare our results to previous work and reflect on possible further improvements.
-
+}
 \begin{figure}
     \centering
     \includegraphics[width=1\linewidth]{figures/tool.pdf}
