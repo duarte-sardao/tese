@@ -548,7 +548,7 @@ private methods. But it has to be understood that these sort of issues are a pos
 
 \begin{table}[t]
     \centering
-    \begin{tabular}{@{\extracolsep{\fill}} l*{6}{r}} \toprule
+    \begin{tabular}{@{\extracolsep{\fill}} l*{8}{r}} \toprule
                       & \multicolumn{2}{c}{Prompt 1} & \multicolumn{2}{c}{Prompt 2} & \multicolumn{2}{c}{Prompt 3} \\
                       & Compilation & Passing & Compilation & Passing & Compilation & Passing \\
     \midrule
@@ -575,8 +575,13 @@ Particular prominent issues like the issue of incorrect constructors, such as in
 and more prevalent as more test cases were generated for each prompt. 
 
 Some new issues with the usage of non-existent methods arose. Whereas before these largely happened with the classes that were not present
+<<<<<<< HEAD
 in the prompt, we observed the adaptation of the add_item(Item) method into one that took an list input, in Prompt 3:
 \begin{lstlisting}
+=======
+in the prompt, we observed the adaptation of the add\_item(Item) method into one that took an list input, in Prompt 3:
+\begin{response}
+>>>>>>> df719033ff5dcf59bcb044b3047c33f07d7530c4
     @Before
     public void setup() {
         user = new User("John Doe");
