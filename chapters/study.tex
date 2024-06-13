@@ -127,13 +127,14 @@ Both of these chances are integrated and as a result, the behaviour of Request c
 
 \section{Large language models}
 
-\todo{\begin{itemize}
+{\begin{itemize}
   \item ChatGPT
-  \item (if time allows) GitHub Copilot Chat on VS Code / IntelliJ IDE
+  \item GitHub Copilot on IntelliJ IDE
 \end{itemize}}
 
 While preliminary work sought to explore ChatGPT and Llama (both CodeLlama and Llama 2), hardware constraints, particularly limited GPU RAM in the machines at our disposal, meant we were unable to explore Llama.  Bing AI and Bard were also considered, but they were problematic due to very stringent message size limits, in the case of Bard, and generally worse results: Bing AI, for example, could not wait for all the information to be sent, if split in more than one message and thus generated confused responses. ChatGPT, being hosted online for free and with generous message size limits, proved to be the most reliable option. Despite this, many capabalities that could prove invaluable for this work remained locked behind a premium paywall.
 The instance of ChatGPT used was the web-based ChatGPT 3.5 Turbo, with default temperature, during the first semester of 2024.
+The version of GitHub Copilot was Version 1.5.6.5692.
 
 \section{Research questions}
 
@@ -181,7 +182,7 @@ what might be one-time flukes.
 As an example how one would instantiate this prompt is listed below for the
 Point subject, where a conflict is introduced by the simultaneous change of
 euclidean to manhattan distance followed by the usage of the same distance method
-in another method.  \todo{breaks when split between 3+ pages}
+in another method.
 \begin{prompt}
 You are a software developer that has to assess whether there is a semantic conflict in a merge commit.  Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, assess whether there is a semantic conflict and explain it. 
 
@@ -417,11 +418,15 @@ We took four prompts:
   \item Prompt 1, from ``No More Manual Tests? Evaluating and Improving ChatGPT for Unit Test Generation''by ~\citet{kn:chattester}
   \item Prompt 2, from ``Using Large Language Models to Generate JUnit Tests: An Empirical Study''by ~\citet{kn:siddiq2023empirical}
   \item Prompt 3, from ``ChatUniTest: A Framework for LLM-Based Test Generation''by~\citet{kn:chatunitest}
-  \item Prompt 4 also took the second part of Prompt 2, the test skeleton, but instead used Github Copilot (Version 1.5.6.5692) for completion.
+  \item Prompt 4 also took the second part of Prompt 2, the test skeleton, but instead used Github Copilot for completion.
 \end{itemize}
 
 3 trials were run for Prompt 1 and Prompt 3, whereas Prompt 2 and 4 only had one as they showed no variation (due to temperature).
-\todo{metrics}
+
+We evaluated the prompts in two steps: in a first step we observed if they compiled and in case they did, if the test generated were passing.
+
+In a second step, we examined the test logic itself to see if the tests can potentially identify the semantic conflict, if the same type of simple corrections
+applied in RQ2 were applied.
 
 \section{Threats to validity}
 
@@ -445,6 +450,6 @@ We mitigated this with frequent revisions and several mistakes were caught.
 
 \subsection{Threats to external validity}
 
-A main threat to external validity was our reliance to ChatGPT-3.5 Turbo \todo{and GitHub Copilot}. While we made efforts to investigate other LLMs
+A main threat to external validity was our reliance to ChatGPT-3.5 Turbo and GitHub Copilot. While we made efforts to investigate other LLMs
 we were constrained by hardware and financial limitations. Thus these results are not necessarily generalizable and further study would be required
 to see how other models compare.
