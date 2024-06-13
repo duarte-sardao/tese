@@ -2,23 +2,40 @@
 
 \section{Conclusion}
 
-\todo{
 In our preparation for dissertation we explored and presented the problem of software merges, more specifically, the difficulty in establishing an automated method to detect, identify and highlight semantic conflicts that arise.
 
 We explored related work that can provide avenues of study and structures to guide the development of our solution. Specifically, previous work on test generation to identify semantic conflicts, the state of the art of automated test generation and the usage of Large Language Models for test generation, with specific focus on the important of appropriate prompting as well as output correction.
 
-Forward, we will apply this knowledge in developing a solution that can hopefully aid developer workflows by identifying and generating tests for semantic conflicts.
-}
+By establishing the three research question we established, we could investigate the viability of using LLMs in this way. From this we can say:
+
+- Research Question 1: We established that ChatGPT has some capability to identify semantic conflicts. One of the obstacles found was understanding:
+conflicts which did not create obvious code faults (such as parallel addition to lists) were not seen as conflicts. 
+
+- Research Question 2: We found that despite many small errors with the test setup and asserts, when an appropriate explanation was given, ChatGPT could generate
+tests that appropriately verified the required behaviours. We also found no significant difference between human written and ChatGPT written explanations. The main obstacle
+was the complexity of some subjects, particularly the real-world ones, where ChatGPT struggled to generate adequate tests.
+
+- Research Question 3: By investigating state of the art prompts, we observed that while they could still generate tests that adequately tested the conflict (after correction),
+these came with downsides, due to the lack of focus provided by the detailed explanation: there was higher variability as it was not guaranteed the right setup would be attempted.
+For example, in tests that required a User class to have the admin field set to true, nothing in the prompt indicated this and while generating many tests will increase the chances
+of this field being set, more tests necessarily imply more time and work.
+
+Forward, future work may hopefully apply this knowledge in developing a solution that can hopefully aid developer workflows by identifying and generating tests for semantic conflicts.
+
 \section{Future Work}
 
 During the course of our research we found many possible future avenues of research based both on our own work and existing research. Future work which explores these could improve
 the quality of our prompting techniques and eventually developed a solution to automatically generate appropriate unit tests when a semantic merge conflict is detected in a commit.
 
-Future improvements to prompting inclue:
+Future improvements to prompting include:
 
 - Improving understanding of semantic conflicts: As the LLM demonstrated an association between unintended software faults and conflicts, simple conflicts were ignored.
 Possible work could focus on providing k-shot learning to improve this capability, or avoid the usage of ``conflict'' in favour of more direct or neutral terms, such as prompting
 for the existence of lost or emergent behaviour.
+
+- Prompt automation and picking necessary information: For our purposes, prompts were manually written. To fit within token limits and to avoid confusing the LLM, informed was cropped to
+the necessary: only the class were the main affected method was present was given. In the case of real-world scenarios, diffs were also cropped, as they included a lot of extraneous information.
+In an automated solution, investigation needs to be done on identifying the necessary elements required for the prompt and how to automatically extract them.
 
 - Test generation with context: Throughout all our test generations, compilations tended to fail due to small errors, particularly with constructors, field access and method calls.
 Providing context by prompting with an existing suite has shown to be a reliable solution and would also aid in following stylistically conventions a project may be using.
