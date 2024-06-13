@@ -267,7 +267,7 @@ is observed for Cart(PM). An explanation might be that one type of prompt genera
 \cref{tab:results:rq2tests}, both examples have comparable amount of test cases and test length does not vary much.
 It is possible these are the results of outliers: that if we for example observe Cart (PM), ChatGPT explanation, the results are significantly weighed by
 trial 3, which requires significant correction due to the way it tries to access the user:
-\begin{response}
+\begin{lstlisting}
     @Test
     public void testSumItemsWithCoupon() {
         Cart cart = new Cart(new User());
@@ -301,9 +301,9 @@ trial 3, which requires significant correction due to the way it tries to access
         cart.checkout("loyal");
         assertEquals(-45, cart.getUser().getBalance(), 0.001);
     }
-\end{response}
+\end{lstlisting}
 has an edit distance of 121, has correction requires extracting the user for access:
-\begin{response}
+\begin{lstlisting}
     @Test
     public void testSumItemsWithCoupon() {
         Cart cart = new Cart(new User());
@@ -339,7 +339,7 @@ has an edit distance of 121, has correction requires extracting the user for acc
         cart.checkout("loyal");
         assertEquals(0, user.balance, 0.001);
     }
-\end{response}
+\end{lstlisting}
 This same error of trying to access user from cart can be found in other ChatGPT results in PM, but it is ambiguous
 whether this is somehow the result of the prompt or coincidental generations. On the other side, Cart (CM) tended to generate
 asserts of type AssertThrow and AssertNotThrow, which often had to be reversed to be in line with merge, for manual, whereas for
@@ -365,7 +365,7 @@ to fix assert errors. In effect, it would be an automated way to do the manual c
 Some other issues with constructors we observed are not so obvious to solve: namely that despite knowing of available construcotrs, there's no guarantee
 the correct one for the situation will be used. We can see the case of Cart (PM): due to changes in the Item class, constructor information came included
 in the diff section of the prompt. This led to the creation of tests using (Value, Coupon) and (Value) format.
-\begin{response}
+\begin{lstlisting}
     public class CartTest {
 
     @Test
@@ -402,27 +402,27 @@ in the diff section of the prompt. This led to the creation of tests using (Valu
         assertEquals(-45, cart.getUser().getBalance(), 0.001);
     }
 }
-\end{response}
+\end{lstlisting}
 Notably these constructors don not set the amount field, which is thus 0, rendering the items useless for any value calculations.
 Rectification would require understanding this logic error and thus is liable to be more difficult to achieve. It is for these representations
 we have so few successes for Cart (PM): while we corrected the asserts to get passing tests in merge (in this case, setting them to 0, as no
 value is subtracted), these corrections do not aid in identifying the conflict.
 
 The other case where the conflict is rarely identified despite our corrections is RO, as it often generated asserts which always passed:
-\begin{response}
+\begin{lstlisting}
     @Test
     public void testHashString() {
         InstalacaoAssentos instalacao = new InstalacaoAssentos();
         assertNotNull(instalacao.hashString());
     }
-\end{response}
+\end{lstlisting}
 Within the parameters of our work and a corrective system that works off compilation and test errors, this is the most problematic case: as the test works perfectly in merge,
 there is nothing prompting us for repair and repair would require more than simply changing a value, but to actually change the type of assert itself.
 
 Retrofit stands as an outlier and indeed we did correct the generated tests as they are so deviated from correctness, any edit would have to fundamentally alter the setup and structure of the test,
 to a point where if henceforth the test worked, we could not say it reflected anything on ChatGPT's capabilities. 
 From observing, it is clear the LLM in a way does not have enough information to correctly generate tests and thus opts for generating non-existent mocks:
-\begin{response}
+\begin{lstlisting}
     @Test(expected = IllegalArgumentException.class)
     public void testBuildRelativeUrlWithNullPathParam() throws UnsupportedEncodingException {
       RequestBuilder builder = new RequestBuilder(mockConverter());
@@ -431,9 +431,9 @@ From observing, it is clear the LLM in a way does not have enough information to
       builder.args(new Object[]{null}); // Pass null argument
       builder.build(); // This should throw IllegalArgumentException
     }
-\end{response}
+\end{lstlisting}
 As well as extensive incomplete test suites, which end up being almost all the same.
-\begin{response}
+\begin{lstlisting}
     @Test(expected = IllegalArgumentException.class)
     public void testBuildRelativeUrl_NullPathParam() throws UnsupportedEncodingException {
       RequestBuilder builder = new RequestBuilder(mock(Converter.class));
@@ -469,7 +469,7 @@ As well as extensive incomplete test suites, which end up being almost all the s
              .args(new Object[] {null})
              .build();
     }
-\end{response}
+\end{lstlisting}
 It is worth noting none of the tests seem to attempt to test both modified behaviours at once (? addition to query parameters and null handlings). Thus even if correctly designed, they would not detect the conflict.
 However this could always be a prompt issue.
 
@@ -576,7 +576,7 @@ and more prevalent as more test cases were generated for each prompt.
 
 Some new issues with the usage of non-existent methods arose. Whereas before these largely happened with the classes that were not present
 in the prompt, we observed the adaptation of the add_item(Item) method into one that took an list input, in Prompt 3:
-\begin{response}
+\begin{lstlisting}
     @Before
     public void setup() {
         user = new User("John Doe");
@@ -585,7 +585,7 @@ in the prompt, we observed the adaptation of the add_item(Item) method into one 
                                   new Item("Item2", 20.0, 1, true));
         cart.add_items(cartItems);
     }
-\end{response}
+\end{lstlisting}
 It is possible the reason for this is that the prompt only shows the method signature, which makes it less impactful and thus the LLM may be
 more prone to adapt or use it incorrectly. In this case, it is likely a method to add items in this manner was very common on the training dataset,
 which goes in line with our previous assessments that issues often arise when our implementation deviates from what is common or expected.
@@ -635,7 +635,7 @@ One of these relates to Change Method type conflicts: given Prompt 1 and 3 only 
 the relationship between the affected methods is hidden. Thus, for example, no test is generated for Cart (CM) that investigates
 checkout with an admin type user as there is not even information that users can have that characteristic. In other cases, it either
 calls or mocks methods to ascertain the appropriate assert. This is the case with Point, for example for Prompt 1:
-\begin{response}
+\begin{lstlisting}
     @Test
     public void testMove() {
         Point point = new Point(3, 4); // Create a Point object at coordinates (3,4)
@@ -647,9 +647,9 @@ calls or mocks methods to ascertain the appropriate assert. This is the case wit
         assertEquals(3 + initialDistance, point.getX(), 0.0001); 
         assertEquals(4 + initialDistance, point.getY(), 0.0001);
     }
-\end{response}
+\end{lstlisting}
 As well as for Prompt 3:
-\begin{response}
+\begin{lstlisting}
     @Test
     public void testMove() throws Exception {
         // Mocking distance method
@@ -662,7 +662,7 @@ As well as for Prompt 3:
         assertEquals(5.0, point.getX(), 0.0);
         assertEquals(5.0, point.getY(), 0.0);
     }
-\end{response}
+\end{lstlisting}
 The former does not identify the conflict because the assert, rather than being fixed on the merge behaviour,
 varies depending on the result of distance. The latter does not identify it because the behaviour of distance is 
 obscured.
@@ -673,7 +673,7 @@ the actual code under test or generating tests that cannot be corrected easily, 
 The most significant difference, if we dismiss the specific case of Prompt 3, is that while we can achieve succesful results,
 there is much higher variability: in most cases for RQ2, if one trial could be ammended, all 3 could be, while here we observe much
 higher variability. For example, Prompt 1, for Antlr, generates:
-\begin{response}
+\begin{lstlisting}
     @Test
     public void testGetBadWords() {
         Python2Target python2Target = new Python2Target(new CodeGenerator());
@@ -691,7 +691,7 @@ higher variability. For example, Prompt 1, for Antlr, generates:
         Set<String> badWordsSecondCall = python2Target.getBadWords();
         assertEquals(badWords, badWordsSecondCall);
     }
-\end{response}
+\end{lstlisting}
 This is a perfectly valid test and it verifies several importants features of the getBadWords method: it should
 return a non-null, non-empty set, that contains some words we know and should be constant. However to identify the semantic
 conflict we need to check the size.
@@ -699,7 +699,7 @@ conflict we need to check the size.
 A way to offset this higher variability is simply to generate more tests. Indeed, Prompt 2 specifically indicates the number of
 tests to generate, which we specified at 10 as was done before. While it did not always generate the right number, it generated many
 tests and often the correct one for our purposes came later. For Cart (CM), the test we want is the 4th:
-\begin{response}
+\begin{lstlisting}
     class CartTest {
 
     private Cart cart;
@@ -781,7 +781,7 @@ tests and often the correct one for our purposes came later. For Cart (CM), the 
         assertEquals(0.0, cart.total_cost(0.25));
     }
 }
-\end{response}
+\end{lstlisting}
 
 By increasing the number of tests generated we increase the odds of generating the test we are looking for,
 but these come at higher costs: more tokens need to be generated, more time is spent generating and a lot more
@@ -790,7 +790,7 @@ correction is required. The monetary and time costs are thus much higher.
 Prompt 4 also indicated the generation of 10 tests, but Copilot showed to be limited in how much it would generate at once,
 leading to less tests per generation. Furthermore tests showed less variance, with variation being mostly on values, not the
 test logic. For example, for the same subject:
-\begin{response}
+\begin{lstlisting}
     @Test
     void testCheckout() {
         User user = new User("John", 1000, false);
@@ -857,7 +857,7 @@ test logic. For example, for the same subject:
         Cart cart = new Cart(user);
         Item item = new Item("item1", 10, 1);
         cart.add_item(item);
-\end{response}
+\end{lstlisting}
 It is worth nothing for this comparison we closely followed Prompt 2's format for 4, with the main variable being the usage of Copilot
 instead of ChatGPT. While in this case the metrics between these two were comparable, we have to note that better results, particularly 
 in regards to compilation, might have been achieved if we had some adopted some known good practices for Copilot generation, such as giving
