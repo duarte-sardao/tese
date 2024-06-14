@@ -1,8 +1,9 @@
-\chapter{Empirical methodology}\label{chap:study}
+\chapter{Empirical study}\label{chap:study}
 
-The purpose of this chapter of work was to assess the capabilities of LLM to identify and test semantic conflicts.
-Thus, it was divided into two phases: an initial exploratory phase, where an unstructured exploration allowed us to develop prompts, identify characteristics of the LLM and narrow down on its abilities and limitations.
-In a second phase, work was systematized, with the elaboration of research questions and metrics to evaluate results.
+This chapter describes the study conducted to assess the capabilities of LLMs
+(in particular, ChatGPT \todo{and Github Copilot}) at identifying, explaining,
+and revealing semantic conflicts in merge commits.
+% This chapter is divided into two phases: an initial exploratory phase, where an unstructured exploration allowed us to develop prompts, identify characteristics of the LLM and narrow down on its abilities and limitations.  In a second phase, work was systematized, with the elaboration of research questions and metrics to evaluate results.
 
 \section{Experimental subjects}\label{chap:study:subjects}
 
@@ -11,63 +12,66 @@ In a second phase, work was systematized, with the elaboration of research quest
 % \tabcolsep=1cm
 % \renewcommand{\arraystretch}{0.90}
 \begin{tabular}{@{\extracolsep{\fill}} lll} \toprule
-                 & Real & Conflict \\
+                 & Real Conflict & Type of Conflict \\
 \midrule
 Point            & No  & Change Method \\
 Fabricated (RO)  & No  & Remove Override \\
 Fabricated (OAC) & No  & Overload by Access Change \\
-Cart (CM)        & No  & Change Method \\
 Cart (PF)        & No  & Parallel Field \\
 Cart (PM)        & No  & Parallel Method \\
+Cart (CM)        & No  & Change Method \\
 Antlr            & Yes & Parallel Field \\
 OkHttp           & Yes & Parallel Method \\
-Retrofit         & Yes & Parallel Method / Change Method \\
+Retrofit         & Yes & Parallel and Change Method \\
 \bottomrule
 \end{tabular}
 \caption{Subjects used in the empirical study.\label{tab:subjects}}
 \end{table}
 
 To assess the validity of a developed solution, a collection of subjects to test must be collected. While several previous work has compiled collections of merge commits with semantic conflicts, the collection done by \citet{kn:nuno} is particularly useful, being publicly available, closely related to our own work, and also allowing us to draw direct comparisons. Most importantly, it aggregates merge instances from both \citet{kn:leuson} and \citet{kn:safemerge}, while also providing valuable information, due to the work developed, such as the specific type of conflict present and whether it was detected and correctly tested by UNSETTLE (providing us with a ``base truth''). Furthermore, it has compiled a set of fabricated conflicts, which provide simpler isolated examples that can aid us as they should be easier to detect and test.
-In analyzing the work of Nuno Castanho, we found the predominant types of semantic conflicts in real scenarios where ``Parallel Changes in Field'', ``Parallel Changes in Method'' and ``Change Method'' \citet{kn:nuno}. Using a simple Cart class as a base, 3 examples were made for these scenarios.
-These Cart examples would be part of the group of subjects used to answer and evaluate the research questions we defined. These were complemented by a simple Point class, two examples fabricated by Nuno Castanho of type ``Override by Access Change'' and ``Remove Override'', which had achieved good results in exploratory testing, Antlr4 and OkHttp, respectively a simple and a hard to test real-world scenario.
-The collection of subjects and corresponding conflict type can be found in \Cref{tab:subjects}.
 
-It is worth examining each subject and it's corresponding conflict, to make understanding the results easier.
+In analyzing the work of Nuno Castanho, we found the predominant types of semantic conflicts in real scenarios where ``Parallel Changes in Field'', ``Parallel Changes in Method'', and ``Change Method'' \cite{kn:nuno}.  Using a simple Cart class as a base, 3 examples were made for these scenarios.
+These Cart examples would be part of the group of subjects used to answer and evaluate the research questions we defined. These were complemented by a simple Point class, two examples fabricated by Castanho of type ``Override by Access Change'' and ``Remove Override'', which had achieved good results in exploratory testing, Antlr4 and OkHttp, respectively a simple and a hard to test real-world scenario.
+The collection of subjects and corresponding type of conflict can be found in \Cref{tab:subjects}.
 
-\textbf{Point, Conflict Type: Change Method}
+% It is worth examining each subject and it's corresponding conflict, to make understanding the results easier.
 
-Point consists of a simple class for a two dimensional point, with fields X and Y.
-Other than getters and setters, it's most relevant methods are move() and distance().
-Originally move increments both x and y by 1, while distance calculates the euclidean distance to (0,0).
-In branches A and B, move() is altered to increment by distance() while distance() is altered ro calculate
-the manhattan distance. The conflict then arises: move() was altered with the expectation that it would move 
+\subsection{Point}
+
+\subsubsection{Conflict Type: Change Method}
+
+Point consists of a simple class for a two dimensional point, with fields \texttt{x} and \texttt{Y}.
+Other than getters and setters, it's most relevant methods are \texttt{move} and \texttt{distance}.
+Originally, the method \texttt{move} increments both \texttt{x} and \texttt{y} by 1, while \texttt{distance} computes the euclidean distance to \texttt{(0,0)}.
+In branches A and B, \texttt{move} is modified to increment by \texttt{distance} while \texttt{distance} is modified to compute
+the manhattan distance.  The conflict then arises \todo{when code is merged?}.  \texttt{move} was modified with the expectation that it would move
 based on the euclidan distance, but with the merging of the other branch it will move differently.
 
-\textbf{Fabricated}
+\subsection{Fabricated}
 
-This fabricated program revolves around events: ticketing, scheduling, installations, etc. The two
-conflicts that make the two subjects relate to different parts of the program.
+The Fabricated subject revolves around events: ticketing, scheduling, installations, etc. The two
+conflicts that make the two subjects relate to different parts of the code.
 
-\textbf{Conflict Type: Remove Override}
+\subsubsection{Conflict Type: Remove Override}
 
-The classes involved in the conflict are Instalacao and InstalacaoAssentos, which extends the former.
-Of is the method helpString(), which returns a string with class information. This method is present
-in both classes with different implementations (thus InstalacaoAssentos overrides). In branch A,
-hashString() is introduced in InstalacaoAssentos: it takes helpString() and hashes it. In branch B,
-the helpString() from InstalacaoAssentos is deleted. Thus the conflict arises because in the merge,
-hashString() will be  calling the helpString() from Instalacao and the has values returned will be different.
+The classes involved in the conflict are \texttt{Instalacao} and \texttt{InstalacaoAssentos}, which extends the former.
+Of is the method \texttt{helpString}, which returns a string with class information.  This method is present
+in both classes with different implementations (thus \texttt{InstalacaoAssentos} overrides it). In branch A,
+\texttt{hashString} is introduced in \texttt{InstalacaoAssentos}: it takes \texttt{helpString} and hashes it. In branch B,
+the \texttt{helpString} from \texttt{InstalacaoAssentos} is deleted. Thus, the conflict arises because in the merge,
+\texttt{hashString} will be calling the \texttt{helpString} from \texttt{Instalacao} and the has values returned will be different.
 
-\textbf{Conflict Type: Overload By Access Change}
+\subsubsection{Conflict Type: Overload By Access Change}
 
-The classes involved are Event and Producer, where the former has a ManyToOne relationship with the latter.
-In Producer, there are two methods: setResgistration(Integer) and setResgistration(int). The former sets
-the producer's registrationNumber to the intValue() of the Integer + 10. The latter just sets the given value.
-In branch A, the int version of the method is made private. In branch B, a setProducerNumber(int) function is added
-to Event: it checks if the Producer is null and if not, calls setResgistration with the given value. In B, this will
-call the int version of the method, as it is still public, but after the merge, the Integer version will be used instead,
+The classes involved are \texttt{Event} and \texttt{Producer}, where the former has a ManyToOne relationship with the latter.
+In \texttt{Producer}, there are two methods: \texttt{setResgistration(Integer)} and \texttt{setResgistration(int)}. The former sets
+the producer's \texttt{registrationNumber} to the \texttt{intValue()} of the \texttt{Integer + 10}. The latter just sets the given value.
+In branch A, the \texttt{int} version of the method is made private. In branch B, a \texttt{setProducerNumber(int)} function is added
+to \texttt{Event}: it checks if the \texttt{Producer} is null and if not, calls \texttt{setResgistration} with the given value. In B, this will
+call the \texttt{int} version of the method, as it is still public, but after the merge, the \texttt{Integer} version will be used instead,
 hence the conflict.
 
-\textbf{Cart}
+\subsection{Cart}
 
 Cart consists of a simple class representing a shopping cart, with auxiliary classes for users and items.
 Its fields correspond to a dictionary of discounts, with string associated to doubles, a list of items in the cart
@@ -75,57 +79,63 @@ and the associated user.
 It has the appropriate methods to add items to the cart, calculate the cart value, and checkout with a given discount code,
 subtracting the value from the user's balance.
 Cart has some pecularities which may differ from real-world classes of the same type. These include the fact that checkout 
-requires a discont code as an argument (there is no checkout without discount)and that items can only be added one by one, without
-any way to add a collection all at once. Notably their auxiliary classes contained only public fields, with no getters and setters, as
+requires a discont code as an argument (there is no checkout without discount) and that items can only be added one by one, without
+any way to add a collection all at once.  Notably their auxiliary classes contained only public fields, with no getters and setters, as
 well as lacking expected fields such as String type ``name'' fields. These divergences from the norm came to matter when it came to
 test generation.
 
-\textbf{Conflict Type: Parallel Field}
+\subsubsection{Conflict Type: Parallel Field}
 
 The base of this conflict has some alterations compared to the other Cart versions: a more full dictionary of discounts,
-a method to get the key set and a boolean method (checkForDiscountRenewal) that returns true or false whether the key set is less or equal than 6.
-The changes correspond to the removal of a discount in line 1 of the field, in branch A, and the removal of a discount in the last line, on branch B.
+a method to get the key set and a boolean method (\texttt{checkForDiscountRenewal}) that returns \texttt{true} or \texttt{false} whether the key set is less or equal than six.
+The changes correspond to the removal of a discount in line 1\todo{???} of the field, in branch A, and the removal of a discount in the last line, on branch B.
 These merge correctly but emergent behaviour arises: the key set in merge is different from both the one in A and B.
 The boolean method further makes this evident.
 
-\textbf{Conflict Type: Parallel Method}
+\subsubsection{Conflict Type: Parallel Method}
 
 The changes relate to the sum\_items() method. At the start, it just goes trough the items in the list and sums together. In branch A,
 a check that certified the return is greater or equal to 0 is removed. In branch B, the boolean coupon is added to item and if an item
 is of type coupon, its value is removed rather than added. There is emergent behaviour in the merge, as coupons now allow carts of negative
 value to exist.
 
-\textbf{Conflict Type: Change Method}
+\subsubsection{Conflict Type: Change Method}
 
 The conflict arises due to the handling of checkout. In branch A, a check is added where if a user is of type admin,
-total\_cost() returns 0. In branch B a check is added in checkout(): if total\_cost is 0, a RuntimeException is thrown.
+\texttt{total\_cost} method returns 0. In branch B, a check is added in the \texttt{checkout} method: if \texttt{total\_cost} is 0, a runtime exception is thrown.
 Naturally these changes conflict in the merge.
 
-\textbf{Antlr, Conflict Type: Parallel Field}
+\subsection{Antlr}
 
-Antlr is much like Cart Parallel, but with additions instead of removals: it contains a String array called python2Keywords, which is returned as a set by
-getBadWords(). In branch A, the string "del" is added and in branch B, the string "return" is added. Thus in the merged version we will have a emergent version
-of the BadWords set, with different length and contents compared to both previous versions.
+\subsubsection{Conflict Type: Parallel Field}
 
-\textbf{OkHttp, Conflict Type: Parallel Method}
+Antlr is much like Cart (Parallel Field), but with additions instead of removals: it contains a String array called \texttt{python2Keywords}, which is returned as a set by the \texttt{getBadWords} method.
+In branch A, the string ``del'' is added and in branch B, the string ``return'' is added.
+Thus in the merged version we will have a emergent version of the \texttt{BadWords}
+set, with different length and contents compared to both previous versions.
+
+\subsection{OkHttp}
+
+\subsubsection{Conflict Type: Parallel Method}
 
 OkHttp provides an HTTP client. The class OkHttpClient configures and creates HTTP connections. This process involves
-the copyWithDefaults() method, which creates a shallow copy, using system defaults for fields which are not set. Both branches
-alter this method, one by changing how failedRoutes are handled and adding a field for transports, while the other replaces
-the default hostname verifier with a custom implementation, OkHostnameVerifier(). As a result, the copy returned on merge will
-be different from both branches, and this difference will trickle down into the initialization of HttpURLConnectionImpl, which
+the \texttt{copyWithDefaults} method, which creates a shallow copy, using system defaults for fields which are not set. Both branches
+modify this method, one by changing how \texttt{failedRoutes} are handled and adding a field for transports, while the other replaces
+the default hostname verifier with a custom implementation, \texttt{OkHostnameVerifier}. As a result, the copy returned on merge will
+be different from both branches, and this difference will trickle down into the initialization of \texttt{HttpURLConnectionImpl}, which
 as the copy as an argument.
 
-\textbf{Retrofit, Conflict Type: Parallel and Change Method}
+\subsection{Retrofit}
 
-Another HTTP client. Relevant to the conflict is the class RequestBuilder, which builds HTTP requests from Java method invocations. The methods altered
-in the conflict are build(), which returns a Request, as well as buildRelativeUrl(), which the former calls.
-Branch A only alters how request queries are handled, by adding the appropriate ? to the url when one is present.
-Branch B adds several checks for Null arguments for request query arguments, path parameters, form fields and multipart parts, throwing an exception or ignoring them
-as adequate.
-Both of these chances are integrated and as a result, the behaviour of Request construction is different in the merge.
+\subsubsection{Conflict Type: Parallel and Change Method}
 
-\section{Large language models}
+Another HTTP client. Relevant to the conflict is the class \texttt{RequestBuilder}, which builds HTTP requests from Java method invocations. The methods modified
+in the conflict are \texttt{build}, which returns a \texttt{Request}, and the method \texttt{buildRelativeUrl}, which the former calls\todo{confuso}.
+Branch A only modified how request queries are handled, by adding the appropriate \texttt{?} to the url when one is present.
+Branch B adds several checks for null arguments for request query arguments, path parameters, form fields and multipart parts, throwing an exception or ignoring them as adequate.
+Both of these chances are integrated and as a result, the behaviour of the construction of a \texttt{Request} is different in the merge.
+
+\section{Large Language Models (LLMs)}
 
 \todo{\begin{itemize}
   \item ChatGPT
@@ -141,9 +151,13 @@ The instance of ChatGPT used was the web-based ChatGPT 3.5 Turbo, with default t
   \item[\textbf{RQ1:}] Can ChatGPT identify, understand, and explain, whether
   there is a semantic conflict in a merge commit?
 
-  \item[\textbf{RQ2:}] Can ChatGPT develop unit tests to identify the emergent behaviour of to a semantic conflict, if given an explanation of it?
+  \item[\textbf{RQ2:}] Given an explanation of a semantic conflict in a merge
+  commit, can ChatGPT generate unit test case that are able to identify it?
+  % the emergent behaviour of to a semantic conflict, if given an explanation of it?
   
-  \item[\textbf{RQ3:}] Can state-of-the-art prompts develop unit tests to identify semantic conflicts, and how do they compare to the prompt developed for RQ2?
+  \item[\textbf{RQ3:}] Can state-of-the-art prompts lead ChatGPT to generate to
+  unit test cases that are able to identify semantic conflicts?  How do they
+  compare to the prompt used in RQ2?
 \end{itemize}
 
 \section{Experimental procedure}
