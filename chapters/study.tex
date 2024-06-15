@@ -1,7 +1,7 @@
 \chapter{Empirical study}\label{chap:study}
 
 This chapter describes the study conducted to assess the capabilities of LLMs
-(in particular, ChatGPT \todo{and Github Copilot}) at identifying, explaining,
+(in particular, ChatGPT and Github Copilot) at identifying, explaining,
 and revealing semantic conflicts in merge commits.
 % This chapter is divided into two phases: an initial exploratory phase, where an unstructured exploration allowed us to develop prompts, identify characteristics of the LLM and narrow down on its abilities and limitations.  In a second phase, work was systematized, with the elaboration of research questions and metrics to evaluate results.
 
@@ -49,7 +49,7 @@ Point consists of a simple class for a two dimensional point, with fields \textt
 Other than getters and setters, it's most relevant methods are \texttt{move} and \texttt{distance}.
 Originally, the method \texttt{move} increments both \texttt{x} and \texttt{y} by 1, while \texttt{distance} computes the euclidean distance to \texttt{(0,0)}.
 In branches A and B, \texttt{move} is modified to increment by \texttt{distance} while \texttt{distance} is modified to compute
-the manhattan distance.  The conflict then arises \todo{when code is merged?}.  \texttt{move} was modified with the expectation that it would move
+the manhattan distance.  The conflict then arises when code is merged.  \texttt{move} was modified with the expectation that it would move
 based on the euclidan distance, but with the merging of the other branch it will move differently.
 
 \subsection{Fabricated}
@@ -93,7 +93,7 @@ test generation.
 
 The base of this conflict has some alterations compared to the other Cart versions: a more full dictionary of discounts,
 a method to get the key set and a boolean method (\texttt{checkForDiscountRenewal}) that returns \texttt{true} or \texttt{false} whether the key set is less or equal than six.
-The changes correspond to the removal of a discount in line 1\todo{???} of the field, in branch A, and the removal of a discount in the last line, on branch B.
+The changes correspond to the removal of a discount in the first line of the field, in branch A, and the removal of a discount in the last line, on branch B.
 These merge correctly but emergent behaviour arises: the key set in merge is different from both the one in A and B.
 The boolean method further makes this evident.
 
