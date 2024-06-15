@@ -1,8 +1,9 @@
-\chapter{Empirical methodology}\label{chap:study}
+\chapter{Empirical study}\label{chap:study}
 
-The purpose of this chapter of work was to assess the capabilities of LLM to identify and test semantic conflicts.
-Thus, it was divided into two phases: an initial exploratory phase, where an unstructured exploration allowed us to develop prompts, identify characteristics of the LLM and narrow down on its abilities and limitations.
-In a second phase, work was systematized, with the elaboration of research questions and metrics to evaluate results.
+This chapter describes the study conducted to assess the capabilities of LLMs
+(in particular, ChatGPT \todo{and Github Copilot}) at identifying, explaining,
+and revealing semantic conflicts in merge commits.
+% This chapter is divided into two phases: an initial exploratory phase, where an unstructured exploration allowed us to develop prompts, identify characteristics of the LLM and narrow down on its abilities and limitations.  In a second phase, work was systematized, with the elaboration of research questions and metrics to evaluate results.
 
 \section{Experimental subjects}\label{chap:study:subjects}
 
@@ -11,130 +12,139 @@ In a second phase, work was systematized, with the elaboration of research quest
 % \tabcolsep=1cm
 % \renewcommand{\arraystretch}{0.90}
 \begin{tabular}{@{\extracolsep{\fill}} lll} \toprule
-                 & Real & Conflict \\
+                 & Real Conflict & Type of Conflict \\
 \midrule
 Point            & No  & Change Method \\
 Fabricated (RO)  & No  & Remove Override \\
 Fabricated (OAC) & No  & Overload by Access Change \\
-Cart (CM)        & No  & Change Method \\
 Cart (PF)        & No  & Parallel Field \\
 Cart (PM)        & No  & Parallel Method \\
+Cart (CM)        & No  & Change Method \\
 Antlr            & Yes & Parallel Field \\
 OkHttp           & Yes & Parallel Method \\
-Retrofit         & Yes & Parallel Method / Change Method \\
+Retrofit         & Yes & Parallel and Change Method \\
 \bottomrule
 \end{tabular}
 \caption{Subjects used in the empirical study.\label{tab:subjects}}
 \end{table}
 
+\todo{I would suggest we first mention the many benchmarks available, i.e.,
+(i) the ones used in \url{https://arxiv.org/abs/2310.02395} and
+(ii) the ones used by \citet{kn:nuno}.  Then explain and justify why we consider
+the ones used by \citet{kn:nuno}.}
+
 To assess the validity of a developed solution, a collection of subjects to test must be collected. While several previous work has compiled collections of merge commits with semantic conflicts, the collection done by \citet{kn:nuno} is particularly useful, being publicly available, closely related to our own work, and also allowing us to draw direct comparisons. Most importantly, it aggregates merge instances from both \citet{kn:leuson} and \citet{kn:safemerge}, while also providing valuable information, due to the work developed, such as the specific type of conflict present and whether it was detected and correctly tested by UNSETTLE (providing us with a ``base truth''). Furthermore, it has compiled a set of fabricated conflicts, which provide simpler isolated examples that can aid us as they should be easier to detect and test.
-In analyzing the work of Nuno Castanho, we found the predominant types of semantic conflicts in real scenarios where ``Parallel Changes in Field'', ``Parallel Changes in Method'' and ``Change Method'' \citet{kn:nuno}. Using a simple Cart class as a base, 3 examples were made for these scenarios.
-These Cart examples would be part of the group of subjects used to answer and evaluate the research questions we defined. These were complemented by a simple Point class, two examples fabricated by Nuno Castanho of type ``Override by Access Change'' and ``Remove Override'', which had achieved good results in exploratory testing, Antlr4 and OkHttp, respectively a simple and a hard to test real-world scenario.
-The collection of subjects and corresponding conflict type can be found in \Cref{tab:subjects}.
 
-It is worth examining each subject and it's corresponding conflict, to make understanding the results easier.
+In analyzing the work of Nuno Castanho, we found the predominant types of semantic conflicts in real scenarios where ``Parallel Changes in Field'', ``Parallel Changes in Method'', and ``Change Method'' \cite{kn:nuno}.  Using a simple Cart class as a base, 3 examples were made for these scenarios.
+These Cart examples would be part of the group of subjects used to answer and evaluate the research questions we defined. These were complemented by a simple Point class, two examples fabricated by Castanho of type ``Override by Access Change'' and ``Remove Override'', which had achieved good results in exploratory testing, Antlr4 and OkHttp, respectively a simple and a hard to test real-world scenario.
+The collection of subjects and corresponding type of conflict can be found in \Cref{tab:subjects}.
 
-\textbf{Point, Conflict Type: Change Method}
+% It is worth examining each subject and it's corresponding conflict, to make understanding the results easier.
 
-Point consists of a simple class for a two dimensional point, with fields X and Y.
-Other than getters and setters, it's most relevant methods are move() and distance().
-Originally move increments both x and y by 1, while distance calculates the euclidean distance to (0,0).
-In branches A and B, move() is altered to increment by distance() while distance() is altered ro calculate
-the manhattan distance. The conflict then arises: move() was altered with the expectation that it would move 
+\subsection{Point}
+
+\subsubsection{Conflict Type: Change Method}
+
+Point consists of a simple class for a two dimensional point, with fields \texttt{x} and \texttt{Y}.
+Other than getters and setters, it's most relevant methods are \texttt{move} and \texttt{distance}.
+Originally, the method \texttt{move} increments both \texttt{x} and \texttt{y} by 1, while \texttt{distance} computes the euclidean distance to \texttt{(0,0)}.
+In branches A and B, \texttt{move} is modified to increment by \texttt{distance} while \texttt{distance} is modified to compute
+the manhattan distance.  The conflict then arises \todo{when code is merged?}.  \texttt{move} was modified with the expectation that it would move
 based on the euclidan distance, but with the merging of the other branch it will move differently.
 
-\textbf{Fabricated}
+\subsection{Fabricated}
 
-This fabricated program revolves around events: ticketing, scheduling, installations, etc. The two
-conflicts that make the two subjects relate to different parts of the program.
+The Fabricated subject revolves around events: ticketing, scheduling, installations, etc. The two
+conflicts that make the two subjects relate to different parts of the code.
 
-\textbf{Conflict Type: Remove Override}
+\subsubsection{Conflict Type: Remove Override}
 
-The classes involved in the conflict are Instalacao and InstalacaoAssentos, which extends the former.
-Of is the method helpString(), which returns a string with class information. This method is present
-in both classes with different implementations (thus InstalacaoAssentos overrides). In branch A,
-hashString() is introduced in InstalacaoAssentos: it takes helpString() and hashes it. In branch B,
-the helpString() from InstalacaoAssentos is deleted. Thus the conflict arises because in the merge,
-hashString() will be  calling the helpString() from Instalacao and the has values returned will be different.
+The classes involved in the conflict are \texttt{Instalacao} and \texttt{InstalacaoAssentos}, which extends the former.
+Of is the method \texttt{helpString}, which returns a string with class information.  This method is present
+in both classes with different implementations (thus \texttt{InstalacaoAssentos} overrides it). In branch A,
+\texttt{hashString} is introduced in \texttt{InstalacaoAssentos}: it takes \texttt{helpString} and hashes it. In branch B,
+the \texttt{helpString} from \texttt{InstalacaoAssentos} is deleted. Thus, the conflict arises because in the merge,
+\texttt{hashString} will be calling the \texttt{helpString} from \texttt{Instalacao} and the has values returned will be different.
 
-\textbf{Conflict Type: Overload By Access Change}
+\subsubsection{Conflict Type: Overload By Access Change}
 
-The classes involved are Event and Producer, where the former has a ManyToOne relationship with the latter.
-In Producer, there are two methods: setResgistration(Integer) and setResgistration(int). The former sets
-the producer's registrationNumber to the intValue() of the Integer + 10. The latter just sets the given value.
-In branch A, the int version of the method is made private. In branch B, a setProducerNumber(int) function is added
-to Event: it checks if the Producer is null and if not, calls setResgistration with the given value. In B, this will
-call the int version of the method, as it is still public, but after the merge, the Integer version will be used instead,
+The classes involved are \texttt{Event} and \texttt{Producer}, where the former has a ManyToOne relationship with the latter.
+In \texttt{Producer}, there are two methods: \texttt{setResgistration(Integer)} and \texttt{setResgistration(int)}. The former sets
+the producer's \texttt{registrationNumber} to the \texttt{intValue()} of the \texttt{Integer + 10}. The latter just sets the given value.
+In branch A, the \texttt{int} version of the method is made private. In branch B, a \texttt{setProducerNumber(int)} function is added
+to \texttt{Event}: it checks if the \texttt{Producer} is null and if not, calls \texttt{setResgistration} with the given value. In B, this will
+call the \texttt{int} version of the method, as it is still public, but after the merge, the \texttt{Integer} version will be used instead,
 hence the conflict.
 
-\textbf{Cart}
+\subsection{Cart}
 
 Cart consists of a simple class representing a shopping cart, with auxiliary classes for users and items.
 Its fields correspond to a dictionary of discounts, with string associated to doubles, a list of items in the cart
 and the associated user.
 It has the appropriate methods to add items to the cart, calculate the cart value, and checkout with a given discount code,
 subtracting the value from the user's balance.
-Cart has some pecularities which may differ from real-world classes of the same type. These include the fact that checkout 
-requires a discont code as an argument (there is no checkout without discount)and that items can only be added one by one, without
-any way to add a collection all at once. Notably their auxiliary classes contained only public fields, with no getters and setters, as
+Cart has some pecularities which may differ from real-world classes of the same type. These include the fact that checkout
+requires a discont code as an argument (there is no checkout without discount) and that items can only be added one by one, without
+any way to add a collection all at once.  Notably their auxiliary classes contained only public fields, with no getters and setters, as
 well as lacking expected fields such as String type ``name'' fields. These divergences from the norm came to matter when it came to
 test generation.
 
-\textbf{Conflict Type: Parallel Field}
+\subsubsection{Conflict Type: Parallel Field}
 
 The base of this conflict has some alterations compared to the other Cart versions: a more full dictionary of discounts,
-a method to get the key set and a boolean method (checkForDiscountRenewal) that returns true or false whether the key set is less or equal than 6.
-The changes correspond to the removal of a discount in line 1 of the field, in branch A, and the removal of a discount in the last line, on branch B.
+a method to get the key set and a boolean method (\texttt{checkForDiscountRenewal}) that returns \texttt{true} or \texttt{false} whether the key set is less or equal than six.
+The changes correspond to the removal of a discount in line 1\todo{???} of the field, in branch A, and the removal of a discount in the last line, on branch B.
 These merge correctly but emergent behaviour arises: the key set in merge is different from both the one in A and B.
 The boolean method further makes this evident.
 
-\textbf{Conflict Type: Parallel Method}
+\subsubsection{Conflict Type: Parallel Method}
 
 The changes relate to the sum\_items() method. At the start, it just goes trough the items in the list and sums together. In branch A,
 a check that certified the return is greater or equal to 0 is removed. In branch B, the boolean coupon is added to item and if an item
 is of type coupon, its value is removed rather than added. There is emergent behaviour in the merge, as coupons now allow carts of negative
 value to exist.
 
-\textbf{Conflict Type: Change Method}
+\subsubsection{Conflict Type: Change Method}
 
 The conflict arises due to the handling of checkout. In branch A, a check is added where if a user is of type admin,
-total\_cost() returns 0. In branch B a check is added in checkout(): if total\_cost is 0, a RuntimeException is thrown.
+\texttt{total\_cost} method returns 0. In branch B, a check is added in the \texttt{checkout} method: if \texttt{total\_cost} is 0, a runtime exception is thrown.
 Naturally these changes conflict in the merge.
 
-\textbf{Antlr, Conflict Type: Parallel Field}
+\subsection{Antlr}
 
-Antlr is much like Cart Parallel, but with additions instead of removals: it contains a String array called python2Keywords, which is returned as a set by
-getBadWords(). In branch A, the string "del" is added and in branch B, the string "return" is added. Thus in the merged version we will have a emergent version
-of the BadWords set, with different length and contents compared to both previous versions.
+\subsubsection{Conflict Type: Parallel Field}
 
-\textbf{OkHttp, Conflict Type: Parallel Method}
+Antlr is much like Cart (Parallel Field), but with additions instead of removals: it contains a String array called \texttt{python2Keywords}, which is returned as a set by the \texttt{getBadWords} method.
+In branch A, the string ``del'' is added and in branch B, the string ``return'' is added.
+Thus in the merged version we will have a emergent version of the \texttt{BadWords}
+set, with different length and contents compared to both previous versions.
+
+\subsection{OkHttp}
+
+\subsubsection{Conflict Type: Parallel Method}
 
 OkHttp provides an HTTP client. The class OkHttpClient configures and creates HTTP connections. This process involves
-the copyWithDefaults() method, which creates a shallow copy, using system defaults for fields which are not set. Both branches
-alter this method, one by changing how failedRoutes are handled and adding a field for transports, while the other replaces
-the default hostname verifier with a custom implementation, OkHostnameVerifier(). As a result, the copy returned on merge will
-be different from both branches, and this difference will trickle down into the initialization of HttpURLConnectionImpl, which
+the \texttt{copyWithDefaults} method, which creates a shallow copy, using system defaults for fields which are not set. Both branches
+modify this method, one by changing how \texttt{failedRoutes} are handled and adding a field for transports, while the other replaces
+the default hostname verifier with a custom implementation, \texttt{OkHostnameVerifier}. As a result, the copy returned on merge will
+be different from both branches, and this difference will trickle down into the initialization of \texttt{HttpURLConnectionImpl}, which
 as the copy as an argument.
 
-\textbf{Retrofit, Conflict Type: Parallel and Change Method}
+\subsection{Retrofit}
 
-Another HTTP client. Relevant to the conflict is the class RequestBuilder, which builds HTTP requests from Java method invocations. The methods altered
-in the conflict are build(), which returns a Request, as well as buildRelativeUrl(), which the former calls.
-Branch A only alters how request queries are handled, by adding the appropriate ? to the url when one is present.
-Branch B adds several checks for Null arguments for request query arguments, path parameters, form fields and multipart parts, throwing an exception or ignoring them
-as adequate.
-Both of these chances are integrated and as a result, the behaviour of Request construction is different in the merge.
+\subsubsection{Conflict Type: Parallel and Change Method}
 
-\section{Large language models}
+Another HTTP client. Relevant to the conflict is the class \texttt{RequestBuilder}, which builds HTTP requests from Java method invocations. The methods modified
+in the conflict are \texttt{build}, which returns a \texttt{Request}, and the method \texttt{buildRelativeUrl}, which the former calls\todo{confuso}.
+Branch A only modified how request queries are handled, by adding the appropriate \texttt{?} to the url when one is present.
+Branch B adds several checks for null arguments for request query arguments, path parameters, form fields and multipart parts, throwing an exception or ignoring them as adequate.
+Both of these chances are integrated and as a result, the behaviour of the construction of a \texttt{Request} is different in the merge.
 
-{\begin{itemize}
-  \item ChatGPT
-  \item GitHub Copilot on IntelliJ IDE
-\end{itemize}}
+\section{Large Language Models (LLMs)}
 
-While preliminary work sought to explore ChatGPT and Llama (both CodeLlama and Llama 2), hardware constraints, particularly limited GPU RAM in the machines at our disposal, meant we were unable to explore Llama.  Bing AI and Bard were also considered, but they were problematic due to very stringent message size limits, in the case of Bard, and generally worse results: Bing AI, for example, could not wait for all the information to be sent, if split in more than one message and thus generated confused responses. ChatGPT, being hosted online for free and with generous message size limits, proved to be the most reliable option. Despite this, many capabalities that could prove invaluable for this work remained locked behind a premium paywall.
+While preliminary work sought to explore ChatGPT\todo{cite} and Llama\todo{cite} (both CodeLlama and Llama 2), hardware constraints, particularly limited GPU RAM in the machines at our disposal, meant we were unable to explore Llama.  Bing AI\todo{cite} and Bard\todo{cite} were also considered, but they were problematic due to very stringent message size limits, in the case of Bard, and generally worse results: Bing AI, for example, could not wait for all the information to be sent, if split in more than one message and thus generated confused responses. ChatGPT, being hosted online for free and with generous message size limits, proved to be the most reliable option. Despite this, many capabalities that could prove invaluable for this work remained locked behind a premium paywall.
 The instance of ChatGPT used was the web-based ChatGPT 3.5 Turbo, with default temperature, during the first semester of 2024.
-The version of GitHub Copilot was Version 1.5.6.5692.
+The version of GitHub Copilot was version 1.5.6.5692.
 
 \section{Research questions}
 
@@ -142,12 +152,16 @@ The version of GitHub Copilot was Version 1.5.6.5692.
   \item[\textbf{RQ1:}] Can ChatGPT identify, understand, and explain, whether
   there is a semantic conflict in a merge commit?
 
-  \item[\textbf{RQ2:}] Can ChatGPT develop unit tests to identify the emergent behaviour of to a semantic conflict, if given an explanation of it?
-  
-  \item[\textbf{RQ3:}] Can state-of-the-art prompts develop unit tests to identify semantic conflicts, and how do they compare to the prompt developed for RQ2?
+  \item[\textbf{RQ2:}] Given an explanation of a semantic conflict in a merge
+  commit, can ChatGPT generate unit test case that are able to identify it?
+  % the emergent behaviour of to a semantic conflict, if given an explanation of it?
+
+  \item[\textbf{RQ3:}] Can state-of-the-art prompts lead ChatGPT to generate to
+  unit test cases that are able to identify semantic conflicts?  How do they
+  compare to the prompt used in RQ2?
 \end{itemize}
 
-\section{Experimental procedure}
+\section{Experimental procedure and metrics}
 
 \subsection{RQ1}
 
@@ -184,7 +198,7 @@ Point subject, where a conflict is introduced by the simultaneous change of
 euclidean to manhattan distance followed by the usage of the same distance method
 in another method.
 \begin{prompt}
-You are a software developer that has to assess whether there is a semantic conflict in a merge commit.  Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, assess whether there is a semantic conflict and explain it. 
+You are a software developer that has to assess whether there is a semantic conflict in a merge commit.  Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, assess whether there is a semantic conflict and explain it.
 
 Base version:
 ```java
@@ -291,30 +305,30 @@ public class Point {
 %
 % \begin{response}
 % To assess whether there is a semantic conflict in the merge commit, let's analyze the changes introduced in versions A and B compared to the base version, and then compare them with the merged version.
-% 
+%
 % ### Changes introduced in Version A:
 % - The `move()` method has been modified to calculate the distance using the `distance()` method and then update the `x` and `y` coordinates accordingly.
 % - This change effectively moves the point by the distance it currently is from the origin.
-% 
+%
 % ### Changes introduced in Version B:
 % - The `distance()` method has been modified to calculate the Manhattan distance instead of the Euclidean distance.
 % - The Manhattan distance is calculated by taking the absolute value of the x and y differences.
-% 
+%
 % ### Analysis of Merged Version:
 % - The `move()` method from Version A has been kept in the merged version, which calculates the distance using the Euclidean distance.
 % - The `distance()` method from Version B has been kept, which calculates the Manhattan distance.
-% 
+%
 % ### Potential Semantic Conflict:
 % - The potential conflict arises from the inconsistency between how distance is calculated in the `move()` method and the `distance()` method in the merged version.
 % - While the `move()` method assumes Euclidean distance for movement, the `distance()` method calculates the Manhattan distance.
 % - This inconsistency could lead to unexpected behavior, as the `move()` method might not accurately reflect the intended behavior of the `distance()` method.
-% 
+%
 % ### Conclusion:
 % - There is a semantic conflict in the merge commit because the merged version contains methods with conflicting assumptions about how distance should be calculated.
 % - Resolving this conflict would require ensuring consistency in the distance calculation method used throughout the class, either sticking with Euclidean distance or Manhattan distance for both `move()` and `distance()` methods.
 % \end{response}
 
-To evaluate the answers generated by ChatGPT, we established five metrics, with likert scales:
+To evaluate the answers generated by ChatGPT, we established five metrics (A--E), each with likert scales.
 %
 \begin{itemize}
   \item[\textbf{A}:] Changes between branches correctly identified (Correct description of Version A and B).
@@ -361,13 +375,16 @@ To evaluate the answers generated by ChatGPT, we established five metrics, with 
 
 \subsection{RQ2}
 
-Research Question 2 sought to evaluate chatGPT's test generation ability. Specifically, whether it could generate tests that would show the evidence the semantic conflict, given an explanation.
-For example, taking the Point, if ChatGPT generates a unit test that tests the move() method, we would identify the conflict by generating a test that passes in merge but fails in branch A and branch B, corresponding to the definition of emergent behaviour~citet{kn:nuno}.
-In this case it would show us the altered behaviour of move() due to the conflict.
+In this research question we sought to evaluate ChatGPT's test generation ability. Specifically, whether it could generate tests that would show the evidence the semantic conflict, given an explanation.
+For example, taking the Point, if ChatGPT generates a unit test that tests the \texttt{move} method, we would identify the conflict by generating a test that passes in merge but fails in branch A and branch B, corresponding to the definition of emergent behaviour (see \citet{kn:nuno} for more information).
+In this case it would show us the altered behaviour of \texttt{move} due to the conflict.
 
+\todo{Before the following text, say that it is known that code and/or tests
+generated by ChatGPT have syntatic errors.  Point the readers to some papers
+that describe those errors.  Then, explain what we did to fix those errors.}
 To evaluate the tests, corrections are made. These involve the smallest possible corrections to make the code compile and pass in merge, by correcting failing asserts.
 
-We evaluate by observing whether a functional unit test is generated and if not, the edit distance to a functioning version of one test. For failing tests, we also note which error led to the failure of compilation or test. The liste types are:
+We evaluate by observing whether a functional\todo{syntatically correct?} unit test is generated and if not, the edit distance to a functioning version of one test. For failing tests, we also note which error led to the failure of compilation or test. The liste types are:
 \begin{itemize}
   \item Assert: The logic of the test makes sense, but the value of the assertion is incorrect.
   \item Constructor: The test fails to compile because an Object is incorrectly constructed.
@@ -376,10 +393,11 @@ We evaluate by observing whether a functional unit test is generated and if not,
   \item Other: Assorted errors in test logic or method calls.
 \end{itemize}
 These allow us to further evaluate how the prompting can be improved and if these errors can be fixed.
+\todo{Falta explicar como computas a tal edit distance.  Explica é dá um exemplo.}
 
 The basic structure of the prompt follows:
 \begin{prompt}
-You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit. 
+You are a software developer that has to write a set of JUnit test cases to trigger a semantic conflict that has been identified in a merge commit.
 Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, and an explanation of the existing semantic conflict, generate the appropriate JUnit test cases that trigger the conflict.
 
 Base version:
@@ -399,34 +417,30 @@ Merge version:
 ```
 
 Explanation of the semantic conflict:
-Generate just code with necessary imports. No explanation needed.  
+Generate just code with necessary imports. No explanation needed.
 \end{prompt}
 Two versions of the prompt were run, each with three trials: in the first, the explanation was manually written, whereas in the highest performance answer from ChatGPT in RQ1 was used.
 This way it could be evaluated to what extent this influence test generation results.
 
-Testing of the subjects was done on the basis of identifying emergent behaviour: this involves the generation of unit tests that 
+Testing of the subjects was done on the basis of identifying emergent behaviour: this involves the generation of unit tests that
 pass in merge and fail in the parent branches (or one branch fails to compile)~\citep{kn:nuno}. This identifies the conflict by
 asserting the behaviour present in merge that was not present before, ie, emerges.
 
 \subsection{RQ3}
 
-Research Question 3 seeks to assess the relevance of our developed work by assessing the generative abilities of previous state-of-the-art prompts,
-which just generate tests for methods, with no conflict information, as well as Github Copilot. This will allow us to consider to what extent this feature affects test generation.
+In this research question we seek to assess the relevance of our developed work by assessing the generative abilities of previous state-of-the-art prompts, which just generate tests for methods, with no conflict information, as well as Github Copilot. This will allow us to consider to what extent this feature\todo{which feature?} affects test generation.
 
-We took four prompts:
+We defined four prompts:
 \begin{itemize}
-  \item Prompt 1, from ``No More Manual Tests? Evaluating and Improving ChatGPT for Unit Test Generation''by ~\citet{kn:chattester}
-  \item Prompt 2, from ``Using Large Language Models to Generate JUnit Tests: An Empirical Study''by ~\citet{kn:siddiq2023empirical}
-  \item Prompt 3, from ``ChatUniTest: A Framework for LLM-Based Test Generation''by~\citet{kn:chatunitest}
-  \item Prompt 4 also took the second part of Prompt 2, the test skeleton, but instead used Github Copilot for completion.
+  \item Prompt \#1: From ``No More Manual Tests? Evaluating and Improving ChatGPT for Unit Test Generation'' by ~\citet{kn:chattester}.
+  \item Prompt \#2: From ``Using Large Language Models to Generate JUnit Tests: An Empirical Study'' by ~\citet{kn:siddiq2023empirical}.
+  \item Prompt \#3: From ``ChatUniTest: A Framework for LLM-Based Test Generation'' by~\citet{kn:chatunitest}.
+  \item Prompt \#4: Second part of prompt 2, the test skeleton, but instead used Github Copilot for completion.
 \end{itemize}
-
-3 trials were run for Prompt 1 and Prompt 3, whereas Prompt 2 and 4 only had one as they showed no variation (due to temperature).
-
-We evaluated the prompts in two steps: in a first step we observed if they compiled and in case they did, if the test generated were passing.
-
-In a second step, we examined the test logic itself to see if the tests can potentially identify the semantic conflict, if the same type of simple corrections
-applied in RQ2 were applied.
+%
+We then ran three trials were run for Prompt \#1 and Prompt \#3, whereas Prompt \#2 and \#4 only had one as they showed no variation (due to no temperature).
+We evaluated the prompts in two steps: in a first step we observed if they compiled\todo{the prompt or the generated tests? it is not clear} and in case they did, if the test generated were passing.
+In a second step, we examined the test logic itself to see if the tests can potentially identify the semantic conflict, if the same type of simple corrections applied in RQ2 were applied.
 
 \section{Threats to validity}
 
@@ -440,16 +454,15 @@ are described in detail in this section.
 \subsection{Threats to construct validity}
 
 We recognize the threat to construct validity played by the prompts we developed, as it is possible they were not appropriate for the research questions
-we defined. We mitigated this by exploring several techniques before settling on the prompts we defined, but other techniques might have yielded better
+we defined. We mitigated this by exploring several techniques \todo{e talvez dizer que as prompts sao de alguma forma baseadas nas prompts descritas no estado-da-arte} before settling on the prompts we defined, but other techniques might have yielded better
 results.
 
 \subsection{Threats to internal validity}
 
-Internal validity may have influenced by human errors, such as minor errors in prompts or mistakes in the collection and writing down of results.
-We mitigated this with frequent revisions and several mistakes were caught.
+Internal validity may have influenced by human errors, such as minor errors in prompts or mistakes in the collection and computation of results.
+We mitigated this with frequent internal revisions. % and several mistakes were caught.
 
 \subsection{Threats to external validity}
 
-A main threat to external validity was our reliance to ChatGPT-3.5 Turbo and GitHub Copilot. While we made efforts to investigate other LLMs
-we were constrained by hardware and financial limitations. Thus these results are not necessarily generalizable and further study would be required
-to see how other models compare.
+A main threat to external validity was our reliance to the LLMs used, i.e., ChatGPT-3.5 Turbo and GitHub Copilot. While we made efforts to investigate other LLMs
+we were constrained by hardware and financial limitations. Thus, these results are not necessarily generalizable and further study would be required to see how other models compare.  Nevertheless, \todo{this two somehow represent the state-of-art}
