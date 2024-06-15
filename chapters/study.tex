@@ -135,7 +135,7 @@ as the copy as an argument.
 \subsubsection{Conflict Type: Parallel and Change Method}
 
 Another HTTP client. Relevant to the conflict is the class \texttt{RequestBuilder}, which builds HTTP requests from Java method invocations. The methods modified
-in the conflict are \texttt{build}, which returns a \texttt{Request}, and the method \texttt{buildRelativeUrl}, which the former calls\todo{confuso}.
+in the conflict are \texttt{build}, which returns a \texttt{Request}, and the method \texttt{buildRelativeUrl}, which is invoked inside of \texttt{build}.
 Branch A only modified how request queries are handled, by adding the appropriate \texttt{?} to the url when one is present.
 Branch B adds several checks for null arguments for request query arguments, path parameters, form fields and multipart parts, throwing an exception or ignoring them as adequate.
 Both of these chances are integrated and as a result, the behaviour of the construction of a \texttt{Request} is different in the merge.
