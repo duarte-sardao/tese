@@ -386,26 +386,34 @@ To evaluate the tests, corrections are made. These involve the smallest possible
 For example, given the following generated test:
 \begin{response}
   @Test
-  public void testAdminCheckout() {
-      User adminUser = new User(true, 100); // Admin user with balance 100
-      Cart cart = new Cart(adminUser);
-      cart.add_item(new Item(1, 10)); // Add an item with value 10
-      assertDoesNotThrow(() -> cart.checkout("loyal")); // Should not throw an exception
+  public void testSetProducerNumber() {
+      Event event = new Event();
+      Producer producer = new Producer();
+      producer.setRegistrationNumber(123); // Set registration number
+      event.setProducer(producer);
+      int expected = 123;
+      int result = event.setProducerNumber(456); // Try to set different registration number
+      assertEquals(expected, result);
   }
 \end{response}
 We apply the corrections and achieve this test:
 \begin{response}
   @Test
-  public void testAdminCheckout() {
-      User adminUser = new User(true);
-      Cart cart = new Cart(adminUser);
-      cart.add_item(new Item(1, 10)); // Add an item with value 10
-      assertThrows(RuntimeException.class, () -> cart.checkout("loyal"));
+  public void testSetProducerNumber() {
+      Event event = new Event();
+      Producer producer = new Producer();
+      producer.setResgistrationNumber(123); // Set registration number
+      event.setProducer(producer);
+      int expected = 466;
+      int result = event.setProducerNumber(456); // Try to set different registration number
+      assertEquals(expected, result);
   }
 \end{response}
-Here, we correct a broken constructors, which had an extra parameter not present in the class definition and invert the assertDoesNotThrow
-into an assertThrows, to match the behaviour in the merge commit. From this we calculate the edit distance, which corresponds to the Levenshtein Distance, excluding comments.
-In this case, it is 33.
+Here, we fix a method call, which in correcting a typo in the code tried to call a non-existent function and ammend the value to be used in the assertion.
+Other common edits were ammending constructor calls with extra parameters or replacing getter calls for getters which did not exist with direct accesses.
+
+From this we calculate the edit distance, which corresponds to the Levenshtein Distance, excluding comments.
+In this case, it is 4.
 
 We evaluate by observing whether a syntatically correct and passing unit test is generated and if not, the edit distance to a functioning version of one test. For failing tests, we also note which error led to the failure of compilation or test. The types are:
 \begin{itemize}
