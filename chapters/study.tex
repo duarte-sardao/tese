@@ -428,7 +428,7 @@ asserting the behaviour present in merge that was not present before, ie, emerge
 
 \subsection{RQ3}
 
-In this research question we seek to assess the relevance of our developed work by assessing the generative abilities of previous state-of-the-art prompts, which just generate tests for methods, with no conflict information, as well as Github Copilot. This will allow us to consider to what extent this feature\todo{which feature?} affects test generation.
+In this research question we seek to assess the relevance of our developed work by assessing the generative abilities of previous state-of-the-art prompts, which just generate tests for methods, with no conflict information, as well as Github Copilot. This will allow us to consider to what extent the usage of another LLM affects test generation.
 
 We defined four prompts:
 \begin{itemize}
@@ -439,7 +439,7 @@ We defined four prompts:
 \end{itemize}
 %
 We then ran three trials were run for Prompt \#1 and Prompt \#3, whereas Prompt \#2 and \#4 only had one as they showed no variation (due to no temperature).
-We evaluated the prompts in two steps: in a first step we observed if they compiled\todo{the prompt or the generated tests? it is not clear} and in case they did, if the test generated were passing.
+We evaluated the prompts in two steps: in a first step we observed if the generated tests compiled and in case they did, if the test generated were passing.
 In a second step, we examined the test logic itself to see if the tests can potentially identify the semantic conflict, if the same type of simple corrections applied in RQ2 were applied.
 
 \section{Threats to validity}
