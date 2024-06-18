@@ -1,9 +1,13 @@
-    \chapter{Experimental results}\label{chap:results}
+\chapter{Experimental results}\label{chap:results}
 
-This chapters answers \textbf{RQ1 – RQ3}, which study ChatGPT's ability to identify and generate tests for semantic conflict, the latter
-with both our prompt, which provides an explanation, and state-of-the-art prompts, which do not.
+This chapters answers \textbf{RQ1 -- RQ3}, which aim to study ChatGPT's ability to identify, explain, and reveal semantic conflicts. % the latter with both our prompt, which provides an explanation, and state-of-the-art prompts, which do not.
 
-\section{RQ1}\label{sec:results:rq1}
+\section{RQ1: Can ChatGPT identify, understand, and explain, whether there is a semantic conflict in a merge commit?}\label{sec:results:rq1}
+
+\todo{Jose: I would suggest to organize this section in three subsection:
+one to report the results regarding identification of the conflict,
+another one to report whether ChatGPT understands the conflict,
+and another to report whether ChatGPT is capable of explaining the conflict.}
 
 \begin{table}[t]
 \centering
@@ -31,11 +35,11 @@ Retrofit (PM/CM) & 1.0 & 1.0 & 1.0 & 0.0 & 0.0 \\
 \Cref{tab:results:rq1} summarizes the metrics achieved per subject. From these we can note that:
 
 \begin{itemize}
-  \item \textbf{ChatGPT is generally able to identify changes made between branches} ($A=2.4$).
+  \item Overall, \textbf{ChatGPT identifies changes made between branches} ($A=2.4$).
 
-  \item \textbf{In none of the subject did the tool mistake the kind of conflict under discussion} ($B=1.0$). This might be because the prompt did not assert the existence of a conflict, allowing negative responses, whereas other prompts, which asked to find a conflict that did exist, lead the model to find any explanation, which often consisted of describing a textual conflict.
+  \item \textbf{In none of the subject did the tool mistake the kind of conflict under discussion}\todo{I don't understand it, try to re-write it} ($B=1.0$). This might be because the prompt did not assert the existence of a conflict, allowing negative responses, whereas other prompts, which asked to find a conflict that did exist, lead the model to find any explanation, which often consisted of describing a textual conflict.
 
-  \item \textbf{Conflict assertion remains uncertain}. ($C=0.9$) In many cases, particularly those of PF type, no conflict as identified. In many other cases it was found but with uncertainty, e.g., with words such as ``possible'', and ``might''.
+  \item \textbf{Conflict assertion remains uncertain}. ($C=0.9$) In many\todo{how many?} cases, particularly those of PF type, no conflict as\todo{was? were? has been?} identified. In many\todo{how many?} other cases, it was found but with uncertainty, e.g., with words such as ``possible'', and ``might''.
 
   \item \textbf{On average, it can identify what originates conflicts} ($D=1.1$).  Despite the range given, values given to the metric were either 0 or 3. This indicates to us in nearly half the cases, the model failed to produce any accurate description, but when it did, it was generally very accurate.
 
@@ -46,7 +50,7 @@ The complete prompts, with results and evaluated metrics, can be found in the at
 An important observation to make is the variability of results, which highlights the importance of running three trials for our evaluation.
 For example, the point class had high variation: two of the results failed to identify any conflict at all, but one of the three not only identified, but quite accurately describe its origin and results.
 
-In the more complex fabricated examples, the biggest issue was the identification of the effects of the semantic conflict, namely that when an overriden function was removed or had its access changed, the other function, with different behaviour, would be used instead. However, given the constraints of the prompt, which is limited to one class, the necessary information could not be transmitted and the LLM argued there would be compilation errors. 
+In the more complex fabricated examples, the biggest issue was the identification of the effects of the semantic conflict, namely that when an overriden function was removed or had its access changed, the other function, with different behaviour, would be used instead. However, given the constraints of the prompt, which is limited to one class, the necessary information could not be transmitted and the LLM argued there would be compilation errors.
 Better results were observed when doing more manual, ad-hoc experiments, as we could identify exactly all the classes involved in the conflict and offer all the required information.
 
 As we proceeded testing the ``Cart'' scenario, we observed a reversal of a trend of very low results for the E metric, particularly for CM and PM.
@@ -58,20 +62,20 @@ In a scenario where detection failed we see an example of the LLM providing a gr
 \begin{response}
 ### Explanation:
 The conflict arises because both changes affect the same field (`hostnameVerifier`), but they prescribe different default values.
-    
+
 In the merge commit, the decision was made to adopt the change from Version B, which explicitly sets the default `hostnameVerifier` to `OkHostnameVerifier()`. This decision potentially overrides any behavior or configuration related to the default `hostnameVerifier` set in Version A.
-    
+
 If the intended behavior was to preserve the default `hostnameVerifier` as defined in Version A, then this would be considered a semantic conflict, as the behavior of the merged version may differ from the behavior of either Version A or Version B individually.
 \end{response}
 In this case, the changes made in only one branch are described as a conflict.
 
-Another case of wrong information given by ChatGPT regarded the changes made, both in Cart(PF), which 
+Another case of wrong information given by ChatGPT regarded the changes made, both in Cart(PF), which
 correctly describes the removal but incorrectly counts:
 \begin{response}
     1. **Diff Version A**:
     - It removes two discount codes, `"superpromo"` and `"winner"`.
     - This version retains 6 discount codes.
- 
+
  2. **Diff Version B**:
     - It removes one discount code, `"winner"`.
     - This version also retains 6 discount codes.
@@ -80,19 +84,19 @@ As well as Antlr, which fails to accurately describe the changes made:
 \begin{response}
 1. **Diff A vs Base:**
     - In version A, the `reduce` keyword was replaced with `return` in the `python2Keywords` array.
- 
+
 2. **Diff B vs Base:**
     - In version B, the `del` keyword was added to the `python2Keywords` array.
 -------------------------------------------------------------------------------
 1. **Diff A vs. Base**:
     - Addition of `"return"` keyword in the `python2Keywords` array.
     - No conflicting changes with other methods or properties.
- 
+
 2. **Diff B vs. Base**:
     - Replacement of `"delattr"` with `"del"` in the `python2Keywords` array.
     - No conflicting changes with other methods or properties.
 \end{response}
-We observed both of these are ``Parallel Field'' semantic conflicts so it is possible the fact that the changes are being made to fields may have some relation to its inability to express them correctly. 
+We observed both of these are ``Parallel Field'' semantic conflicts so it is possible the fact that the changes are being made to fields may have some relation to its inability to express them correctly.
 Further credence to this involves Cart (PM), where edits to the field of an auxiliary class also were misdescribed.
 In contrast stands Retrofit: while ChatGPT reliably failed to correctly describe the changes, no edits were made to fields. From observation, we can say these errors may be due
 to the fact that the changes are similar and repeated across two complex methods, for branch B. We still see major misdescriptions for branch A, which is relatively simple, with a simple addition of an append to a string.
@@ -101,9 +105,9 @@ We see examples of aspects of branch B being assigned to it, and then those same
     1. In `buildRelativeUrl()`:
     - Version A adds a null check for path parameters and throws an `IllegalArgumentException` if any of them are null. This ensures that path parameters are not null, which could lead to unexpected behavior or errors.
     - Version B also adds a null check for path parameters but handles it differently. Instead of throwing an exception, it continues execution. This could lead to inconsistencies if the application logic relies on path parameters being non-null.
- 
+
  2. In `buildBody()`:
-    - Both versions A and B have added null checks for the body parameter in the `SIMPLE` case. This ensures that the body is not null before proceeding with further processing. However, the behavior is consistent between the two versions. 
+    - Both versions A and B have added null checks for the body parameter in the `SIMPLE` case. This ensures that the body is not null before proceeding with further processing. However, the behavior is consistent between the two versions.
 \end{response}
 
 Like with Antlr and Retrofit, OkHttp generated no conclusive answers. In particular it tended to offer advice on how identify and diagnose semantic conflicts and make good merges. This is a behaviour that was also observed with other complex, real-world conflicts, during the period of ad-hoc testing.
@@ -120,7 +124,7 @@ Looking at the changes introduced in versions A and B, there does not seem to be
 However, when merging both changes, we need to ensure that the introduced hostname verifier (`OkHostnameVerifier`) is consistent with the overall configuration of the `OkHttpClient`. Specifically, we need to verify whether `OkHostnameVerifier` is compatible with the behavior and expectations of the existing codebase.
 \end{response}
 
-Evaluating the results as a whole, it is worth imagining in which way the types of conflicts affect the model's capabilities. 
+Evaluating the results as a whole, it is worth imagining in which way the types of conflicts affect the model's capabilities.
 As observed earlier, it seem that Parallel Field conflicts induce errors in branch change description. They also fail to identify the conflict but this seems unrelated to failures of both description:
 both cases with succesful and failing descriptions failed to produce conflict identification. Indeed, this was the case, we would expect some description of a conflict, with the same imprecisions, whereas
 for our PF cases no conflict was even considered to exist. Our hypothesis is that the conflict is far too simple to be detected: in both cases some type of collection is altered, either with insertions or removals.
@@ -143,29 +147,34 @@ two of the answers for OkHttp accept the possibility, arguing that more study ne
 Further work should thus tackle this: on one hand exploring how to provide a better understanding of semantic conflicts, specifically that emergent behaviour is the result of semantic conflict, even if it does not introduce an apparent bug, software vault or unexpected behaviour.
 On the other hand, real-world scenario with complex dependencies, large classes with varied functions, inheritance and other features complicates detection and more complex prompts, data extraction and presentation are likely required.
 
-\section{RQ2}\label{sec:results:rq2}
 
-\Cref{tab:results:rq2} summarizes the results achieved, split by conflict and evaluation type.
-These list the passing tests, after edits, the average edit distance to tests that compile and pass in merge 
-and the errors present that stop the conflict from being detected.
 
-\Cref{tab:results:rq2tests} gives the values for the tests, after compilation errors are fixed in merge.
-These come in the format Base A B Merge. C stands for compilation failures, R for runtime errors, F for failing test and P for passing tests.
+
+\section{RQ2: Given an explanation of a semantic conflict in a merge
+commit, can ChatGPT generate unit test case that are able to identify it?}\label{sec:results:rq2}
+
+\Cref{tab:results:rq2} summarizes the results achieved, organized by subject and
+type of conflict, and evaluation type\todo{what?}.
+These\todo{?} list the passing tests, after edits, the average edit distance to tests that compile and pass in merge,
+and the errors that stop the conflict from being detected.
+
+\Cref{tab:results:rq2tests} reports the values for the tests, after compilation errors are fixed in merge.\todo{don't understand it}
+These come in the format b (for Base), A, B, and M (for Merge). C stands for compilation failures, R for runtime errors, F for failing test, and P for passing tests.
 In some cases there are several listing per trial, due to the existence of several unit tests.
-The first two results for Cart (CM) ChatGPT are italicized: these utilized deprecated features of Junit, and required rolling back to an earlier
-version to run.
-
-OkHttp is omitted from the results, as the prompt caused it to only generate imports. It is unknown why.
-
-From this we can observe:
--The main obstacle to the detection of the conflict was incorrect asserts, present in nearly every case.
--In non-compiling tests, those generated with explanations given by ChatGPT tend to require more correction.
--Tests are generally compilable or very close to succesful compilation, with constructor and other errors, such as usage of non-existent getters as the main issues.
+The first two results for Cart (CM) ChatGPT are italicized: these utilized deprecated features of Junit, and required rolling back to an earlier version to run.\todo{is this really relevant?}
+OkHttp is omitted from the results as ChatGPT only generated import statements.
+It is unknown why.
+From \Cref{tab:results:rq2tests} we can observe that:
+\begin{itemize}
+  \item The main obstacle to the detection of the conflict was incorrect asserts, present in nearly every case.
+  \item In non-compiling tests, those generated with explanations given by ChatGPT tend to require more correction.
+  \item Tests are generally compilable or very close to succesful compilation, with constructor and other errors, such as usage of non-existent getters as the main issues.
+\end{itemize}
 
 \begin{table}[t]
     \centering
     \begin{tabular}{@{\extracolsep{\fill}} lrrr} \toprule
-                             & Successes (of 3) & Average Edit Distance & Errors \\
+                             & Successes (out of 3) & Avg. Edit Distance & Errors \\
     \midrule
     Point (CM) Manual        & 3 & 4 & Assert \\
     Point (CM) ChatGPT       & 3 & 4 & Assert \\
@@ -187,61 +196,65 @@ From this we can observe:
 
 \begin{table}[t]
     \centering
-    \begin{tabular}{@{\extracolsep{\fill}} llcccccccccccccc} 
+    \begin{tabular}{@{\extracolsep{\fill}} llcccccccccccccc}
         \toprule
-        Prompt & & \multicolumn{14}{c}{Trial} \\ 
+        Prompt & & \multicolumn{14}{c}{Trial} \\
         \cmidrule(lr){3-16}
-        & & \multicolumn{4}{c}{1} & \multicolumn{6}{c}{2} & \multicolumn{4}{c}{3} \\ 
-                            & & b & A & B & M & & b & A & B & M & & b & A & B & M \\ 
+        & & \multicolumn{4}{c}{1} & \multicolumn{6}{c}{2} & \multicolumn{4}{c}{3} \\
+                            & & b & A & B & M & & b & A & B & M & & b & A & B & M \\
 \midrule
-Point (CM) Manual           & & F & F & F & P & & F & F & F & P & & F & F & F & P \\ 
-Point (CM) ChatGPT          & & F & F & F & P & & F & F & F & P & & F & F & F & P \\ 
-                            & & F & F & P & P & & F & F & P & P & & F & F & P & P \\ 
-Fabricated (OAC) Manual     & & C & C & F & P & & C & C & F & P & & C & C & F & P \\ 
-Fabricated (OAC) ChatGPT    & & C & C & F & P & & C & C & F & P & & C & C & F & P \\ 
-Fabricated (RO) Manual      & & C & F & C & P & & C & P & C & P & & C & P & C & P \\ 
+Point (CM) Manual           & & F & F & F & P & & F & F & F & P & & F & F & F & P \\
+Point (CM) ChatGPT          & & F & F & F & P & & F & F & F & P & & F & F & F & P \\
+                            & & F & F & P & P & & F & F & P & P & & F & F & P & P \\
+Fabricated (OAC) Manual     & & C & C & F & P & & C & C & F & P & & C & C & F & P \\
+Fabricated (OAC) ChatGPT    & & C & C & F & P & & C & C & F & P & & C & C & F & P \\
+Fabricated (RO) Manual      & & C & F & C & P & & C & P & C & P & & C & P & C & P \\
 Fabricated (RO) ChatGPT     & & C & F & C & P & & C & P & C & P & & C & P & C & P \\
-Cart (CM) Manual            & & F & F & F & P & & F & F & F & P & & F & F & F & P \\ 
-                            & &   &   &   &   & & P & P & P & P & &   &   &   &   \\ 
+Cart (CM) Manual            & & F & F & F & P & & F & F & F & P & & F & F & F & P \\
+                            & &   &   &   &   & & P & P & P & P & &   &   &   &   \\
 Cart (CM) ChatGPT           & & \textit{F} & \textit{F} & \textit{F} & \textit{P} & & \textit{F} & \textit{F} & \textit{F} & \textit{P} & & F & F & F & P \\ %italicize first two
-                            & &   &   &   &   & &   &   &   &   & & F & F & P & P \\ 
-Cart (PF) Manual            & & F & F & F & P & & F & F & F & P & & F & F & F & P \\ 
-                            & & F & F & F & P & & F & F & F & P & & F & F & F & P \\ 
-Cart (PM) Manual            & & C & C & P & P & & C & C & P & P & & C & C & P & P \\ 
-                            & & P & P & P & P & & C & C & P & P & & P & P & P & P \\ 
-                            & &   &   &   &   & & C & C & P & P & & C & C & P & P \\ 
-                            & &   &   &   &   & & C & C & P & P & & P & P & P & P \\ 
+                            & &   &   &   &   & &   &   &   &   & & F & F & P & P \\
+Cart (PF) Manual            & & F & F & F & P & & F & F & F & P & & F & F & F & P \\
+                            & & F & F & F & P & & F & F & F & P & & F & F & F & P \\
+Cart (PM) Manual            & & C & C & P & P & & C & C & P & P & & C & C & P & P \\
+                            & & P & P & P & P & & C & C & P & P & & P & P & P & P \\
+                            & &   &   &   &   & & C & C & P & P & & C & C & P & P \\
+                            & &   &   &   &   & & C & C & P & P & & P & P & P & P \\
 Cart (PM) ChatGPT           & & C & C & P & P & & C & C & P & P & & C & C & P & P \\
                             & & C & C & P & P & & C & C & F & P & & P & P & P & P \\
                             & &   &   &   &   & & C & C & P & P & & C & C & P & P \\
                             & &   &   &   &   & & C & C & F & P & & P & P & P & P \\
-Antlr (PF) Manual           & & F & F & F & P & & F & F & F & P & & F & F & F & P \\ 
+Antlr (PF) Manual           & & F & F & F & P & & F & F & F & P & & F & F & F & P \\
         \bottomrule
     \end{tabular}
-    \caption{Test running results in base A B Merge \label{tab:results:rq2tests}}
+    \caption{Test \todo{compilation and} running results in base (b), branch A,
+    branch B, and merge (M).  C stands for compilation failures, R for runtime errors,
+    F for failing test, and P for passing tests.
+    \label{tab:results:rq2tests}}
 \end{table}
 
 
 Analysis of \Cref{tab:results:rq2tests} allows us to identify which cases identify the conflict, and which did not.
 It is worth examining the results and what they mean, starting by the failing examples:
+%
+\begin{itemize}
+  \item PPPP: The test always passes, due to the correct testing of a feature not affected by the merge.
 
--PPPP: The test always passes, due to the correct testing of a feature not affected by the merge.
+  \item FFPP and CCPP: The test passes in branch B and in merge. This indicates a behaviour was introduced and remained unaltered in the merge, thus it is not a conflict in itself.
+  This was common for Point (CM) ChatGPT, as the prompt induced the generation of tests for \texttt{distance}, which correctly calculated and asserted the euclidean distance of a given point.  They\todo{who? LLMs?  prompts?} however failed to do the same when applying the distance to the \texttt{move} method, thus those required correction.
 
--FFPP and CCPP: The test passes in branch B and in merge. This indicates a behaviour was introduced and remained unaltered in the merge, thus it is not a conflict in itself.
-This was common for Point (CM) ChatGPT, as the prompt induced the generation of tests for distance(), which correctly calculated and asserted the euclidean distance of a given point.
-They however failed to do the same when applying the distance to move(), thus those required correction.
-
--CPCP: The same as the previous example, but the change introduced is in branch A.
-
+  \item CPCP: The same as the previous example, but the change introduced is in branch A.
+\end{itemize}
+%
 The examples that show a semantic conflict is present require failure in all brances except merge, or compilation failure in base and one of the branches and failure on the other.
-
 These are:
-
--FFFP
--CCFP
--CFCP
-
-These all show that behaviour is emergent: something which was never true in any of the previous branches becomes true. The behaviour being asserted is thus the 
+\begin{itemize}
+  \item FFFP
+  \item CCFP
+  \item CFCP
+\end{itemize}
+%
+These all show that behaviour is emergent: something which was never true in any of the previous branches becomes true. The behaviour being asserted is thus the
 emergent behaviour that occurs in merge.
 
 If we observe the results, particularly the errors found, we can see that the main issue present
@@ -250,16 +263,16 @@ where the values to verify are hash and thus hard to know without running the co
 they were the result of simple logical or mathematical errors, things that are trivial for a human to get right
 and thus also correct.
 It is hard to identify why exactly it finds it so hard to get the right asserts. If we observe the cart example,
-we find that tests generated for distance() were always correct. These consisted of a simple x + y addition.
-However, tests generated for move() were always wrong; in turn these were just x + distance() and y + distance() additions.
-Given that it shows it can correctly calculate distance() it is hard to fathom why it struggles
+we find that tests generated for \texttt{distance} were always correct. These consisted of a simple \texttt{x + y} addition.
+However, tests generated for \texttt{move} were always wrong\todo{misleading}; in turn these were just \texttt{x + distance} and \texttt{y + distance} additions.
+Given that it shows it can correctly calculate \texttt{distance} it is hard to fathom why it struggles
 to use it in addition: we can perhaps suggest there is making the association between the method call and the returned value it represents.
 
-Ocasional compilation errors occurred due to the generation of methods that are not present in the code, such as getUser().
+Ocasional compilation errors occurred due to the generation of methods that are not present in the code, such as \texttt{getUser}.
 In one case, we find an interesting error: the codebase contains methods named ```setResgistration'''.
 For the most part they are ignored, as they are not necessary to identify the conflict. In one trial, however,
 the method is called for Producer. However the ```Resgistration''' typo is corrected: ``producer.setRegistrationNumber(123);''.
-Naturally, this stops code from compiling, but it is a noteworthy example of how Large-Language Models, due to their nature as 
+Naturally, this stops code from compiling, but it is a noteworthy example of how Large-Language Models, due to their nature as
 predictive models, can fail in outlier cases, such as an unexpected typo in method namings.
 
 It is noticeable that for Cart(CM), the manual explanation test cases required slight more editing, while the reverse
@@ -268,77 +281,77 @@ is observed for Cart(PM). An explanation might be that one type of prompt genera
 It is possible these are the results of outliers: that if we for example observe Cart (PM), ChatGPT explanation, the results are significantly weighed by
 trial 3, which requires significant correction due to the way it tries to access the user:
 \begin{response}
-    @Test
-    public void testSumItemsWithCoupon() {
-        Cart cart = new Cart(new User());
-        Item item = new Item(50, true); // Item with coupon
-        cart.add_item(item);
-        assertEquals(-50, cart.sum_items(), 0.001);
-    }
+@Test
+public void testSumItemsWithCoupon() {
+    Cart cart = new Cart(new User());
+    Item item = new Item(50, true); // Item with coupon
+    cart.add_item(item);
+    assertEquals(-50, cart.sum_items(), 0.001);
+}
 
-    @Test
-    public void testSumItemsWithoutCoupon() {
-        Cart cart = new Cart(new User());
-        Item item = new Item(50); // Item without coupon
-        cart.add_item(item);
-        assertEquals(50, cart.sum_items(), 0.001);
-    }
+@Test
+public void testSumItemsWithoutCoupon() {
+    Cart cart = new Cart(new User());
+    Item item = new Item(50); // Item without coupon
+    cart.add_item(item);
+    assertEquals(50, cart.sum_items(), 0.001);
+}
 
-    @Test
-    public void testTotalCostWithCoupon() {
-        Cart cart = new Cart(new User());
-        Item item = new Item(50, true); // Item with coupon
-        cart.add_item(item);
-        cart.checkout("loyal");
-        assertEquals(-45, cart.getUser().getBalance(), 0.001);
-    }
+@Test
+public void testTotalCostWithCoupon() {
+    Cart cart = new Cart(new User());
+    Item item = new Item(50, true); // Item with coupon
+    cart.add_item(item);
+    cart.checkout("loyal");
+    assertEquals(-45, cart.getUser().getBalance(), 0.001);
+}
 
-    @Test
-    public void testTotalCostWithoutCoupon() {
-        Cart cart = new Cart(new User());
-        Item item = new Item(50); // Item without coupon
-        cart.add_item(item);
-        cart.checkout("loyal");
-        assertEquals(-45, cart.getUser().getBalance(), 0.001);
-    }
+@Test
+public void testTotalCostWithoutCoupon() {
+    Cart cart = new Cart(new User());
+    Item item = new Item(50); // Item without coupon
+    cart.add_item(item);
+    cart.checkout("loyal");
+    assertEquals(-45, cart.getUser().getBalance(), 0.001);
+}
 \end{response}
 has an edit distance of 121, has correction requires extracting the user for access:
 \begin{response}
-    @Test
-    public void testSumItemsWithCoupon() {
-        Cart cart = new Cart(new User());
-        Item item = new Item(50, true); // Item with coupon
-        cart.add_item(item);
-        assertEquals(0, cart.sum_items(), 0.001);
-    }
+@Test
+public void testSumItemsWithCoupon() {
+    Cart cart = new Cart(new User());
+    Item item = new Item(50, true); // Item with coupon
+    cart.add_item(item);
+    assertEquals(0, cart.sum_items(), 0.001);
+}
 
-    @Test
-    public void testSumItemsWithoutCoupon() {
-        Cart cart = new Cart(new User());
-        Item item = new Item(50); // Item without coupon
-        cart.add_item(item);
-        assertEquals(0, cart.sum_items(), 0.001);
-    }
+@Test
+public void testSumItemsWithoutCoupon() {
+    Cart cart = new Cart(new User());
+    Item item = new Item(50); // Item without coupon
+    cart.add_item(item);
+    assertEquals(0, cart.sum_items(), 0.001);
+}
 
-    @Test
-    public void testTotalCostWithCoupon() {
-        User user = new User();
-        Cart cart = new Cart(user);
-        Item item = new Item(50, true); // Item with coupon
-        cart.add_item(item);
-        cart.checkout("loyal");
-        assertEquals(0, user.balance, 0.001);
-    }
+@Test
+public void testTotalCostWithCoupon() {
+    User user = new User();
+    Cart cart = new Cart(user);
+    Item item = new Item(50, true); // Item with coupon
+    cart.add_item(item);
+    cart.checkout("loyal");
+    assertEquals(0, user.balance, 0.001);
+}
 
-    @Test
-    public void testTotalCostWithoutCoupon() {
-        User user = new User();
-        Cart cart = new Cart(user);
-        Item item = new Item(50); // Item without coupon
-        cart.add_item(item);
-        cart.checkout("loyal");
-        assertEquals(0, user.balance, 0.001);
-    }
+@Test
+public void testTotalCostWithoutCoupon() {
+    User user = new User();
+    Cart cart = new Cart(user);
+    Item item = new Item(50); // Item without coupon
+    cart.add_item(item);
+    cart.checkout("loyal");
+    assertEquals(0, user.balance, 0.001);
+}
 \end{response}
 This same error of trying to access user from cart can be found in other ChatGPT results in PM, but it is ambiguous
 whether this is somehow the result of the prompt or coincidental generations. On the other side, Cart (CM) tended to generate
@@ -357,7 +370,7 @@ improved by closely following norms and rule of thumb expectations and corollari
 for more unusual pieces of software.
 
 A way to resolve this issue would be to include constructor headers in the original prompt. However one issue is the selection of which
-headers: if instead of just Item and User, the Cart class had 20 other dependencies which bore no relevance in our conflict, we would be 
+headers: if instead of just Item and User, the Cart class had 20 other dependencies which bore no relevance in our conflict, we would be
 providing extra information in the prompt which could cause confusion. A possibly better option is feeding compilation messages back for correction,
 as shown by ChatTester~\cite{kn:chattester}, possibly with the addition of corresponding headers. This corrective approach could also be utilized
 to fix assert errors. In effect, it would be an automated way to do the manual corrections we carried out.
@@ -366,7 +379,7 @@ Some other issues with constructors we observed are not so obvious to solve: nam
 the correct one for the situation will be used. We can see the case of Cart (PM): due to changes in the Item class, constructor information came included
 in the diff section of the prompt. This led to the creation of tests using (Value, Coupon) and (Value) format.
 \begin{response}
-    public class CartTest {
+public class CartTest {
 
     @Test
     public void testSumItemsWithCoupon() {
@@ -410,65 +423,65 @@ value is subtracted), these corrections do not aid in identifying the conflict.
 
 The other case where the conflict is rarely identified despite our corrections is RO, as it often generated asserts which always passed:
 \begin{response}
-    @Test
-    public void testHashString() {
-        InstalacaoAssentos instalacao = new InstalacaoAssentos();
-        assertNotNull(instalacao.hashString());
-    }
+@Test
+public void testHashString() {
+    InstalacaoAssentos instalacao = new InstalacaoAssentos();
+    assertNotNull(instalacao.hashString());
+}
 \end{response}
 Within the parameters of our work and a corrective system that works off compilation and test errors, this is the most problematic case: as the test works perfectly in merge,
 there is nothing prompting us for repair and repair would require more than simply changing a value, but to actually change the type of assert itself.
 
 Retrofit stands as an outlier and indeed we did correct the generated tests as they are so deviated from correctness, any edit would have to fundamentally alter the setup and structure of the test,
-to a point where if henceforth the test worked, we could not say it reflected anything on ChatGPT's capabilities. 
+to a point where if henceforth the test worked, we could not say it reflected anything on ChatGPT's capabilities.
 From observing, it is clear the LLM in a way does not have enough information to correctly generate tests and thus opts for generating non-existent mocks:
 \begin{response}
-    @Test(expected = IllegalArgumentException.class)
-    public void testBuildRelativeUrlWithNullPathParam() throws UnsupportedEncodingException {
-      RequestBuilder builder = new RequestBuilder(mockConverter());
-      builder.methodInfo(mockMethodInfo());
-      builder.apiUrl("http://example.com");
-      builder.args(new Object[]{null}); // Pass null argument
-      builder.build(); // This should throw IllegalArgumentException
-    }
+@Test(expected = IllegalArgumentException.class)
+public void testBuildRelativeUrlWithNullPathParam() throws UnsupportedEncodingException {
+    RequestBuilder builder = new RequestBuilder(mockConverter());
+    builder.methodInfo(mockMethodInfo());
+    builder.apiUrl("http://example.com");
+    builder.args(new Object[]{null}); // Pass null argument
+    builder.build(); // This should throw IllegalArgumentException
+}
 \end{response}
 As well as extensive incomplete test suites, which end up being almost all the same.
 \begin{response}
-    @Test(expected = IllegalArgumentException.class)
-    public void testBuildRelativeUrl_NullPathParam() throws UnsupportedEncodingException {
-      RequestBuilder builder = new RequestBuilder(mock(Converter.class));
-      builder.methodInfo(mock(RestMethodInfo.class))
-             .apiUrl("http://example.com")
-             .args(new Object[] {null})
-             .build();
-    }
-  
-    @Test(expected = IllegalArgumentException.class)
-    public void testBuildBody_NullBody() {
-      RequestBuilder builder = new RequestBuilder(mock(Converter.class));
-      builder.methodInfo(mock(RestMethodInfo.class))
-             .apiUrl("http://example.com")
-             .args(new Object[] {null})
-             .build();
-    }
-  
-    @Test(expected = IllegalArgumentException.class)
-    public void testBuildBody_NullFormUrlEncodedField() {
-      RequestBuilder builder = new RequestBuilder(mock(Converter.class));
-      builder.methodInfo(mock(RestMethodInfo.class))
-             .apiUrl("http://example.com")
-             .args(new Object[] {null})
-             .build();
-    }
-  
-    @Test(expected = IllegalArgumentException.class)
-    public void testBuildBody_NullMultipartPart() {
-      RequestBuilder builder = new RequestBuilder(mock(Converter.class));
-      builder.methodInfo(mock(RestMethodInfo.class))
-             .apiUrl("http://example.com")
-             .args(new Object[] {null})
-             .build();
-    }
+@Test(expected = IllegalArgumentException.class)
+public void testBuildRelativeUrl_NullPathParam() throws UnsupportedEncodingException {
+    RequestBuilder builder = new RequestBuilder(mock(Converter.class));
+    builder.methodInfo(mock(RestMethodInfo.class))
+           .apiUrl("http://example.com")
+           .args(new Object[] {null})
+           .build();
+}
+
+@Test(expected = IllegalArgumentException.class)
+public void testBuildBody_NullBody() {
+    RequestBuilder builder = new RequestBuilder(mock(Converter.class));
+    builder.methodInfo(mock(RestMethodInfo.class))
+           .apiUrl("http://example.com")
+           .args(new Object[] {null})
+           .build();
+}
+
+@Test(expected = IllegalArgumentException.class)
+public void testBuildBody_NullFormUrlEncodedField() {
+    RequestBuilder builder = new RequestBuilder(mock(Converter.class));
+    builder.methodInfo(mock(RestMethodInfo.class))
+           .apiUrl("http://example.com")
+           .args(new Object[] {null})
+           .build();
+}
+
+@Test(expected = IllegalArgumentException.class)
+public void testBuildBody_NullMultipartPart() {
+    RequestBuilder builder = new RequestBuilder(mock(Converter.class));
+    builder.methodInfo(mock(RestMethodInfo.class))
+           .apiUrl("http://example.com")
+           .args(new Object[] {null})
+           .build();
+}
 \end{response}
 It is worth noting none of the tests seem to attempt to test both modified behaviours at once (? addition to query parameters and null handlings). Thus even if correctly designed, they would not detect the conflict.
 However this could always be a prompt issue.
@@ -483,7 +496,11 @@ Thus we can say with some certainty that for these simple cases, most of which w
 It is unfortunate that test generation for OkHttp failed so badly was to not even generate tests, as that class was far more intricate and could give evidence to issues such as dealing with
 private methods. But it has to be understood that these sort of issues are a possibility given the volatility of LLMs.
 
-\section{RQ3}\label{sec:results:rq3}
+
+
+\section{RQ3: Can state-of-the-art prompts lead ChatGPT to generate to
+unit test cases that are able to identify semantic conflicts?  How do they
+compare to the prompt used in RQ2?}\label{sec:results:rq3}
 
 
 %\begin{table}[t]
@@ -553,7 +570,7 @@ private methods. But it has to be understood that these sort of issues are a pos
                       & Comp. & Pass. & Comp. & Pass. & Comp. & Pass. & Comp. & Pass. \\
     \midrule
     Point (CM)       & 3 & 2 & 1 & 0 & 0 & 0 & 1 & 1 \\
-    Fabricated (RO)  & 1 & 0 & 1 & 1 & 3 & 0 & 1 & 0 \\ 
+    Fabricated (RO)  & 1 & 0 & 1 & 1 & 3 & 0 & 1 & 0 \\
     Fabricated (OAC) & 2 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
     Cart (CM)        & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
     Cart (PF)        & 2 & 2 & 0 & 0 & 0 & 0 & 0 & 0 \\
@@ -570,10 +587,10 @@ private methods. But it has to be understood that these sort of issues are a pos
 %compilation/runtime
 
 \Cref{tab:results:rq3t1} allows us to observe that issues relating to compilation and correct assertions remain
-a problem for these prompts, confirming this is not necessarily just a issue with the prompt we developed. 
+a problem for these prompts, confirming this is not necessarily just a issue with the prompt we developed.
 
 Particular prominent issues like the issue of incorrect constructors, such as in the case of Item, remained relevant
-and more prevalent as more test cases were generated for each prompt. 
+and more prevalent as more test cases were generated for each prompt.
 
 Some new issues with the usage of non-existent methods arose. Whereas before these largely happened with the classes that were not present
 in the prompt, we observed the adaptation of the add\_item(Item) method into one that took an list input, in Prompt 3:
@@ -640,12 +657,12 @@ calls or mocks methods to ascertain the appropriate assert. This is the case wit
     @Test
     public void testMove() {
         Point point = new Point(3, 4); // Create a Point object at coordinates (3,4)
-        
+
         double initialDistance = point.distance(); // Calculate initial distance from origin
         point.move(); // Move the point
-        
+
         // Assert that the new coordinates are equal to the initial coordinates plus the initial distance
-        assertEquals(3 + initialDistance, point.getX(), 0.0001); 
+        assertEquals(3 + initialDistance, point.getX(), 0.0001);
         assertEquals(4 + initialDistance, point.getY(), 0.0001);
     }
 \end{response}
@@ -665,10 +682,10 @@ As well as for Prompt 3:
     }
 \end{response}
 The former does not identify the conflict because the assert, rather than being fixed on the merge behaviour,
-varies depending on the result of distance. The latter does not identify it because the behaviour of distance is 
+varies depending on the result of distance. The latter does not identify it because the behaviour of distance is
 obscured.
 
-Prompt 3 specifically suffer from this degree of excessive mocking when not necessary, either obscuring the behaviour of 
+Prompt 3 specifically suffer from this degree of excessive mocking when not necessary, either obscuring the behaviour of
 the actual code under test or generating tests that cannot be corrected easily, without reworking the test in general.
 
 The most significant difference, if we dismiss the specific case of Prompt 3, is that while we can achieve succesful results,
@@ -860,7 +877,7 @@ test logic. For example, for the same subject:
         cart.add_item(item);
 \end{response}
 It is worth nothing for this comparison we closely followed Prompt 2's format for 4, with the main variable being the usage of Copilot
-instead of ChatGPT. While in this case the metrics between these two were comparable, we have to note that better results, particularly 
+instead of ChatGPT. While in this case the metrics between these two were comparable, we have to note that better results, particularly
 in regards to compilation, might have been achieved if we had some adopted some known good practices for Copilot generation, such as giving
 context of existing tests \citet{kn:githubcopilot}. But it is also true that test context might also be applicable to our ChatGPT prompts,
 after adaptation. The downside is this requires existing tests, which should usually be the case but not always.
