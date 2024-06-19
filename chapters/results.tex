@@ -379,8 +379,6 @@ Some other issues with constructors we observed are not so obvious to solve: nam
 the correct one for the situation will be used. We can see the case of Cart (PM): due to changes in the Item class, constructor information came included
 in the diff section of the prompt. This led to the creation of tests using (Value, Coupon) and (Value) format.
 \begin{response}
-public class CartTest {
-
     @Test
     public void testSumItemsWithCoupon() {
         Cart cart = new Cart(new User());
@@ -414,7 +412,6 @@ public class CartTest {
         cart.checkout("loyal");
         assertEquals(-45, cart.getUser().getBalance(), 0.001);
     }
-}
 \end{response}
 Notably these constructors don not set the amount field, which is thus 0, rendering the items useless for any value calculations.
 Rectification would require understanding this logic error and thus is liable to be more difficult to achieve. It is for these representations
@@ -875,6 +872,7 @@ test logic. For example, for the same subject:
         Cart cart = new Cart(user);
         Item item = new Item("item1", 10, 1);
         cart.add_item(item);
+    }
 \end{response}
 It is worth nothing for this comparison we closely followed Prompt 2's format for 4, with the main variable being the usage of Copilot
 instead of ChatGPT. While in this case the metrics between these two were comparable, we have to note that better results, particularly
