@@ -50,13 +50,11 @@ Furthermore, Changes-Matcher outputs a DSL which provides information on how to 
 also improve test generation.
 \end{itemize}
 
-\subsection{Development Plan and Tool Functioning}
-todo{
-Development of the solution will go through several stages. Firstly, the process which has already been in progress, is the initial evaluation of LLM's and prompt techniques. After acquiring the list of subjects to test and deciding on the LLM, we can systematize this to develop the prototype solution. From here we start developing a tool that can automatically generate a prompt, get a test from the LLM and then run it. This prototype tool can then be further augmented, by applying corrections for tests that may fail to compile. \Cref{fig:tool} details the expected functioning of the tool once completed. A final period of evaluation and observations will compare our results to previous work and reflect on possible further improvements.
-}
+Building upon this work, it should be possible to develop a fully automated tool to identify the conlict and from there generate appropriate tests,
+which \ref{fig:tool} describes.
 \begin{figure}
     \centering
     \includegraphics[width=1\linewidth]{figures/tool.pdf}
-    \caption{Functioning pipeline of proposed tool.\todo{good enough? check svg better}}
+    \caption{Functioning pipeline of proposed tool.}
     \label{fig:tool}
 \end{figure}
