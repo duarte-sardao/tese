@@ -8,17 +8,19 @@ We explored related work that can provide avenues of study and structures to gui
 
 By establishing the three research question we established, we could investigate the viability of using LLMs in this way. From this we can say:
 
-- Research Question 1: We established that ChatGPT has some capability to identify semantic conflicts. One of the obstacles found was understanding:
+\begin{itemize}
+\item Research Question 1: We established that ChatGPT has some capability to identify semantic conflicts. One of the obstacles found was understanding:
 conflicts which did not create obvious code faults (such as parallel addition to lists) were not seen as conflicts. 
 
-- Research Question 2: We found that despite many small errors with the test setup and asserts, when an appropriate explanation was given, ChatGPT could generate
+\item Research Question 2: We found that despite many small errors with the test setup and asserts, when an appropriate explanation was given, ChatGPT could generate
 tests that appropriately verified the required behaviours. We also found no significant difference between human written and ChatGPT written explanations. The main obstacle
 was the complexity of some subjects, particularly the real-world ones, where ChatGPT struggled to generate adequate tests.
 
-- Research Question 3: By investigating state of the art prompts, we observed that while they could still generate tests that adequately tested the conflict (after correction),
+\item Research Question 3: By investigating state of the art prompts, we observed that while they could still generate tests that adequately tested the conflict (after correction),
 these came with downsides, due to the lack of focus provided by the detailed explanation: there was higher variability as it was not guaranteed the right setup would be attempted.
 For example, in tests that required a User class to have the admin field set to true, nothing in the prompt indicated this and while generating many tests will increase the chances
 of this field being set, more tests necessarily imply more time and work.
+\end{itemize}
 
 Forward, future work may hopefully apply this knowledge in developing a solution that can hopefully aid developer workflows by identifying and generating tests for semantic conflicts.
 
@@ -29,22 +31,24 @@ the quality of our prompting techniques and eventually developed a solution to a
 
 Future improvements to prompting include:
 
-- Improving understanding of semantic conflicts: As the LLM demonstrated an association between unintended software faults and conflicts, simple conflicts were ignored.
+\begin{itemize}
+\item Improving understanding of semantic conflicts: As the LLM demonstrated an association between unintended software faults and conflicts, simple conflicts were ignored.
 Possible work could focus on providing k-shot learning to improve this capability, or avoid the usage of ``conflict'' in favour of more direct or neutral terms, such as prompting
 for the existence of lost or emergent behaviour.
 
-- Prompt automation and picking necessary information: For our purposes, prompts were manually written. To fit within token limits and to avoid confusing the LLM, informed was cropped to
+\item Prompt automation and picking necessary information: For our purposes, prompts were manually written. To fit within token limits and to avoid confusing the LLM, informed was cropped to
 the necessary: only the class were the main affected method was present was given. In the case of real-world scenarios, diffs were also cropped, as they included a lot of extraneous information.
 In an automated solution, investigation needs to be done on identifying the necessary elements required for the prompt and how to automatically extract them.
 
-- Test generation with context: Throughout all our test generations, compilations tended to fail due to small errors, particularly with constructors, field access and method calls.
+\item Test generation with context: Throughout all our test generations, compilations tended to fail due to small errors, particularly with constructors, field access and method calls.
 Providing context by prompting with an existing suite has shown to be a reliable solution and would also aid in following stylistically conventions a project may be using.
 This could also be helpful with other issues, such as using mocking and more complex techniques when and only when it is necessary.
 
-- Integration with Changes-Matcher\Citet{kn:nuno}: Changes-Matcher detects semantic conflicts by comparing merges to common patterns, such as Change Method, Parallel Field and others
+\item Integration with Changes-Matcher\Citet{kn:nuno}: Changes-Matcher detects semantic conflicts by comparing merges to common patterns, such as Change Method, Parallel Field and others
 seen throughout our work. Integrating these, possibly with a prompt to explain the specific type of conflict present could be helpful in conflict explanation.
 Furthermore, Changes-Matcher outputs a DSL which provides information on how to test the conflict (indicating which methods should be called directly and indirectly). This could possibly
 also improve test generation.
+\end{itemize}
 
 \subsection{Development Plan and Tool Functioning}
 todo{
