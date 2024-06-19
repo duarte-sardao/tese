@@ -363,7 +363,7 @@ It is thus likely good practice to not make value judgements on the behaviour of
 On the topic of compilation errors, it is worth nothing often, for Cart(CM) these were related to constructors, as the constructors
 for the other classes involved in the Cart conflicts (Item and User) were not included in the prompt. It is interesting
 to observe what the common error is: the introduction of extra parameters. For example, in the code of Cart only the fields
-value and amount of Item are accessed. However, Item was frequently iniatilized with a constructor with 3 parameter: Name,
+value and amount of Item are accessed. However, Item was frequently iniatilized with a constructor with three parameters: Name,
 Value and Amount. It is fair to assume the Item class would both have a name field and that it would come first in the constructor
 and it is likely the training data had many examples of this. Thus it is worth pointing out that testability of code by LLM's can be
 improved by closely following norms and rule of thumb expectations and corollarily LLMs will struggle to effectively construct tests
@@ -608,7 +608,7 @@ which goes in line with our previous assessments that issues often arise when ou
 Of note is the case of Prompt 3: while it prompted the LLM to use mocks and reflection when possible, it used these features
 for all cases, even though these were unnecessary for the vast majority of cases. It did however generate one passing test for OkHttp,
 which so far we had failed to do and where other prompts failed too, as they all sought to access the private method copyWithDefaults().
-Of note, however, the 2 compilation failures for OkHttp in prompt 3 also dealt with private access, but to a field rather than a method.
+Of note, however, the two compilation failures for OkHttp in Prompt 3 also dealt with private access, but to a field rather than a method.
 
 Prompt 4 suffered from limitations of generation and it would often stop generating midtest. For our purposes these were cropped and not counted for the analysis.
 This limitation makes sense, as Copilot is primarily targeted at helping developers complete code, as an auxiliary tool, not as a tool to generate very large
@@ -642,7 +642,7 @@ These were Cart (PF) for Prompt 1 as well as Cart (PM) for Prompt 3.
 With \Cref{tab:results:rq3t2} we can observe that by applying the same correction process we carried out in
 RQ2, we can achieve a meaningful number of tests that not only pass, but also identify the semantic conflict.
 
-It is however notable that these are fewer in number, except maybe Prompt 4, which can be corrected for 6 subjects.
+It is however notable that these are fewer in number, except maybe Prompt 4, which can be corrected for six subjects.
 While we find failures for the same reason as in RQ2, where after correction tests pass, but do not identify the conflict,
 the characteristics of these prompts also introduced new issues.
 
@@ -686,7 +686,7 @@ Prompt 3 specifically suffer from this degree of excessive mocking when not nece
 the actual code under test or generating tests that cannot be corrected easily, without reworking the test in general.
 
 The most significant difference, if we dismiss the specific case of Prompt 3, is that while we can achieve succesful results,
-there is much higher variability: in most cases for RQ2, if one trial could be ammended, all 3 could be, while here we observe much
+there is much higher variability: in most cases for RQ2, if one trial could be ammended, all three could be, while here we observe much
 higher variability. For example, Prompt 1, for Antlr, generates:
 \begin{response}
     @Test
