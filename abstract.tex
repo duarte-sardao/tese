@@ -6,8 +6,10 @@ Em desenvolvimento de software colaborativo, trabalho paralelo, desenvolvido em 
 Entre conflitos de integração, os semânticos emergem com um tipo particularmente difícil de resolver, porque não são detetados por sistemas de controlo de versões e, não tendo erros sintáticos, compilam com sucesso. 
 Um exemplo de um conflito semântico pode ser visto na integração de mudanças paralelas de uma classe Point, que contêm um método para calcular a distância para outro Point: num cenário em que um desenvolvedor num ramo A muda o cálculo de distância (de euclideana para manhattan, por exemplo), enquanto que no B outro introduz uma função move(), que usa o cálculo da distância como o valor para o movimento. Percebemos que depois de a integração nenhum erro é levantado, mas o comportamento está desviado dos ramos originais: especificamente, o movimento comportar-se-á de maneira diferente.
 
-Procuramos explorar como o emergente ramo de Grandes Modelos de Linguagem podem fornecer um enorme avanço na nossa abilidade de testar o comportamento alterado, introduzido ou perdido devido a conflitos semânticos.
-Especificamente, com base em trabalho anterior que identifica prováveis conflitos e gera outputs, numa linguagem de domínio específica, analisamos a abilidade de ChatGPT para gerar testes unitários apropriados that evidenciam a presença de conflitos semânticos, com prompting adequado.
+Exploramos como o emergente ramo de Grandes Modelos de Linguagem pode fornecer um enorme avanço na nossa abilidade de testar o comportamento alterado, introduzido ou perdido devido a conflitos semânticos.
+Especificamente, analisamos a abilidade de ChatGPT para descrever o conflito presente numa integração, bem como a capacidade de gerar testes unitários apropriados that evidenciam a presença de conflitos semânticos, com a descrição fornecida.
+Concluímos que, geralmente, o ChatGPT demonstra capacidade para ambas as tarefas quando apresentado código de pouca complexidade. Outro obstáculo prominente é a associação entre ``conflito'' e falha de software ativa, que leva a 
+dificuldade a identificar conflitos mais simples.
 
 \bigskip\noindent
 \textbf{Palavras-chave:} LLM, Conflitos Semânticos, Geração de Testes
@@ -22,7 +24,9 @@ In collaborative software development, parallel work done by several different b
 Among merge conflicts, semantic merges arise as particularly difficult to resolve, as they avoid detection by version control systems and lacking syntactic errors, compile successfully.
 An example of a semantic conflict can be seen in the integration of parallel changes in a class such as Point, containing a method to calculate the distance to another Point: one developer in branch A changes the distance calculation (from euclidean to manhattan, for example), while in B another introduces a move() method, which uses the distance calculation as the value to move by. We find that upon a merge, while no errors are raised, the code exhibits altered behaviour from the original branches: specifically, the movement will behave differently.
 
-We seek to explore how the emerging field of Large Language Models can provide a breakthrough in our ability to test for the altered, introduced and lost behaviours arising from semantic conflicts. Specifically, building upon previous work that identifies probable conflicts and generates outputs, on a domain-specific language, we analyse the ability of ChatGPT to generate appropriate unit tests that highlight the presence of semantic conflicts, given appropriate prompting.
+We sought to explore how the emerging field of Large Language Models can provide a breakthrough in our ability to test for the altered, introduced and lost behaviours arising from semantic conflicts. 
+Specifically, we analysed the ability of ChatGPT to describe the conflict present in a merge, as well as it capabality to generate appropriate unit tests that highlight the presence of semantic conflicts, with the description provided.
+We concluded that, in most cases, ChatGPT demonstrates capacity for both tasks when presented with low complexity code. Another notable obstacle is the association between ``conflict'' and active software fault, which leads to difficulty identifying simpler conflicts.
 
 \bigskip\noindent
 \textbf{Keywords:} LLM, Semantic Conflicts, Test Generation
