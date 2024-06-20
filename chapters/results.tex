@@ -29,7 +29,7 @@ Retrofit (PM/CM) & 1.0 & 1.0 & 1.0 & 0.0 & 0.0 \\
 \textit{Average}  & 2.4 & 1.0 & 0.9 & 1.1 & 0.6 \\
 \bottomrule
 \end{tabular}
-\caption{Average values per subject and metric.\label{tab:results:rq1}}
+\caption{Average values (with corresponding ranges) per subject and metric.\label{tab:results:rq1}}
 \end{table}
 
 \Cref{tab:results:rq1} summarizes the metrics achieved per subject. From these we can note that:
@@ -160,10 +160,6 @@ and the errors that stop the conflict from being detected.
 
 \Cref{tab:results:rq2tests} reports the values for the tests, after compilation errors are fixed in merge.\todo{don't understand it}
 These come in the format b (for Base), A, B, and M (for Merge). C stands for compilation failures, R for runtime errors, F for failing test, and P for passing tests.
-In some cases there are several listing per trial, due to the existence of several unit tests.
-The first two results for Cart (CM) ChatGPT are italicized: these utilized deprecated features of Junit, and required rolling back to an earlier version to run.\todo{is this really relevant?}
-OkHttp is omitted from the results as ChatGPT only generated import statements.
-It is unknown why.
 From \Cref{tab:results:rq2tests} we can observe that:
 \begin{itemize}
   \item The main obstacle to the detection of the conflict was incorrect asserts, present in nearly every case.
@@ -191,7 +187,9 @@ From \Cref{tab:results:rq2tests} we can observe that:
     Retrofit (PM/CM) Manual  & 0 & N/A & Other \\
     \midrule
     \end{tabular}
-    \caption{Results by conflict and explanation type.\label{tab:results:rq2}}
+    \caption{Results by conflict and explanation type, including succesful conflict identification (after edits), the average edit distance to a compiling and passing test as well as the errors found.
+    OkHttp is omitted, as the LLM failed to generate any tests, only imports.
+    \label{tab:results:rq2}}
 \end{table}
 
 \begin{table}[t]
@@ -229,7 +227,8 @@ Antlr (PF) Manual           & & F & F & F & P & & F & F & F & P & & F & F & F & 
     \end{tabular}
     \caption{Test \todo{compilation and} running results in base (b), branch A,
     branch B, and merge (M).  C stands for compilation failures, R for runtime errors,
-    F for failing test, and P for passing tests.
+    F for failing test, and P for passing tests. The cases in italic indicates tests that were generated with deprecated Junit features.
+    Most rows are found where multiple unit tests were generated.
     \label{tab:results:rq2tests}}
 \end{table}
 
@@ -578,7 +577,7 @@ compare to the prompt used in RQ2?}\label{sec:results:rq3}
     Trials    & \multicolumn{2}{c}{3} & \multicolumn{2}{c}{1} & \multicolumn{2}{c}{3} & \multicolumn{2}{c}{1} \\
     \bottomrule
     \end{tabular}
-    \caption{Results for Prompt 1, 2, 3 and 4, for compilations and tests.\label{tab:results:rq3t1}}
+    \caption{Results for Prompt 1, 2, 3 and 4, listing how many tests compile (or run without errors) and from those, how many tests pass.\label{tab:results:rq3t1}}
 \end{table}
 
 %compilation/runtime
@@ -636,7 +635,7 @@ These were Cart (PF) for Prompt 1 as well as Cart (PM) for Prompt 3.
     %\midrule
     \bottomrule
     \end{tabular}
-    \caption{Ammendable tests.\label{tab:results:rq3t2}}
+    \caption{Number of tests that identify the conflict, if simple corrections are made such as in RQ2\label{tab:results:rq3t2}}
 \end{table}
 
 With \Cref{tab:results:rq3t2} we can observe that by applying the same correction process we carried out in
