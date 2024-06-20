@@ -32,26 +32,23 @@ Retrofit         & Yes & Parallel and Change Method \\
 Previous works have established catalogs of merge commits with semantic conflicts
 to ease the evaluation and comparison of any developed solution.
 
-\citet{kn:safemerge} \todo{describe it.  how many conflicts are there, where they
-come from, what type, etc.}
-% analyze popular repositories, i.e., Elasticsearch, libGDX, iosched, kotlin, MPAndroidChart, okhttp, retrofit, RxJava, and the Spring Boot framework, where they find 11 positive results \todo{the results dont really matter in this subsection}.
+\citet{kn:safemerge} developed a crawler which examined GitHub repositories, specifically Elasticsearch, libGDX, iosched, kotlin, MPAndroidChart, okhttp, retrofit, RxJava, and the Spring Boot framework, where they find 52 merge scenarios,
+where after analysis 11 true positives were found.
 
-\citet{kn:leuson} \todo{describe it.  how many conflicts are there, where they
-come from, what type, etc.}
+\citet{kn:leuson} selected 38 merge scenarios, from open-source Java projects, through of a combination of scripting mining and extracting scenarios from previous work. Of these, 11 were the result of an automatic merge and had a semantic conflict.
 
-\citet{kn:nuno} \todo{describe it.  how many conflicts are there, where they
-come from, what type, etc.}
+\citet{kn:nuno}'s collection differed from others, by including 10 fabricated scenarios, alongside 19 conflicts from both \citet{kn:safemerge} and \citet{kn:leuson}.
 
-\citet{kn:leuson2} established 28 merge commits with conflicts, from a total of 85.   \todo{describe it.  how many conflicts are there, where they come from, what type, etc.}
+\citet{kn:leuson2} established 28 merge commits with conflicts, from a total of 85 changes' pairs from 51 merge scenarios from 31 Java porjects. 22 of the cases were new and 63 were found in previous work.
 
 For our study we selected the subjects used in \citet{kn:nuno}'s study.  It is
-publicly available, closely related to our own work, and also allowing us to
+publicly available, closely related to our own work, thus also allowing us to
 draw direct comparisons.  Most importantly, it aggregates merge instances from
 both \citet{kn:leuson} and \citet{kn:safemerge}, while also providing valuable
 information, due to the work developed, such as the specific type of conflict
 present and whether it was detected and correctly tested by UNSETTLE~\cite{kn:nuno}
-(providing us with a ``base truth'').  Furthermore, it has compiled a set of
-fabricated conflicts, which provide simpler isolated examples that can aid us as
+(providing us with a ``base truth'').  Furthermore, since it has compiled a set of
+fabricated conflicts, we have a basis of simpler isolated examples that can aid us as
 they should be easier to identify, explain, and reveal.
 
 While analyzing \citet{kn:nuno}'s set, we found the predominant types of semantic
