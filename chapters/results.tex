@@ -37,9 +37,9 @@ Retrofit (PM/CM) & 1.0 & 1.0 & 1.0 & 0.0 & 0.0 \\
 \begin{itemize}
   \item Overall, \textbf{ChatGPT identifies changes made between branches} ($A=2.4$).
 
-  \item \textbf{In none of the subject did the tool mistake the kind of conflict under discussion}\todo{I don't understand it, try to re-write it} ($B=1.0$). This might be because the prompt did not assert the existence of a conflict, allowing negative responses, whereas other prompts, which asked to find a conflict that did exist, lead the model to find any explanation, which often consisted of describing a textual conflict.
+  \item \textbf{In none of the trias did the tool attempt to describe a textual conflict} ($B=1.0$). This might be because the prompt did not assert the existence of a conflict, allowing negative responses, whereas other prompts, which asked to find a conflict that did exist, lead the model to find any explanation, which often consisted of describing a textual conflict.
 
-  \item \textbf{Conflict assertion remains uncertain}. ($C=0.9$) In many\todo{how many?} cases, particularly those of PF type, no conflict as\todo{was? were? has been?} identified. In many\todo{how many?} other cases, it was found but with uncertainty, e.g., with words such as ``possible'', and ``might''.
+  \item \textbf{Conflict assertion remains uncertain}. ($C=0.9$) In 13 cases, particularly those of PF type, the response claimed no conflict existed. In five other cases, it was found but with uncertainty, e.g., with words such as ``possible'', and ``might''.
 
   \item \textbf{On average, it can identify what originates conflicts} ($D=1.1$).  Despite the range given, values given to the metric were either 0 or 3. This indicates to us in nearly half the cases, the model failed to produce any accurate description, but when it did, it was generally very accurate.
 
@@ -154,11 +154,11 @@ On the other hand, real-world scenario with complex dependencies, large classes 
 commit, can ChatGPT generate unit test case that are able to identify it?}\label{sec:results:rq2}
 
 \Cref{tab:results:rq2} summarizes the results achieved, organized by subject and
-type of conflict, and evaluation type\todo{what?}.
-These\todo{?} list the passing tests, after edits, the average edit distance to tests that compile and pass in merge,
+type of conflict.
+Each column lists the passing tests, after edits, the average edit distance to tests that compile and pass in merge,
 and the errors that stop the conflict from being detected.
 
-\Cref{tab:results:rq2tests} reports the values for the tests, after compilation errors are fixed in merge.\todo{don't understand it}
+\Cref{tab:results:rq2tests} reports the test results of the corrected tests.
 These come in the format b (for Base), A, B, and M (for Merge). C stands for compilation failures, R for runtime errors, F for failing test, and P for passing tests.
 From \Cref{tab:results:rq2tests} we can observe that:
 \begin{itemize}
@@ -225,7 +225,7 @@ Cart (PM) ChatGPT           & & C & C & P & P & & C & C & P & P & & C & C & P & 
 Antlr (PF) Manual           & & F & F & F & P & & F & F & F & P & & F & F & F & P \\
         \bottomrule
     \end{tabular}
-    \caption{Test \todo{compilation and} running results in base (b), branch A,
+    \caption{Test compilation and running results in base (b), branch A,
     branch B, and merge (M).  C stands for compilation failures, R for runtime errors,
     F for failing test, and P for passing tests. The cases in italic indicates tests that were generated with deprecated Junit features.
     Most rows are found where multiple unit tests were generated.
@@ -240,7 +240,7 @@ It is worth examining the results and what they mean, starting by the failing ex
   \item PPPP: The test always passes, due to the correct testing of a feature not affected by the merge.
 
   \item FFPP and CCPP: The test passes in branch B and in merge. This indicates a behaviour was introduced and remained unaltered in the merge, thus it is not a conflict in itself.
-  This was common for Point (CM) ChatGPT, as the prompt induced the generation of tests for \texttt{distance}, which correctly calculated and asserted the euclidean distance of a given point.  They\todo{who? LLMs?  prompts?} however failed to do the same when applying the distance to the \texttt{move} method, thus those required correction.
+  This was common for Point (CM) ChatGPT, as the prompt induced the generation of tests for \texttt{distance}, which correctly calculated and asserted the euclidean distance of a given point.  The test for the \texttt{move} method failed to the same, thus those required correction.
 
   \item CPCP: The same as the previous example, but the change introduced is in branch A.
 \end{itemize}
@@ -263,7 +263,7 @@ they were the result of simple logical or mathematical errors, things that are t
 and thus also correct.
 It is hard to identify why exactly it finds it so hard to get the right asserts. If we observe the cart example,
 we find that tests generated for \texttt{distance} were always correct. These consisted of a simple \texttt{x + y} addition.
-However, tests generated for \texttt{move} were always wrong\todo{misleading}; in turn these were just \texttt{x + distance} and \texttt{y + distance} additions.
+However, tests generated for \texttt{move} always had incorrect assertion values; in turn these were just \texttt{x + distance} and \texttt{y + distance} additions.
 Given that it shows it can correctly calculate \texttt{distance} it is hard to fathom why it struggles
 to use it in addition: we can perhaps suggest there is making the association between the method call and the returned value it represents.
 
