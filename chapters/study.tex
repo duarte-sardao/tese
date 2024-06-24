@@ -3,7 +3,8 @@
 This chapter describes the study conducted to assess the capabilities of LLMs
 (in particular, ChatGPT and GitHub Copilot) at identifying, explaining,
 and revealing semantic conflicts in merge commits.
-% This chapter is divided into two phases: an initial exploratory phase, where an unstructured exploration allowed us to develop prompts, identify characteristics of the LLM and narrow down on its abilities and limitations.  In a second phase, work was systematized, with the elaboration of research questions and metrics to evaluate results.
+We explain how the study was conducted, by detailing the subjects used, why they were used and their characteristics, as well
+as the research questions developed, what they seek to answer and what metrics were established to evaluate them.
 
 \section{Experimental subjects}\label{chap:study:subjects}
 
@@ -32,29 +33,29 @@ Retrofit         & Yes & Parallel and Change Method \\
 Previous works have established catalogs of merge commits with semantic conflicts
 to ease the evaluation and comparison of any developed solution.
 
-\citet{kn:safemerge} developed a crawler which examined GitHub repositories, specifically Elasticsearch, libGDX, iosched, kotlin, MPAndroidChart, okhttp, retrofit, RxJava, and the Spring Boot framework, where they find 52 merge scenarios,
-where after analysis 11 true positives were found.
+\citet{kn:safemerge} developed a crawler which examined GitHub repositories, specifically Elasticsearch, libGDX, iosched, kotlin, MPAndroidChart, okhttp, retrofit, RxJava, and the Spring Boot framework. They found 52 merge scenarios,
+and, after analysis, found 11 true positives.
 
 \citet{kn:leuson} selected 38 merge scenarios, from open-source Java projects, through of a combination of scripting mining and extracting scenarios from previous work. Of these, 11 were the result of an automatic merge and had a semantic conflict.
 
-\citet{kn:nuno}'s collection differed from others, by including 10 fabricated scenarios, alongside 19 conflicts from both \citet{kn:safemerge} and \citet{kn:leuson}.
+Castanho's collection~\cite{kn:nuno} differed from others, by including 10 fabricated scenarios, alongside 19 conflicts from both \citet{kn:safemerge} and \citet{kn:leuson}.
 
-\citet{kn:leuson2} established 28 merge commits with conflicts, from a total of 85 changes' pairs from 51 merge scenarios from 31 Java porjects. 22 of the cases were new and 63 were found in previous work.
+\citet{kn:leuson2} collected 28 merge commits with conflicts, from a total of 85 changes' pairs from 51 merge scenarios from 31 Java porjects. 22 of the cases were new and 63 were found in previous work.
 
-For our study we selected the subjects used in \citet{kn:nuno}'s study.  It is
+For our study we selected the subjects used in Castanho's study~\cite{kn:nuno}.  It is
 publicly available, closely related to our own work, thus also allowing us to
 draw direct comparisons.  Most importantly, it aggregates merge instances from
 both \citet{kn:leuson} and \citet{kn:safemerge}, while also providing valuable
 information, due to the work developed, such as the specific type of conflict
 present and whether it was detected and correctly tested by UNSETTLE~\cite{kn:nuno}
-(providing us with a ``base truth'').  Furthermore, since it has compiled a set of
+(providing us with a ``base truth'').  Furthermore, since it includes a set of
 fabricated conflicts, we have a basis of simpler isolated examples that can aid us as
 they should be easier to identify, explain, and reveal.
 
-While analyzing \citet{kn:nuno}'s set, we found the predominant types of semantic
+While analyzing Castanho's set~\cite{kn:nuno}, we found the predominant types of semantic
 conflicts in real scenarios where ``Parallel Changes in Field'', ``Parallel Changes in Method'',
 and ``Change Method''.  Using a simple Cart class as a base, three examples were
-made for these scenarios.  These Cart examples were part of the group of subjects used to answer and evaluate the research questions we defined.  These were complemented by a simple Point class, two examples fabricated by Castanho of type ``Override by Access Change'' and ``Remove Override'', %which had achieved good results in exploratory testing\todo{not clear.  perhaps to early to say this}, 
+fabricated for these scenarios.  These Cart examples were part of the group of subjects used to answer and evaluate the research questions we defined.  These were complemented by a simple Point class, two examples fabricated by Castanho of type ``Override by Access Change'' and ``Remove Override'', %which had achieved good results in exploratory testing\todo{not clear.  perhaps to early to say this}, 
 Antlr4, OkHttp and Retrofit, respectively a simple and two hard to test real-world scenarios.
 The collection of subjects and corresponding type of conflict can be found in \Cref{tab:subjects}.
 
