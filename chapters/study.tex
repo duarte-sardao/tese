@@ -3,8 +3,9 @@
 This chapter describes the study conducted to assess the capabilities of LLMs
 (in particular, ChatGPT and GitHub Copilot) at identifying, explaining,
 and revealing semantic conflicts in merge commits.
-We explain how the study was conducted, by detailing the subjects used, why they were used and their characteristics, as well
-as the research questions developed, what they seek to answer and what metrics were established to evaluate them.
+We explain how the study was conducted, by detailing the subjects used, why they were used and their characteristics, the 
+choice of LLM chosen as well as
+the research questions developed, what they seek to answer and what metrics were established to evaluate them.
 
 \section{Experimental subjects}\label{chap:study:subjects}
 
@@ -65,12 +66,12 @@ The collection of subjects and corresponding type of conflict can be found in \C
 
 \subsubsection{Conflict Type: Change Method}
 
-Point consists of a simple class for a two dimensional point, with fields \texttt{x} and \texttt{Y}.
+Point consists of a simple class for a two dimensional point, with fields \texttt{x} and \texttt{y}.
 Other than getters and setters, it's most relevant methods are \texttt{move} and \texttt{distance}.
 Originally, the method \texttt{move} increments both \texttt{x} and \texttt{y} by 1, while \texttt{distance} computes the euclidean distance to \texttt{(0,0)}.
 In branches A and B, \texttt{move} is modified to increment by \texttt{distance} while \texttt{distance} is modified to compute
-the manhattan distance.  The conflict then arises when code is merged.  \texttt{move} was modified with the expectation that it would move
-based on the euclidan distance, but with the merging of the other branch it will move differently.
+the manhattan distance.  The conflict then arises when code is merged. The method \texttt{move} was modified with the expectation that it would move
+the point based on the euclidan distance, but with the merging of the other branch it will move differently.
 
 \subsection{Fabricated}
 
@@ -80,7 +81,7 @@ conflicts that make the two subjects relate to different parts of the code.
 \subsubsection{Conflict Type: Remove Override}
 
 The classes involved in the conflict are \texttt{Instalacao} and \texttt{InstalacaoAssentos}, which extends the former.
-Of is the method \texttt{helpString}, which returns a string with class information.  This method is present
+Of note is the method \texttt{helpString}, which returns a string with class information.  This method is present
 in both classes with different implementations (thus \texttt{InstalacaoAssentos} overrides it). In branch A,
 \texttt{hashString} is introduced in \texttt{InstalacaoAssentos}: it takes \texttt{helpString} and hashes it. In branch B,
 the \texttt{helpString} from \texttt{InstalacaoAssentos} is deleted. Thus, the conflict arises because in the merge,
@@ -105,9 +106,9 @@ It has the appropriate methods to add items to the cart, calculate the cart valu
 subtracting the value from the user's balance.
 Cart has some pecularities which may differ from real-world classes of the same type. These include the fact that checkout
 requires a discont code as an argument (there is no checkout without discount) and that items can only be added one by one, without
-any way to add a collection all at once.  Notably their auxiliary classes contained only public fields, with no getters and setters, as
-well as lacking expected fields such as String type ``name'' fields. These divergences from the norm came to matter when it came to
-test generation.
+any way to add a collection all at once.  Notably their auxiliary classes lacked expected fields such as String type ``name'' fields,
+as well as only containing only public fields, with no getters and setters. While this is bad practice, it was design as such to
+observe how this affected test generation; indeed, these divergences from the norm came to matter in that regard.
 
 \subsubsection{Conflict Type: Parallel Field}
 
@@ -119,14 +120,14 @@ The boolean method further makes this evident.
 
 \subsubsection{Conflict Type: Parallel Method}
 
-The changes relate to the sum\_items() method. At the start, it just goes trough the items in the list and sums together. In branch A,
-a check that certified the return is greater or equal to 0 is removed. In branch B, the boolean coupon is added to item and if an item
+The changes relate to the \texttt{sum\_items} method. At the start, it just goes trough the items in the list and sums together. In branch A,
+a check that certified that the return is greater or equal to 0 is removed. In branch B, the boolean coupon is added to item and if an item
 is of type coupon, its value is removed rather than added. There is emergent behaviour in the merge, as coupons now allow carts of negative
 value to exist.
 
 \subsubsection{Conflict Type: Change Method}
 
-The conflict arises due to the handling of checkout. In branch A, a check is added where if a user is of type admin,
+The conflict arises due to the handling of checkout. In branch A, a check is added so that if a user is of type admin,
 \texttt{total\_cost} method returns 0. In branch B, a check is added in the \texttt{checkout} method: if \texttt{total\_cost} is 0, a runtime exception is thrown.
 Naturally these changes conflict in the merge.
 
@@ -143,7 +144,7 @@ set, with different length and contents compared to both previous versions.
 
 \subsubsection{Conflict Type: Parallel Method}
 
-OkHttp provides an HTTP client. The class OkHttpClient configures and creates HTTP connections. This process involves
+OkHttp provides an HTTP client service. The class \texttt{OkHttpClient} configures and creates HTTP connections. This process involves
 the \texttt{copyWithDefaults} method, which creates a shallow copy, using system defaults for fields which are not set. Both branches
 modify this method, one by changing how \texttt{failedRoutes} are handled and adding a field for transports, while the other replaces
 the default hostname verifier with a custom implementation, \texttt{OkHostnameVerifier}. As a result, the copy returned on merge will
@@ -154,9 +155,9 @@ as the copy as an argument.
 
 \subsubsection{Conflict Type: Parallel and Change Method}
 
-Another HTTP client. Relevant to the conflict is the class \texttt{RequestBuilder}, which builds HTTP requests from Java method invocations. The methods modified
+This conflict also involves a HTTP client service. Relevant to the conflict is the class \texttt{RequestBuilder}, which builds HTTP requests from Java method invocations. The methods modified
 in the conflict are \texttt{build}, which returns a \texttt{Request}, and the method \texttt{buildRelativeUrl}, which is invoked inside of \texttt{build}.
-Branch A only modified how request queries are handled, by adding the appropriate \texttt{?} to the url when one is present.
+Branch A only modified how request queries are handled, by adding the appropriate \texttt{'?'} to the url when one is present.
 Branch B adds several checks for null arguments for request query arguments, path parameters, form fields and multipart parts, throwing an exception or ignoring them as adequate.
 Both of these chances are integrated and as a result, the behaviour of the construction of a \texttt{Request} is different in the merge.
 
