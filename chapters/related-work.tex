@@ -113,6 +113,29 @@ Ti Jao et al have proposed test oracles for program merges. Most significantly, 
 % 132 out of 778 TOM
 % changes matcher always finds it, tests are 6 out of 17
 
+\subsubsection{Conflict definition to assess tests}\label{chap:rw:behaviours}
+
+To assess whether a conflict is correctly identified with unit tests, we need to select a definition that relates to testing.
+Thus, two concepts are usually considered: emergent behaviour and lost behaviour. Respectively this refers to behaviour that 
+is introduced in the process of merging, despite not being present in either branch, and behaviour that exists in one branch
+but is then lost in the merge. While several existing works have established formal definitions for these behaviours~\cite{kn:taoji,kn},
+we focus on the definition formulated by~\citet{kn:nuno}, as they broadened previous formulations to consider cases where the test does not apply,
+ie, cases where the test does not compile. This is common when a conflict includes a method that was introduced in one branch: a test generated including
+it will compile for that branch and merge, but not the other branch or base.
+
+Thus, the behaviours are defined as:
+
+%\textbf{Emergent Behaviour}: Let \texttt{t} be a successful test for the merged program \texttt{M} with \texttt{V_1}
+%and \texttt{V_2} as its parents. We then say that \texttt{M} has emergent behaviour if \texttt{t} applies to both
+%parents and fails over the same assertion \texttt{ψ} in both, or \texttt{t} applies to a single parent and fails.
+
+%Lost Behaviour: Suppose that the parent versions V1 and V2 have the common ancestor B.
+%Let t be a successful test case for Vi.
+%If t applies to B and M and t fails in both over the same assertion ψ, or t does not apply to B and fails in M,
+%or t does not apply to B and M, then we say that the behaviour introduced by Vi was lost.
+\todo{complete}
+
+
 \section{Test Generation}
 
 \subsection{Traditional Automatic Test Generation}
