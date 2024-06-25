@@ -364,7 +364,7 @@ for the other classes involved in the Cart conflicts (Item and User) were not in
 to observe what the common error is: the introduction of extra parameters. For example, in the code of Cart only the fields
 value and amount of Item are accessed. However, Item was frequently iniatilized with a constructor with three parameters: Name,
 Value and Amount. It is fair to assume the Item class would both have a name field and that it would come first in the constructor
-and it is likely the training data had many examples of this. Thus it is worth pointing out that testability of code by LLM's can be
+and it is likely the training data had many examples of this. Thus it is worth pointing out that testability of code by LLMs can be
 improved by closely following norms and rule of thumb expectations and corollarily LLMs will struggle to effectively construct tests
 for more unusual pieces of software.
 
