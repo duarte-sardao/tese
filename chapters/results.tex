@@ -2,12 +2,7 @@
 
 This chapters answers \textbf{RQ1 -- RQ3}, which aim to study ChatGPT's ability to identify, explain, and reveal semantic conflicts. % the latter with both our prompt, which provides an explanation, and state-of-the-art prompts, which do not.
 
-\section{RQ1: Can ChatGPT identify, understand, and explain, whether there is a semantic conflict in a merge commit?}\label{sec:results:rq1}
-
-\todo{Jose: I would suggest to organize this section in three subsection:
-one to report the results regarding identification of the conflict,
-another one to report whether ChatGPT understands the conflict,
-and another to report whether ChatGPT is capable of explaining the conflict.}
+\section{RQ1: Can ChatGPT identify the presence of a semantic conflict, as well as explain it?}\label{sec:results:rq1}
 
 \begin{table}[t]
 \centering
@@ -43,34 +38,22 @@ Retrofit (PM/CM) & 1.0 & 1.0 & 1.0 & 0.0 & 0.0 \\
 
   \item \textbf{On average, it can identify what originates conflicts} ($D=1.1$).  Despite the range given, values given to the metric were either 0 or 3. This indicates to us in nearly half the cases, the model failed to produce any accurate description, but when it did, it was generally very accurate.
 
-  \item \textbf{ChatGPT struggles with accurately describing the results of semantic conflicts} ($E=0.8$), i.e., how the behaviour is specifically altered and how the outputs change. Indeed, even when the origin of the conflict is found, an accurate description of the results does not necessarily follow, with the topic being vague or not touched upon.
+  \item \textbf{ChatGPT struggles with accurately describing the results of semantic conflicts} ($E=0.6$), i.e., how the behaviour is specifically altered and how the outputs change. Indeed, even when the origin of the conflict is found, an accurate description of the results does not necessarily follow, with the topic being vague or not touched upon.
 \end{itemize}
 
 The complete prompts, with results and evaluated metrics, can be found in the attachments.
-An important observation to make is the variability of results, which highlights the importance of running three trials for our evaluation.
-For example, the point class had high variation: two of the results failed to identify any conflict at all, but one of the three not only identified, but quite accurately describe its origin and results.
 
-In the more complex fabricated examples, the biggest issue was the identification of the effects of the semantic conflict, namely that when an overriden function was removed or had its access changed, the other function, with different behaviour, would be used instead. However, given the constraints of the prompt, which is limited to one class, the necessary information could not be transmitted and the LLM argued there would be compilation errors.
-Better results were observed when doing more manual, ad-hoc experiments, as we could identify exactly all the classes involved in the conflict and offer all the required information.
+\subsection{Conflict Identification}
+Exploring initially just if ChatGPT can recognize the presence of a semantic conflict,
+an important observation to make is the variability of results, which highlights the importance of running three trials for our evaluation.
+For example, the Point class had high variation: two of the results failed to identify any conflict at all (despite being so simple), but one of the three not only identified, but quite accurately describe its origin and results.
+This remained a general trend, resulting on the average value of 1.0 being predominant for metric C.
 
-As we proceeded testing the ``Cart'' scenario, we observed a reversal of a trend of very low results for the E metric, particularly for CM and PM.
-Indeed for these examples, not only did the LLM identify the origins of the conflict, but exactly the result of this, such as:
-``Now, in the merged version, both changes are included. So, when an admin user proceeds to checkout (assuming the admin check in version A evaluates to true), the cost will be set to 0. But immediately after, the checkout method checks if the cost is 0 and throws an exception if it is. This leads to a contradictory behavior: the system sets the cost to 0 for admin users but then does not allow them to proceed with checkout due to the cost being 0.''
-It is possible this is due to the very straighforward logic of the CM example in particular. What is surprising is that due to some minor changes in the Cart class, we re-ran these tests and originally these values were much lower. Why there was such an improvement is unknown but it is evidence of the variability of these tools.
+It is however worth adressing the exceptions: Cart (CM), which always yields a positive response and Cart (PF) as well as Antlr (PF), which always yield negative responses.
+Immediately we can observe that both purely negative examples are of type ``Parallel Field''. When we analyze their responses, we see a pattern: the changes made to the branches 
+are incorrectly described.
 
-In a scenario where detection failed we see an example of the LLM providing a grossly wrong explanation: ``If the user is an admin and a discount code that results in a cost of 0 is applied, the exception will never be thrown because the `checkout` method will not be called.''. As regards the conflict itself, this was only completely wrong assertion of its kind: in general where answers failed they were either vague or omitted, not present. The only other major example of a factually incorrect answer came with OkHttp:
-\begin{response}
-### Explanation:
-The conflict arises because both changes affect the same field (`hostnameVerifier`), but they prescribe different default values.
-
-In the merge commit, the decision was made to adopt the change from Version B, which explicitly sets the default `hostnameVerifier` to `OkHostnameVerifier()`. This decision potentially overrides any behavior or configuration related to the default `hostnameVerifier` set in Version A.
-
-If the intended behavior was to preserve the default `hostnameVerifier` as defined in Version A, then this would be considered a semantic conflict, as the behavior of the merged version may differ from the behavior of either Version A or Version B individually.
-\end{response}
-In this case, the changes made in only one branch are described as a conflict.
-
-Another case of wrong information given by ChatGPT regarded the changes made, both in Cart(PF), which
-correctly describes the removal but incorrectly counts:
+Cart(PF), incorrectly counts and describes the removal:
 \begin{response}
     1. **Diff Version A**:
     - It removes two discount codes, `"superpromo"` and `"winner"`.
@@ -80,7 +63,8 @@ correctly describes the removal but incorrectly counts:
     - It removes one discount code, `"winner"`.
     - This version also retains 6 discount codes.
 \end{response}
-As well as Antlr, which fails to accurately describe the changes made:
+
+While Antlr, fails to accurately describe the changes made:
 \begin{response}
 1. **Diff A vs Base:**
     - In version A, the `reduce` keyword was replaced with `return` in the `python2Keywords` array.
@@ -96,11 +80,12 @@ As well as Antlr, which fails to accurately describe the changes made:
     - Replacement of `"delattr"` with `"del"` in the `python2Keywords` array.
     - No conflicting changes with other methods or properties.
 \end{response}
-We observed both of these are ``Parallel Field'' semantic conflicts so it is possible the fact that the changes are being made to fields may have some relation to its inability to express them correctly.
-Further credence to this involves Cart (PM), where edits to the field of an auxiliary class also were misdescribed.
+In both cases, the changes are being made to fields, which may have some relation to its inability to express them correctly.
+Further credence to this involves Cart (PM), where edits to the field of an auxiliary class were also misdescribed.
+
 In contrast stands Retrofit: while ChatGPT reliably failed to correctly describe the changes, no edits were made to fields. From observation, we can say these errors may be due
 to the fact that the changes are similar and repeated across two complex methods, for branch B. We still see major misdescriptions for branch A, which is relatively simple, with a simple addition of an append to a string.
-We see examples of aspects of branch B being assigned to it, and then those same aspects not acknowledged for branch B.
+We see examples of changes made in branch B being describe as changes made in A, such as null checks.
 \begin{response}
     1. In `buildRelativeUrl()`:
     - Version A adds a null check for path parameters and throws an `IllegalArgumentException` if any of them are null. This ensures that path parameters are not null, which could lead to unexpected behavior or errors.
@@ -110,7 +95,19 @@ We see examples of aspects of branch B being assigned to it, and then those same
     - Both versions A and B have added null checks for the body parameter in the `SIMPLE` case. This ensures that the body is not null before proceeding with further processing. However, the behavior is consistent between the two versions.
 \end{response}
 
-Like with Antlr and Retrofit, OkHttp generated no conclusive answers. In particular it tended to offer advice on how identify and diagnose semantic conflicts and make good merges. This is a behaviour that was also observed with other complex, real-world conflicts, during the period of ad-hoc testing.
+While it possible these imprecisions in describing the changes made between branches influence the consideration that no conflict exists, there are other explanations, particularly for the ``Parallel Field'' examples.
+The LLM, despite incorrectly listing the changes, shows understanding of the merge done:
+\begin{response}
+Based on these changes, there isn't a semantic conflict in this merge. The changes from both versions `A` and `B` are independent and do not affect the same lines of code or properties. They both remove different discount codes, and the merge incorporates both of these changes correctly, resulting in a version that has those two discount codes removed.
+
+So, the merge is successful and preserves the intended changes from both versions without causing any conflicts in the functionality of the class.
+\end{response}
+Our hypothesis is that the conflict is far too simple to be detected: in both cases some type of collection is altered, either with insertions or removals.
+The merging of these alterations leads to emergent behaviour: the sets and lists returned are different, with different sizes, when compared to both branches.
+However while the behaviour is emergent, it is both expected and likely desirable, hence why it is probably not being seen as conflict.
+
+In contrast to these scenarios, which may be so simple ChatGPT does not understand them as conflicts, we find subjects so complicated, the LLM struggles to responds.
+We can observe this with OkHttp, which generated no conclusive answers. In particular it tended to offer advice on how identify and diagnose semantic conflicts and make good merges. This is a behaviour that was also observed with other complex, real-world conflicts, during the period of ad-hoc testing.
 \begin{response}
 ### Potential Semantic Conflict:
 While there is no direct semantic conflict, there could be conflicts in the usage and interpretation of the `transports` field and its associated methods. For instance:
@@ -124,30 +121,53 @@ Looking at the changes introduced in versions A and B, there does not seem to be
 However, when merging both changes, we need to ensure that the introduced hostname verifier (`OkHostnameVerifier`) is consistent with the overall configuration of the `OkHttpClient`. Specifically, we need to verify whether `OkHostnameVerifier` is compatible with the behavior and expectations of the existing codebase.
 \end{response}
 
-Evaluating the results as a whole, it is worth imagining in which way the types of conflicts affect the model's capabilities.
-As observed earlier, it seem that Parallel Field conflicts induce errors in branch change description. They also fail to identify the conflict but this seems unrelated to failures of both description:
-both cases with succesful and failing descriptions failed to produce conflict identification. Indeed, this was the case, we would expect some description of a conflict, with the same imprecisions, whereas
-for our PF cases no conflict was even considered to exist. Our hypothesis is that the conflict is far too simple to be detected: in both cases some type of collection is altered, either with insertions or removals.
-The merging of these alterations leads to emergent behaviour: the sets and lists returned are different, with different sizes, when compared to both branches.
-However while the behaviour is emergent, it is both expected and likely desirable, hence why it is probably not being seen as conflict.
-
-It is difficult to assess to what extent other types of conflicts affect detection ability. If we observe PM and CM, Cart (PM) and Point (CM) are comparable, while Cart (CM) has near perfect scores and OkHttp (PM) very low ones.
-It seems by far that the complexity of the conflict is the determining factor and this complexity can be noted as the complexity of the whole class under test (with OkHttp being the clear outlier), but also in the intricacies of the conflict.
-We observe Cart (CM) is fairly straighforward: if the user is an admin, checkout throws and exception. Indeed, even without any of the merge info, it would be fairly trivial to identify this is unintended, whereas
-Point and Cart (PM) require the identification of the original behaviour and how it has changed.
-
-It is also worth pointing out that despite good results for metric D in Remove Override and Overload by Access Change, with a perfect 3 in the latter, explanations of the result was flawed, due to a lack of information, ChatGPT reliably understood that trying a function that was removed or that had its access changed would produce errors. Thus it is worth noting in this case, accurate identification of the conflict's result would require a prompt that provides further information.
-
-Overall, we can say ChatGPT can indeed identify and explain whether there is a semantic conflict in a merge. This comes with many caveats however, firstly being that identification does not necessarily lead to a proper explanation. This is not a particularly pressing issue, as a tool that identifies conflicts and then alerts humans, who can themselves describe and fix the issue would already be a great boon for efficient software development.
-
-The bigger caveat is the situations in which it identifies the conflicts: simple fabricated scenarios with significant alterations to behaviour. When the emergent behaviour is small and expected, such as those of PF, the LLM does not view it as a conflict, indicating a bias to clearly unexpected and unintended behaviour. On the other side, if the class is of significant complexity, it becomes harder for the LLM to extract valuable information.
+In general terms the situations in which it identifies the conflicts are simple fabricated scenarios with significant alterations to behaviour. When the emergent behaviour is small and expected, such as those of PF, the LLM does not view it as a conflict, indicating a bias to clearly unexpected and unintended behaviour. On the other side, if the class is of significant complexity, it becomes harder for the LLM to extract valuable information.
 We see these issues combined in OkHttp as the conflict is straighforward: parallel changes result in an object that is different from both branches, thus emergent. Simultaneously, the class is significantly more complex than the other subjects. Thus while in the PF examples, the possibility of a conflict is flat out dismissed,
 two of the answers for OkHttp accept the possibility, arguing that more study needs to be done on transports and the hostname verifier respectively.
 
-Further work should thus tackle this: on one hand exploring how to provide a better understanding of semantic conflicts, specifically that emergent behaviour is the result of semantic conflict, even if it does not introduce an apparent bug, software vault or unexpected behaviour.
-On the other hand, real-world scenario with complex dependencies, large classes with varied functions, inheritance and other features complicates detection and more complex prompts, data extraction and presentation are likely required.
+To improve identification, further work should on one hand explore how to provide a better understanding of semantic conflicts, specifically that emergent behaviour is the result of semantic conflict, even if it does not introduce an apparent bug, software fault or unexpected behaviour.
+On the other hand, solutions need to be conceived for real-world scenarios with complex dependencies, large classes with varied functions, inheritance and other features that complicate detection. More complex prompts, data extraction and presentation are likely required.
 
+\subsection{Conflict Explanation}
 
+While the majority of cases recognized the existence or the possible existence of a conflict, the LLM could not always express what the conflict was and how it manifested.
+In some cases, descriptions were entirely factually incorrect, such as ``If the user is an admin and a discount code that results in a cost of 0 is applied, the exception will never be thrown because the `checkout` method will not be called.'' for Cart (CM). Another case of this happened with the only OkHttp where a conflict was recognized:
+\begin{response}
+### Explanation:
+The conflict arises because both changes affect the same field (`hostnameVerifier`), but they prescribe different default values.
+
+In the merge commit, the decision was made to adopt the change from Version B, which explicitly sets the default `hostnameVerifier` to `OkHostnameVerifier()`. This decision potentially overrides any behavior or configuration related to the default `hostnameVerifier` set in Version A.
+
+If the intended behavior was to preserve the default `hostnameVerifier` as defined in Version A, then this would be considered a semantic conflict, as the behavior of the merged version may differ from the behavior of either Version A or Version B individually.
+\end{response}
+In this case, the changes made in only one branch are described as a conflict.
+
+However, most cases were of imprecisions and omissions, not entirely wrong descriptions. In some cases, these were the result of limitations of our prompt.
+Particularly, with the ``Remove Override'' and ``Overload by Access Change'' subjects, the LLM was limited because the prompt only included information for the target class.
+Thus, ChatGPT understand there would be a problem with Simultaneously adding a dependency to a method and removing its override, but lacking access to the method being overriden,
+could not give an actual description of what the error would entail.
+Better results were observed when doing more manual, ad-hoc experiments, as we could identify exactly all the classes involved in the conflict and offer all the required information.
+
+Another aspect worth considering is that while in many cases, ChatGPT could reliably describe which elements and interactions were the origin of the conflict, it would or could rarely then explain how that conflict manifested, ie
+what outputs would be returned. We observe this in the significance differences between metric D and E.
+
+A notable exception is Cart (CM), with a 2.7 average for metric D. Indeed, we find it correctly explains everything, including how the code will behave.
+\begin{response}
+Now, in the merged version, both changes are included. So, when an admin user proceeds to checkout (assuming the admin check in version A evaluates to true), the cost will be set to 0. But immediately after, the checkout method checks if the cost is 0 and throws an exception if it is. This leads to a contradictory behavior: the system sets the cost to 0 for admin users but then doesn't allow them to proceed with checkout due to the cost being 0.
+
+Therefore, the semantic conflict arises from the contradictory behaviors introduced by the changes in versions A and B, specifically regarding how the cost is handled for admin users and the checkout process.
+\end{response}
+It is possible this is due to the very straighforward logic of the CM example in particular: it is hard to describe the conflict without mentioning the relation between admin and the method throwing.
+What is surprising is that due to some minor changes in the Cart class, we re-ran these tests and originally this metric was much lower. Why there was such an improvement is unknown but it is evidence of the variability of these tools.
+
+It is difficult to assess to what extent the type of conflict affects the correctness of explanations. If we observe PM and CM, Cart (PM) and Point (CM) are comparable. Cart (CM) has near perfect scores while OkHttp (PM) and Retrofit (PM/CM) fail completely.
+It seems by far that the complexity of the conflict is the determining factor and this complexity can be noted as the complexity of the whole class under test (with OkHttp and Retrofit being the clear outliers), but also in the intricacies of the conflict.
+We observe Cart (CM) is fairly straighforward: if the user is an admin, checkout throws and exception. Indeed, even without any of the merge info, it would be fairly trivial to identify this is unintended, whereas
+Point and Cart (PM) require the identification of the original behaviour and how it has changed.
+
+We can conclude that identification does not necessarily lead to a proper explanation. 
+This is not a the most pressing issue, as a tool that identifies conflicts and then alerts humans, who can themselves describe and fix the issue would already be a great boon for efficient software development.
+However, it limits our ability to further work on fully automated solutions, as explanations of the conflict are likely invaluable for this.
 
 
 \section{RQ2: Given an explanation of a semantic conflict in a merge
