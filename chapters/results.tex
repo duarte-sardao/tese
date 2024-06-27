@@ -27,24 +27,29 @@ Retrofit (PM/CM) & 1.0 & 1.0 & 1.0 & 0.0 & 0.0 \\
 \caption{Average values (with corresponding ranges) per subject and metric.\label{tab:results:rq1}}
 \end{table}
 
-\Cref{tab:results:rq1} summarizes the metrics achieved per subject. From these we can note that:
+\Cref{tab:results:rq1} summarizes the metrics achieved \todo{achieved por quem ou pelo quê?} per subject. From these we can note that:
 
 \begin{itemize}
   \item Overall, \textbf{ChatGPT identifies changes made between branches} ($A=2.4$).
 
-  \item \textbf{In none of the trias did the tool attempt to describe a textual conflict} ($B=1.0$). This might be because the prompt did not assert the existence of a conflict, allowing negative responses, whereas other prompts, which asked to find a conflict that did exist, lead the model to find any explanation, which often consisted of describing a textual conflict.
+  \item \textbf{In none of the trias \todo{trials? tries?} did the tool attempt to describe a textual conflict} ($B=1.0$). \\
+  This might be because the prompt did not assert the existence of a conflict, allowing negative responses, whereas other prompts, which asked to find a conflict that did exist, lead the model to find any explanation, which often consisted of describing a textual conflict.
 
-  \item \textbf{Conflict assertion remains uncertain}. ($C=0.9$) In 13 cases, particularly those of PF type, the response claimed no conflict existed. In five other cases, it was found but with uncertainty, e.g., with words such as ``possible'', and ``might''.
+  \item \textbf{Conflict assertion remains uncertain} ($C=0.9$). \\
+  In 13 cases, particularly those of PF type, the response claimed no conflict existed. In five other cases, it was found but with uncertainty, e.g., with words such as ``possible'', and ``might''.
 
-  \item \textbf{On average, it can identify what originates conflicts} ($D=1.1$).  Despite the range given, values given to the metric were either 0 or 3. This indicates to us in nearly half the cases, the model failed to produce any accurate description, but when it did, it was generally very accurate.
+  \item \textbf{On average, it can identify what originates conflicts} ($D=1.1$).  \\
+  Despite the range given, values given to the metric were either 0 or 3. This indicates to us in nearly half the cases, the model failed to produce any accurate description, but when it did, it was generally very accurate.
 
-  \item \textbf{ChatGPT struggles with accurately describing the results of semantic conflicts} ($E=0.6$), i.e., how the behaviour is specifically altered and how the outputs change. Indeed, even when the origin of the conflict is found, an accurate description of the results does not necessarily follow, with the topic being vague or not touched upon.
+  \item \textbf{ChatGPT struggles with accurately describing the results of semantic conflicts} ($E=0.6$), i.e., how the behaviour is specifically altered and how the outputs change. \\
+  Indeed, even when the origin of the conflict is found, an accurate description of the results does not necessarily follow, with the topic being vague or not touched upon.
 \end{itemize}
 
-The complete prompts, with results and evaluated metrics, can be found in the attachments.
+The complete prompts, with results and evaluated metrics, can be found in the appendix \todo{X}.
 
 \subsection{Conflict Identification}
-Exploring initially just if ChatGPT can recognize the presence of a semantic conflict,
+
+\todo{Nao consigo dar parse desta primeira frase} Exploring initially just if ChatGPT can recognize the presence of a semantic conflict,
 an important observation to make is the variability of results, which highlights the importance of running three trials for our evaluation.
 For example, the Point class had high variation: two of the results failed to identify any conflict at all (despite being so simple), but one of the three not only identified, but quite accurately describe its origin and results.
 This remained a general trend, resulting on the average value of 1.0 being predominant for metric C.
@@ -121,7 +126,7 @@ Looking at the changes introduced in versions A and B, there does not seem to be
 However, when merging both changes, we need to ensure that the introduced hostname verifier (`OkHostnameVerifier`) is consistent with the overall configuration of the `OkHttpClient`. Specifically, we need to verify whether `OkHostnameVerifier` is compatible with the behavior and expectations of the existing codebase.
 \end{response}
 
-In general terms the situations in which it identifies the conflicts are simple fabricated scenarios with significant alterations to behaviour. When the emergent behaviour is small and expected, such as those of PF, the LLM does not view it as a conflict, indicating a bias to clearly unexpected and unintended behaviour. On the other side, if the class is of significant complexity, it becomes harder for the LLM to extract valuable information.
+In a nutshell, the situations in which it identifies the conflicts are simple fabricated scenarios with significant alterations to behaviour. When the emergent behaviour is small and expected, such as those of PF, the LLM does not view it as a conflict, indicating a bias to clearly unexpected and unintended behaviour. On the other side, if the class is of significant complexity, it becomes harder for the LLM to extract valuable information.
 We see these issues combined in OkHttp as the conflict is straighforward: parallel changes result in an object that is different from both branches, thus emergent. Simultaneously, the class is significantly more complex than the other subjects. Thus while in the PF examples, the possibility of a conflict is flat out dismissed,
 two of the answers for OkHttp accept the possibility, arguing that more study needs to be done on transports and the hostname verifier respectively.
 
@@ -158,7 +163,7 @@ Now, in the merged version, both changes are included. So, when an admin user pr
 Therefore, the semantic conflict arises from the contradictory behaviors introduced by the changes in versions A and B, specifically regarding how the cost is handled for admin users and the checkout process.
 \end{response}
 It is possible this is due to the very straighforward logic of the CM example in particular: it is hard to describe the conflict without mentioning the relation between admin and the method throwing.
-What is surprising is that due to some minor changes in the Cart class, we re-ran these tests and originally this metric was much lower. Why there was such an improvement is unknown but it is evidence of the variability of these tools.
+What is surprising is that due to some minor changes in the Cart class, we re-ran these tests and originally this metric was much lower. Why there was such an improvement is unknown but it is evidence of the variability of these tools\todo{which tools?  LLMs?}.
 
 It is difficult to assess to what extent the type of conflict affects the correctness of explanations. If we observe PM and CM, Cart (PM) and Point (CM) are comparable. Cart (CM) has near perfect scores while OkHttp (PM) and Retrofit (PM/CM) fail completely.
 It seems by far that the complexity of the conflict is the determining factor and this complexity can be noted as the complexity of the whole class under test (with OkHttp and Retrofit being the clear outliers), but also in the intricacies of the conflict.
@@ -177,7 +182,7 @@ commit, can ChatGPT generate unit test case that are able to identify it?}\label
 type of conflict.
 Each column lists the passing tests, after edits, the average edit distance to tests that compile and pass in merge,
 and the errors that stop the conflict from being detected.
-
+%
 \Cref{tab:results:rq2tests} reports the test results of the corrected tests.
 These come in the format b (for Base), A, B, and M (for Merge). C stands for compilation failures, R for runtime errors, F for failing test, and P for passing tests.
 From \Cref{tab:results:rq2tests} we can observe that:
@@ -273,7 +278,7 @@ These are:
   \item CFCP
 \end{itemize}
 %
-These all show that behaviour is emergent: something which was never true in any of the previous branches becomes true. The behaviour being asserted is thus the
+All these examples show that behaviour is emergent: something which was never true in any of the previous branches becomes true. The behaviour being asserted is thus the
 emergent behaviour that occurs in merge.
 
 If we observe the results, particularly the errors found, we can see that the main issue present
@@ -288,14 +293,14 @@ Given that it shows it can correctly calculate \texttt{distance} it is hard to f
 to use it in addition: we can perhaps suggest there is making the association between the method call and the returned value it represents.
 
 Ocasional compilation errors occurred due to the generation of methods that are not present in the code, such as \texttt{getUser}.
-In one case, we find an interesting error: the codebase contains methods named ```setResgistration'''.
+In one case, we find an interesting error: the codebase contains methods named ``setResgistration''.
 For the most part they are ignored, as they are not necessary to identify the conflict. In one trial, however,
-the method is called for Producer. However the ```Resgistration''' typo is corrected: ``producer.setRegistrationNumber(123);''.
-Naturally, this stops code from compiling, but it is a noteworthy example of how Large-Language Models, due to their nature as
+the method is called for Producer. However the `Resgistration'' typo is corrected: ``producer.setRegistrationNumber(123);''.
+Naturally, this stops code from compiling, but it is a noteworthy example of how LLMs, due to their nature as
 predictive models, can fail in outlier cases, such as an unexpected typo in method namings.
 
-It is noticeable that for Cart(CM), the manual explanation test cases required slight more editing, while the reverse
-is observed for Cart(PM). An explanation might be that one type of prompt generates more complex and longer tests. However as can be seen in
+It is noticeable that for Cart (CM), the manual explanation test cases required slight more editing, while the reverse
+is observed for Cart (PM). An explanation might be that one type of prompt generates more complex and longer tests. However as can be seen in
 \cref{tab:results:rq2tests}, both examples have comparable amount of test cases and test length does not vary much.
 It is possible these are the results of outliers: that if we for example observe Cart (PM), ChatGPT explanation, the results are significantly weighed by
 trial 3, which requires significant correction due to the way it tries to access the user:
@@ -379,7 +384,7 @@ ChatGPT explanation the conflict these asserts were more often correct. This is 
 which claims the error throwing behaviour in merge is not intended, leading for tests that assert that nothing is thrown.
 It is thus likely good practice to not make value judgements on the behaviour of the code in merge.
 
-On the topic of compilation errors, it is worth nothing often, for Cart(CM) these were related to constructors, as the constructors
+On the topic of compilation errors, it is worth nothing often, for Cart (CM) these were related to constructors, as the constructors
 for the other classes involved in the Cart conflicts (Item and User) were not included in the prompt. It is interesting
 to observe what the common error is: the introduction of extra parameters. For example, in the code of Cart only the fields
 value and amount of Item are accessed. However, Item was frequently iniatilized with a constructor with three parameters: Name,
@@ -394,7 +399,7 @@ providing extra information in the prompt which could cause confusion. A possibl
 as shown by ChatTester~\cite{kn:chattester}, possibly with the addition of corresponding headers. This corrective approach could also be utilized
 to fix assert errors. In effect, it would be an automated way to do the manual corrections we carried out.
 
-Some other issues with constructors we observed are not so obvious to solve: namely that despite knowing of available construcotrs, there's no guarantee
+Some other issues with constructors we observed are not so obvious to solve: namely that despite knowing of available construcotrs, there's\todo{no abrvs} no guarantee
 the correct one for the situation will be used. We can see the case of Cart (PM): due to changes in the Item class, constructor information came included
 in the diff section of the prompt. This led to the creation of tests using (Value, Coupon) and (Value) format.
 \begin{response}
@@ -499,7 +504,7 @@ public void testBuildBody_NullMultipartPart() {
            .build();
 }
 \end{response}
-It is worth noting none of the tests seem to attempt to test both modified behaviours at once (? addition to query parameters and null handlings). Thus even if correctly designed, they would not detect the conflict.
+It is worth noting none of the tests seem to attempt to test both modified behaviours at once (\todo{?} addition to query parameters and null handlings). Thus even if correctly designed, they would not detect the conflict.
 However this could always be a prompt issue.
 
 It is worth nothing Retrofit has a large existing test suite, including a Helper class which is very helpful for setting up the RequestBuilder with appropriate arguments.
@@ -594,6 +599,7 @@ results compare to the results of the prompt used in RQ2?}\label{sec:results:rq3
     Antlr (PF)       & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
     OkHttp (PM)      & 0 & 0 & 0 & 0 & 1 & 1 & 0 & 0 \\
     Retrofit (PM/CM) & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    \midrule
     Trials    & \multicolumn{2}{c}{3} & \multicolumn{2}{c}{1} & \multicolumn{2}{c}{3} & \multicolumn{2}{c}{1} \\
     \bottomrule
     \end{tabular}
@@ -604,12 +610,13 @@ results compare to the results of the prompt used in RQ2?}\label{sec:results:rq3
 
 \Cref{tab:results:rq3t1} allows us to observe that issues relating to compilation and correct assertions remain
 a problem for these prompts, confirming this is not necessarily just a issue with the prompt we developed.
-
-Particular prominent issues like the issue of incorrect constructors, such as in the case of Item, remained relevant
+%
+Particular prominent issues like the issue of incorrect constructors %, such as in the case of Item,
+remained relevant
 and more prevalent as more test cases were generated for each prompt.
 
-Some new issues with the usage of non-existent methods arose. Whereas before these largely happened with the classes that were not present
-in the prompt, we observed the adaptation of the add\_item(Item) method into one that took an list input, in Prompt 3:
+Moreover, new issues with the usage of non-existent methods arose. Whereas before these largely happened with the classes that were not present
+in the prompt, we observed the adaptation of the \texttt{add\_item(Item)} method into one that took an list input, in Prompt 3:
 \begin{response}
     @Before
     public void setup() {
@@ -620,7 +627,8 @@ in the prompt, we observed the adaptation of the add\_item(Item) method into one
         cart.add_items(cartItems);
     }
 \end{response}
-It is possible the reason for this is that the prompt only shows the method signature, which makes it less impactful and thus the LLM may be
+% It is possible
+The reason for this is that the prompt only shows the method signature, which makes it less impactful and thus the LLM may be
 more prone to adapt or use it incorrectly. In this case, it is likely a method to add items in this manner was very common on the training dataset,
 which goes in line with our previous assessments that issues often arise when our implementation deviates from what is common or expected.
 
@@ -658,7 +666,7 @@ These were Cart (PF) for Prompt 1 as well as Cart (PM) for Prompt 3.
     \caption{Number of tests that identify the conflict, if simple corrections are made such as in RQ2\label{tab:results:rq3t2}}
 \end{table}
 
-With \Cref{tab:results:rq3t2} we can observe that by applying the same correction process we carried out in
+In \Cref{tab:results:rq3t2}, we can observe that by applying the same correction process we carried out in
 RQ2, we can achieve a meaningful number of tests that not only pass, but also identify the semantic conflict.
 
 It is however notable that these are fewer in number, except maybe Prompt 4, which can be corrected for six subjects.
@@ -731,8 +739,8 @@ return a non-null, non-empty set, that contains some words we know and should be
 conflict we need to check the size.
 
 A way to offset this higher variability is simply to generate more tests. Indeed, Prompt 2 specifically indicates the number of
-tests to generate, which we specified at 10 as was done before. While it did not always generate the right number, it generated many
-tests and often the correct one for our purposes came later. For Cart (CM), the test we want is the 4th:
+tests to generate, which we specified at 10 as was done before\todo{cite the paper}. While it did not always generate the right number, it generated many
+tests and often the correct one for our purposes came later. For Cart (CM), the test we want is the 4th, \todo{i.e., testCheckoutWithAdminUser?}:
 \begin{response}
     class CartTest {
 
@@ -896,7 +904,7 @@ test logic. For example, for the same subject:
 It is worth nothing for this comparison we closely followed Prompt 2's format for 4, with the main variable being the usage of Copilot
 instead of ChatGPT. While in this case the metrics between these two were comparable, we have to note that better results, particularly
 in regards to compilation, might have been achieved if we had some adopted some known good practices for Copilot generation, such as giving
-context of existing tests \citet{kn:githubcopilot}. But it is also true that test context might also be applicable to our ChatGPT prompts,
+context of existing tests~\cite{kn:githubcopilot}. But it is also true that test context might also be applicable to our ChatGPT prompts,
 after adaptation. The downside is this requires existing tests, which should usually be the case but not always.
 
 In general we verify then that yes, while existing prompts can produce similar results to the prompt developed for RQ2
