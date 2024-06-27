@@ -62,14 +62,23 @@ Do you believe there could be a *semantic* merge conflict here? Where? Explain w
 
 The first two prompts failed. Indeed for prompt ChatGPT only mentioned the changes in move, but even after prompting it to pay attention to distance, it failed to identify the conflict. For both, it seemed to not understand what was being referred to when speaking of conflict, describing all changes as a "conflict". Thus it would say, there is a conflict between whether to use euclidian and manhattan distance and there is a conflict on how the move function works.
 
-The last prompt given, highlighting the *semantic* aspect of the merge conflict, yielded good results, with the conflict being perfectly described, as seen in \Cref{fig:semconf}. After prompting for a test, it generates an appropriate one: it tests if the move function updates Point appropriately based on the euclidean distance. Thus it fails for base and branch B, where movement is still done with the value of 1, it passes for branch A as there move is based on distance; and it fails in merge, as now movement is being done with the distance calculation, but the calculation is now manhattan.
+The last prompt given, highlighting the *semantic* aspect of the merge conflict, yielded good results, with the conflict being perfectly described, as seen in the following response:
 
-\begin{figure}
-    \centering
-    \includegraphics[width=0.75\linewidth]{figures/image.png}
-    \caption{ChatGPT description of the semantic conflict.\todo{can we have a white-background of it? or having this in a \texttt{response} environment.}}
-    \label{fig:semconf}
-\end{figure}
+\begin{response}
+Absolutely, a semantic merge conflict exists in this scenario. Let's break it down:
+
+1. **Branch A Changes:** In Branch A, the `move()` method calculates the distance using the `distance()` method (which calculates the Euclidean distance using `Math.sqrt()`). Then, it modifies `x` and `y` based on this distance.
+
+2. **Branch B Changes:** In Branch B, the `distance()` method is changed to compute the Manhattan distance (using `Math.abs()`), which is different from the Euclidean distance.
+
+3. **Merged Result:** After the merge, the `distance()` method in the merged code computes the Manhattan distance, but the `move()` method uses this `distance()` to perform a calculation based on the Euclidean distance. This is a semantic conflict because the `move()` method assumes it's dealing with the Euclidean distance but is actually calculating using Manhattan distance.
+
+The conflict arises because the methods `move()` and `distance()` are not in sync regarding the way they compute the distance. One calculates the Euclidean distance, and the other calculates the Manhattan distance, leading to inconsistencies in how the `move()` method updates the `x` and `y` coordinates.
+
+To resolve this conflict, you'll need to decide which distance calculation method (`Math.sqrt()` or `Math.abs()`) is appropriate for your application's needs, then ensure consistency between the `move()` and `distance()` methods.
+\end{response}
+
+After prompting for a test, it generates an appropriate one: it tests if the move function updates Point appropriately based on the euclidean distance. Thus it fails for base and branch B, where movement is still done with the value of 1, it passes for branch A as there move is based on distance; and it fails in merge, as now movement is being done with the distance calculation, but the calculation is now manhattan.
 
 In simple fabricated scenarios, where simple conflicts were added to existing software solutions, ChatGPT showed ability to identify and describe the semantic conflict. Despite this, test generation remained complicated and few of the successful identification of semantic conflicts yielded working tests. The final prompt follows.
 
@@ -90,14 +99,17 @@ We have done a merge on a piece of software and introduced a semantic conflict o
 \end{prompt}
 
 Common issues are confusion between textual and semantic merges, which can be mitigated by clear explanation of what a semantic merge is; hallucinations of features not present in the code or hallucinations of changes where changes were not made; lack of focus on the methods where conflict is evident, despite reiterations; loss of focus when prompt has to be split into several messages. 
-Rare close successes occured, particularly in cases where the conflict was asserted to be there in the prompt and could simply be described by explaining the changes made, such as parallel changes to collections initialization, as seen in \Cref{fig:cantfind}.
+Rare close successes occured, particularly in cases where the conflict was asserted to be there in the prompt and could simply be described by explaining the changes made, such as parallel changes to collections initialization:
 
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{figures/almostsemantic.jpg}
-    \caption{ChatGPT describes the parallel changes as the origin of the conflict, but falls short of describing the emergent behaviour (in this case as simple as the different value returned by size()).\todo{can we have a white-background of it? or having this in a \texttt{response} environment.}}
-    \label{fig:cantfind}
-\end{figure}
+\begin{response}
+In the provided code snippets and the diff for branches A and B, it appears that both branches have added new table types to the `SlimTableFactory` class. Specifically, branch A adds the table type "ddt:" (DynamicDecisionTable) and "dynamic decision:", while branch B adds the table type "script:" (ScriptTable).
+
+During the merge, the version control system successfully combined these changes since they were in different parts of the code and did not directly conflict syntactically. However, the resulting merged code may have unexpected behavior because both branches introduced new table types without knowledge of each other's changes.
+
+The unexpected behavior arises from the fact that the merged code includes both the "ddt:" and "dynamic decision:" table types from branch A and the "script:" table type from branch B. This combination of changes may not be intended, and it could lead to issues in the program logic or functionality.
+
+To resolve this semantic conflict, you should manually review the merged code and decide which table types should be included. You may need to discuss with your team or refer to the requirements to determine the correct set of table types. Once you have made a decision, update the code accordingly to ensure the desired behavior.
+\end{response}
 
 While we found that ChatGPT could not identify the semantic conflicts present in real software solutions, in some of \citet{kn:nuno}'s fabricated scenarios, these were correctly explained. Part of the difference between real-world examples and fabricated scenarios may come down to the information given. The fabricated scenarios were accompanied with a description of the specific semantic conflict present and the changes made perfectly reflected the description, with clear modifications and no extraneous changes. Thus it is possible collecting and offering that information with real-world scenarios may improve the ability of LLMs in this regard, but the higher "noise" of these scenarios may be too disruptive in this regard.
 
@@ -133,14 +145,13 @@ Underscoring these experiments with real world test cases is an overlying issue:
 
 Given the difficulty of getting ChatGPT to provide accurate descriptions of the semantic conflicts, it was worth exploring whether the conflicts can be made evident just by generating tests targeting affected methods and classes. Several strategies were adopted: the prompting with the class after merge, the prompting with the class after merge and branch diffs and prompting with the class after merge and a structure graph. In most cases, where existing test suites where available, such information was also provided, with the prompt being reformulated to ask for its extension, rather than generation from scratch, as this shown to be important before~\cite{kn:githubcopilot}.
 
-For 15 tests of 5 different projects, only 2 compiled, before and after prompting for corrections. One of these tested trivial additions to an array in both branches and the other identified a behaviour introduced in branch B that successfully carried over to merge, thus not a conflict. Positively, ChatGPT could understand the significance of this test working in branch B and merge but not A, as seen in \Cref{fig:testexplain}, suggesting it could understand the significance of a test failing for merge but not upper branches, which would indicate conflicts.
+For 15 tests of 5 different projects, only 2 compiled, before and after prompting for corrections. One of these tested trivial additions to an array in both branches and the other identified a behaviour introduced in branch B that successfully carried over to merge, thus not a conflict. Positively, ChatGPT could understand the significance of this test working in branch B and merge but not A, suggesting it could understand the significance of a test failing for merge but not upper branches, which would indicate conflicts:
 
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{figures/testexplain.jpg}
-    \caption{ChatGPT explanation of meaning of failures and passes of test in different branches.\todo{can we have a white-background of it? or having this in a \texttt{response} environment.}}
-    \label{fig:testexplain}
-\end{figure}
+\begin{response}
+If the test "buildWithNullMultipartPart" fails for branch A but works on branch B and the merge, it suggests that the changes made in branch B (and subsequently merged) have addressed the issue related to null multipart parts. The alterations made in the merge likely include modifications to handle null multipart parts correctly, ensuring that the method behaves as expected.
+
+The failure in branch A indicates that the original implementation did not handle null multipart parts appropriately, leading to an exception being thrown during the test. The fact that the test passes on branch B and the merge suggests that the changes introduced in those branches have successfully addressed this issue and improved the handling of null multipart parts in the `build()` method.
+\end{response}
 
 Common issues affecting test generation were:
 
