@@ -1,6 +1,8 @@
 \chapter{Introduction} \label{chap:intro}
 
-The purpose of this chapter is to introduce the motivation for the work, briefly describe the problem at hand and outline the work that will be developed, as well as the structure of the thesis.\todo{This paragraph sounds like PDIS.  Revisit it as there are a few other bits in this chapter.}
+The purpose of this chapter is to introduce the motivation for the work, briefly describe the problem at hand and outline the work that will be developed, as well as the structure of the thesis.
+We explore what a semantic conflict is, why they are problematic in software development and provide an illustrative example.
+We define the goal of our study and explain what research questions were established and what answers we arrived at.
 
 \section{Motivation} \label{sec:motivation}
 
@@ -55,17 +57,24 @@ Following an initial exploratory phase, where different prompts, techniques and 
 the following three research questions:
 
 \begin{itemize}
-    \item[\textbf{RQ1:}] Can ChatGPT identify the presence of a semantic conflict, as well as explain it? \\
-    \todo{Provide a brief answer to this RQ.}
+    \item[\textbf{RQ1:}] Can ChatGPT identify the presence of a semantic conflict, as well as explain it?
+    
+    We found that ChatGPT can provide some adequate answers, but heavily biased towards noticeably disruptive conflicts
+    in simple fabricated scenarios. \\
   
     \item[\textbf{RQ2:}] Given an explanation of a semantic conflict in a merge
-    commit, can ChatGPT generate unit test case that are able to identify it? \\
-    \todo{Provide a brief answer to this RQ.}
+    commit, can ChatGPT generate unit test case that are able to identify it?
+    
+    Tests generated nearly always had compilation or assertion errors. However in most
+    cases these were simple to fix and the ammended test could correctly identify the conflict.
+    Complex real-world scenarios remained the exception.\\
   
     \item[\textbf{RQ3:}] Can state-of-the-art prompts lead ChatGPT to generate to
     unit test cases that are able to identify semantic conflicts?  How do their
-    results compare to the results of the prompt used in RQ2? \\
-    \todo{Provide a brief answer to this RQ.}
+    results compare to the results of the prompt used in RQ2?
+    
+    We found that existing prompts could generate succesful tests, when corrections are made. Despite this,
+    they perform worse than RQ2's prompt, with less positive results for a much larger amount of generated tests.\\
   \end{itemize}
 
 \section{Thesis Structure} \label{sec:struct}
