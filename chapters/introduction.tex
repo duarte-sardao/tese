@@ -47,19 +47,23 @@ certifying that due to the semantic conflict, new unexpected behaviour has been 
 
 The goal of this research project is to assess to what extent existing Large Language Models can be used to identify semantic conflicts, both textually and through the generation
 of appropriate unit tests. By comparing our results to existing prompts for unit test generation, we will assess to what extent, if any, we improved on and how to further develop
-unit test generation for semantic conflicts using LLMs.
-\todo{review}
+unit test generation for semantic conflicts using LLMs, hopefully opening avenues for fully automated systems that identify and alert developers to this type of conflict.
+
 \section{Study} \label{sec:study}
 
 Following an initial exploratory phase, where different prompts, techniques and models were experimented with, our work approaches the issue by answering
 3 research questions:
 
-1. To what extent can a LLM textually explain a semantic conflict present in a merge.
-
-2. To what extent can a LLM generate appropriate unit tests, given a textual explanation of the semantic conflict. 
-
-3. To what extent do existing prompts generate appropriate unit tests and how do they compare to the prompt we developed. 
-\todo{review}
+\begin{itemize}
+    \item[\textbf{RQ1:}] Can ChatGPT identify the presence of a semantic conflict, as well as explain it?
+  
+    \item[\textbf{RQ2:}] Given an explanation of a semantic conflict in a merge
+    commit, can ChatGPT generate unit test case that are able to identify it?
+  
+    \item[\textbf{RQ3:}] Can state-of-the-art prompts lead ChatGPT to generate to
+    unit test cases that are able to identify semantic conflicts?  How do their
+    results compare to the results of the prompt used in RQ2?
+  \end{itemize}
 
 \section{Thesis Structure} \label{sec:struct}
 
