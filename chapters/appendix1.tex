@@ -74,9 +74,9 @@ The last prompt given, highlighting the *semantic* aspect of the merge conflict,
 
 In simple fabricated scenarios, where simple conflicts were added to existing software solutions, ChatGPT showed ability to identify and describe the semantic conflict. Despite this, test generation remained complicated and few of the successful identification of semantic conflicts yielded working tests. The final prompt follows.
 
-\begin{quote}
+\begin{prompt}
 Generate a Junit unit test to identify this semantic conflict, knowing what you do now. The test must compile without errors and require no further alterations. It should require no further dependencies and import all classes correctly.
-\end{quote}
+\end{prompt}
 
 While adapted to avoid common pitfalls, the tests generate still suffered from basic issues such as missing imports, which could be mitigated by prompting the LLM for correction automatically. More complex issues of implementation were present, such as calling the base function instead of dependent, wrong usage of construction and function returns, parameter types or unnecessary mocks. Further, when prompting for correction, the LLM often explains that the developer should correct this, thus further work needs to be done to ensure the tool does all the work itself.
 
@@ -86,9 +86,9 @@ Prompting in real-world examples, or more complex fabricated examples, has produ
 
 We also had to reckon with size limits for messages. Thus, when necessary, we started with an explanatory prompt and then fed the information step by step. However, it remained crucial to remind the LLM of the goal in the last message.
 
-\begin{quote}
+\begin{prompt}
 We have done a merge on a piece of software and introduced a semantic conflict of types: "Update two different dependencies of a method or update one method and concurrently update one of its dependencies" and "Concurrent changes to the same method". I will now show the base commit, the diff in branch A, the diff in branch B, and the final merge version in 4 separate messages. At the end I want you to explain why and where the semantic conflict is present.
-\end{quote}
+\end{prompt}
 
 Common issues are confusion between textual and semantic merges, which can be mitigated by clear explanation of what a semantic merge is; hallucinations of features not present in the code or hallucinations of changes where changes were not made; lack of focus on the methods where conflict is evident, despite reiterations; loss of focus when prompt has to be split into several messages. 
 Rare close successes occured, particularly in cases where the conflict was asserted to be there in the prompt and could simply be described by explaining the changes made, such as parallel changes to collections initialization, as seen in \Cref{fig:cantfind}.
@@ -104,7 +104,7 @@ While we found that ChatGPT could not identify the semantic conflicts present in
 
 Another factor in consideration is the issue of dependencies, as so far testing had focused on just a unitary class. Given that semantic conflicts can involve interactions between classes and subclasses or other dependencies, it is relevant to provide further information. Initial tests just added one dependency, whether by calling a class methods or due to a inheritance relationship. An example, with the addition of an illustrative example of a semantic conflict follows.
 
-\begin{quote}
+\begin{prompt}
 We have done a merge on a piece of software and introduced a semantic conflict of type Parallel Changes in Method.
 
 Semantic conflicts occur when concurrent and syntactic-correct changes in different regions of a source file or different files cause the software system to misbehave. For example, suppose there is a Java class `Point` with a method `distance()` that computes the Euclidean distance of a Point to the origin and Bob decides to modify `distance()` so it computes instead the Manhattan distance. At the same time, Alice, not aware of Bob's changes, creates a new method `move()` that uses `distance()` to calculate the Euclidean distance. Then, the changes of both developers are merged. As Bob and Alice did not modify the same lines of code, there is no textual conflict. There is neither a syntactic conflict as the merged code still compiles. However, the program now has an unexpected behaviour. The `move()` method introduced by Alice no longer moves a Point an Euclidean distance (as Alice was expecting) but rather moves a Manhattan distance
@@ -112,19 +112,19 @@ Semantic conflicts occur when concurrent and syntactic-correct changes in differ
 The affected declaration is copyWithDefaults().
 
 A first message will detail the class before the merge, the diffs for both branches and the class after the merge. A second message will have a dependent class, whose methods indirectly call copyWithDefaults(). After I send these next two classes, identify and describe the semantic conflict.    
-\end{quote}
+\end{prompt}
 
 A more complex evolution on this idea consisted of providing textual representations of UML graphs, such as plantUML call and structure graphs. These however proved to be complex in their own regard as they often induced the LLM to "forget" previous information and its goal, possibly due to their large size. A factor to consider, too, was that the information provided had to be limited in depth since, depending on the size of the software solution, a complete graph would be of extremely unwieldy size. Through some effort, we could get the LLM to recognize both the diagram and the class information, namely, by offering the diagram first.
 
-\begin{quote}
+\begin{prompt}
 We have done a merge on a piece of software. In this, we introduced a semantic conflict on the method dominates(State| State) of the class OpenTripPlanner. In a first message I will send a call diagram, in plantUML format. In a second message I will send the original class, the differences in the branches and the merged class.  At the end you must identify and explain the semantic conflict.
-\end{quote}
+\end{prompt}
 
 However, it was particularly necessary to frequently refocus and concentrate the LLM. For example, after sending the diff and class information, reminding:
 
-\begin{quote}
+\begin{prompt}
 Explain why and where the semantic conflict is present, taking into account all the information provided in the last 2 messages. As mentioned before, focus on dominates(State| State). Make sure to mention information from the call diagram, if it is relevant to understanding the conflict.
-\end{quote}
+\end{prompt}
 
 In the end, we were able to get the LLM to both recognize the merge information and the call diagram focused on the affected declaration and obtain a correct description of both the meaning of the diagram and the changes made in the merge. This however did not entail any improved description of the conflict, for all the cases tested.
 
@@ -161,13 +161,13 @@ Results were generic, many times not even referring to aspects of the code itsel
 
 To evaluated our progressively developed prompt with existing state of the art, we selected 5 prompts from comparison, henceforth referred as 1 \cite{kn:chattester}, 2 \cite{kn:siddiq2023empirical}, 3 \cite{kn:gptunitbra}, and 4 \cite{kn:chatunitest}. Our prompt, in turn, was 2-step prompt as follows:
 
-\begin{quote}
+\begin{prompt}
 The following class was altered in a merge, specifically the METHOD method. Analyse it and what it does, with focus on the method and its usage: CLASS INFO
-\end{quote}
+\end{prompt}
 
-\begin{quote}
+\begin{prompt}
 You are a Java developer. Due to changes in the METHOD method, you've been asked to write a complete test suite to identify possible errors introduced due to the changes. Write a junit test suite for the method. All classes must be correctly imported. The tests must compile without errors. The tests must be complete and require no modification and addition. No explanation needed.
-\end{quote}
+\end{prompt}
 
 As subjects, we selected the basic fabricated Point class example, Antlr4, whose testing simply requires the length of a returned list and OkHttp, a more complex example requiring mocks and reflection for testing.
 For each prompt, we generated 3 times and selected the best result for comparison.
