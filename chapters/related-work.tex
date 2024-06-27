@@ -25,9 +25,7 @@ The notion of semantic conflict-freedom is seen as a sufficient condition for co
   \item Otherwise out(O,i) = out(A,i) = out(B,i) = out(M,i)
 \end{itemize}
 
-\subsection{Generation of Unit Tests}
-
-\todo{Can we call this section ``Detection with Testing''?}
+\subsection{Detection with Testing}
 
 In identifying the presence of semantic conflicts in a merge conflict, developed solutions have focused on the automatic generation of unit tests.
 
@@ -44,7 +42,7 @@ In both cases, they highlight the ability of transformations (for example, makin
 \citet{kn:nuno} has proposed the tool UNSETTLE (aUtomatic uNit teSt gEneraTion for semanTic confLict dEtection)\footnote{UNSETTLE can be found at \url{https://github.com/conflito/unsettle}.} which is composed of two modules:
 %
 \begin{itemize}
-  \item \textbf{Changes-Matcher} module that identifies the possible presence of semantic conflicts, by first computing the changes between different versions (base and variants) and then comparing it to a set of patterns (listed in \Cref{table:pattern-table} \todo{o `)' fecha aqui?} describing common sources of conflicts as a base. From this it generates a DSL file, highlighting which methods and classes should be put under test to identify the conflict.
+  \item \textbf{Changes-Matcher} module that identifies the possible presence of semantic conflicts, by first computing the changes between different versions (base and variants) and then comparing it to a set of patterns (listed in \Cref{table:pattern-table}) describing common sources of conflicts as a base. From this it generates a DSL file, highlighting which methods and classes should be put under test to identify the conflict.
 
   \item \textbf{Test generator module}, a modified version of EvoSuite that takes the previously created artifact as an input to guide test generation.
 \end{itemize}
