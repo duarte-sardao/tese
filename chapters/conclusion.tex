@@ -34,7 +34,7 @@ During the course of our research we found many possible future avenues of resea
 the quality of our prompting techniques and eventually developed a solution to automatically generate appropriate unit tests when a semantic merge conflict is detected in a commit.
 
 Future improvements to prompting include:
-
+%
 \begin{itemize}
 \item \textbf{Improving understanding of semantic conflicts:} As the LLM demonstrated an association between unintended software faults and conflicts, simple conflicts were ignored.
 Possible work could focus on providing k-shot learning to improve this capability, or avoid the usage of ``conflict'' in favour of more direct or neutral terms, such as prompting
@@ -57,12 +57,13 @@ also improve test generation.
 As we noted the difficulty LLMs had with aspects such as private methods, application of these transformations could make succesful testing much more likely.
 \end{itemize}
 
-Building upon this work, it should be possible to develop a fully automated tool to identify the conflict and from there generate appropriate tests,
-which \Cref{fig:tool} describes.
-\begin{figure}
+\begin{figure}[tb!]
     \centering
     \includegraphics[width=1\linewidth]{figures/tool.pdf}
     \caption{Pipeline of a future tool that would effectively explore the usage
     of LLMs to reveal semantic conflicts.}
     \label{fig:tool}
 \end{figure}
+
+Building upon this work, it should be possible to develop a fully automated tool to identify the conflict and from there generate appropriate tests,
+which \Cref{fig:tool} describes.
