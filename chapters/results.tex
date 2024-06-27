@@ -27,12 +27,12 @@ Retrofit (PM/CM) & 1.0 & 1.0 & 1.0 & 0.0 & 0.0 \\
 \caption{Average values (with corresponding ranges) per subject and metric.\label{tab:results:rq1}}
 \end{table}
 
-\Cref{tab:results:rq1} summarizes the metrics achieved \todo{achieved por quem ou pelo quê?} per subject. From these we can note that:
+\Cref{tab:results:rq1} summarizes the metrics evaluated per subject. From these we can note that:
 
 \begin{itemize}
   \item Overall, \textbf{ChatGPT identifies changes made between branches} ($A=2.4$).
 
-  \item \textbf{In none of the trias \todo{trials? tries?} did the tool attempt to describe a textual conflict} ($B=1.0$). \\
+  \item \textbf{In none of the trials did the tool attempt to describe a textual conflict} ($B=1.0$). \\
   This might be because the prompt did not assert the existence of a conflict, allowing negative responses, whereas other prompts, which asked to find a conflict that did exist, lead the model to find any explanation, which often consisted of describing a textual conflict.
 
   \item \textbf{Conflict assertion remains uncertain} ($C=0.9$). \\
@@ -45,12 +45,12 @@ Retrofit (PM/CM) & 1.0 & 1.0 & 1.0 & 0.0 & 0.0 \\
   Indeed, even when the origin of the conflict is found, an accurate description of the results does not necessarily follow, with the topic being vague or not touched upon.
 \end{itemize}
 
-The complete prompts, with results and evaluated metrics, can be found in the appendix \todo{X}.
+%The complete prompts, with results and evaluated metrics, can be found in the appendix \todo{X}.
 
 \subsection{Conflict Identification}
 
-\todo{Nao consigo dar parse desta primeira frase} Exploring initially just if ChatGPT can recognize the presence of a semantic conflict,
-an important observation to make is the variability of results, which highlights the importance of running three trials for our evaluation.
+Initially just evaluating if ChatGPT can recognize the presence of a semantic conflict, we note that
+the results are highly variable, which highlights the importance of running three trials for our evaluation.
 For example, the Point class had high variation: two of the results failed to identify any conflict at all (despite being so simple), but one of the three not only identified, but quite accurately describe its origin and results.
 This remained a general trend, resulting on the average value of 1.0 being predominant for metric C.
 
@@ -163,7 +163,7 @@ Now, in the merged version, both changes are included. So, when an admin user pr
 Therefore, the semantic conflict arises from the contradictory behaviors introduced by the changes in versions A and B, specifically regarding how the cost is handled for admin users and the checkout process.
 \end{response}
 It is possible this is due to the very straighforward logic of the CM example in particular: it is hard to describe the conflict without mentioning the relation between admin and the method throwing.
-What is surprising is that due to some minor changes in the Cart class, we re-ran these tests and originally this metric was much lower. Why there was such an improvement is unknown but it is evidence of the variability of these tools\todo{which tools?  LLMs?}.
+What is surprising is that due to some minor changes in the Cart class, we re-ran these tests and originally this metric was much lower. Why there was such an improvement is unknown but it is evidence of the variability of Large Language Models.
 
 It is difficult to assess to what extent the type of conflict affects the correctness of explanations. If we observe PM and CM, Cart (PM) and Point (CM) are comparable. Cart (CM) has near perfect scores while OkHttp (PM) and Retrofit (PM/CM) fail completely.
 It seems by far that the complexity of the conflict is the determining factor and this complexity can be noted as the complexity of the whole class under test (with OkHttp and Retrofit being the clear outliers), but also in the intricacies of the conflict.
@@ -399,7 +399,7 @@ providing extra information in the prompt which could cause confusion. A possibl
 as shown by ChatTester~\cite{kn:chattester}, possibly with the addition of corresponding headers. This corrective approach could also be utilized
 to fix assert errors. In effect, it would be an automated way to do the manual corrections we carried out.
 
-Some other issues with constructors we observed are not so obvious to solve: namely that despite knowing of available construcotrs, there's\todo{no abrvs} no guarantee
+Some other issues with constructors we observed are not so obvious to solve: namely that despite knowing of available constructors, there is no guarantee
 the correct one for the situation will be used. We can see the case of Cart (PM): due to changes in the Item class, constructor information came included
 in the diff section of the prompt. This led to the creation of tests using (Value, Coupon) and (Value) format.
 \begin{response}
@@ -504,7 +504,7 @@ public void testBuildBody_NullMultipartPart() {
            .build();
 }
 \end{response}
-It is worth noting none of the tests seem to attempt to test both modified behaviours at once (\todo{?} addition to query parameters and null handlings). Thus even if correctly designed, they would not detect the conflict.
+It is worth noting none of the tests seem to attempt to test both modified behaviours at once (the addition of the character '?' to query parameters and null handlings). Thus even if correctly designed, they would not detect the conflict.
 However this could always be a prompt issue.
 
 It is worth nothing Retrofit has a large existing test suite, including a Helper class which is very helpful for setting up the RequestBuilder with appropriate arguments.
@@ -739,8 +739,8 @@ return a non-null, non-empty set, that contains some words we know and should be
 conflict we need to check the size.
 
 A way to offset this higher variability is simply to generate more tests. Indeed, Prompt 2 specifically indicates the number of
-tests to generate, which we specified at 10 as was done before\todo{cite the paper}. While it did not always generate the right number, it generated many
-tests and often the correct one for our purposes came later. For Cart (CM), the test we want is the 4th, \todo{i.e., testCheckoutWithAdminUser?}:
+tests to generate, which we specified at 10 as was done before~\cite{kn:siddiq2023empirical}. While it did not always generate the right number, it generated many
+tests and often the correct one for our purposes came later. For Cart (CM), the test we want is the 4th, testCheckoutWithAdminUser:
 \begin{response}
     class CartTest {
 
