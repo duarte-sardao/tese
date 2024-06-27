@@ -27,25 +27,29 @@ The notion of semantic conflict-freedom is seen as a sufficient condition for co
 
 \subsection{Generation of Unit Tests}
 
+\todo{Can we call this section ``Detection with Testing''?}
+
 In identifying the presence of semantic conflicts in a merge conflict, developed solutions have focused on the automatic generation of unit tests.
 
 By Da Silva et al, we find an attempt at identifying cases of semantic conflict by applying automated behaviour change detection~\cite{kn:leuson}. In summary, with a base commit B, a left L, right R and merge M, they observe that a generated unit test that passes in L but fails in B partially reveals the effect of the changes made in that branch. If the test then fails in M, it is likely the changes made in R interfere. To generate unit tests they used EvoSuite~\cite{kn:evosuite} and Randoop~\cite{kn:randoop}.
 
 In their analysis they found that the developed tool only detected interference in four out of 15 changes within merge scenarios that do actually suffer from interference, corresponding then to a recall of 0.267. While this is a very modest rate, it displayed no false positives (precision of 1) and thus could likely be integrated in a testing process to prune possible merge conflicts early, or further studied and refined.
 
- Building upon their previous work, \citet{kn:leuson2} proposed SAM (SemAntic Merge), a tool that generates tests upon merges in Java. It can be found at \url{https://github.com/leusonmario/SAM}. In summary, SAM initially does a simple textual merge to integrate the difference branches while identifying possible textual conflicts. After merging four program versions are built, to fully describe the merge scenario under test: Base, Left, Right, Merge. Source code transformations to improve testability are also part of the process, but optional. Finally, the test generation tools are fed objects serialized during the execution of existing test suites. After applying four test generations tools: EvoSuite~\cite{kn:evosuite}, Differential EvoSuite, Randoop ~\cite{kn:randoop} and Randoop Clean, their own adapted version of Randoop, SAM executes the generated tests against the four versions of the program, identifies which tests failed, interpreting it with pre-defined interference criteria heuristics and from there reports conflicts, if detected ~\cite{kn:leuson2}.
+ Building upon their previous work, \citet{kn:leuson2} proposed SAM (SemAntic Merge), a tool that generates tests upon merges in Java.\footnote{SAM can be found at \url{https://github.com/leusonmario/SAM}.}. In summary, SAM initially does a simple textual merge to integrate the difference branches while identifying possible textual conflicts. After merging four program versions are built, to fully describe the merge scenario under test: Base, Left, Right, Merge. Source code transformations to improve testability are also part of the process, but optional. Finally, the test generation tools are fed objects serialized during the execution of existing test suites. After applying four test generations tools: EvoSuite~\cite{kn:evosuite}, Differential EvoSuite, Randoop~\cite{kn:randoop} and Randoop Clean, their own adapted version of Randoop, SAM executes the generated tests against the four versions of the program, identifies which tests failed, interpreting it with pre-defined interference criteria heuristics and from there reports conflicts, if detected~\cite{kn:leuson2}.
 
 Detecting nine out of 28 conflicts, it shows improvements over previous work: the authors specifically highlight the best performance when combining tests from only EvoSuite and Differential EvoSuite. Regarding behaviour changes specifically, 89 are found. 
 In both cases, they highlight the ability of transformations (for example, making private fields public) to increase testability, showing moderate improvements in some tested scenarios, with 20 additional changes being detected and three additional conflicts detected (Differential Evosuite detects 3, each other generator detect one conflict each).  Regarding the 19 false-negatives, 11 of them showed behaviour changes, which were not caused by the changes due to the semantic conflicts~\cite{kn:leuson2}.
 
 
-\citet{kn:nuno} has proposed the tool UNSETTLE (aUtomatic uNit teSt gEneraTion for semanTic confLict dEtection). This tool, which can be found at \url{https://github.com/conflito/unsettle}, is composed of two modules:
+\citet{kn:nuno} has proposed the tool UNSETTLE (aUtomatic uNit teSt gEneraTion for semanTic confLict dEtection)\footnote{UNSETTLE can be found at \url{https://github.com/conflito/unsettle}.} which is composed of two modules:
+%
+\begin{itemize}
+  \item \textbf{Changes-Matcher} module that identifies the possible presence of semantic conflicts, by first computing the changes between different versions (base and variants) and then comparing it to a set of patterns (listed in \Cref{table:pattern-table} \todo{o `)' fecha aqui?} describing common sources of conflicts as a base. From this it generates a DSL file, highlighting which methods and classes should be put under test to identify the conflict.
 
-Changes-Matcher identifies the possible presence of semantic conflicts, by first computing the changes between different versions (base and variants) and then comparing it to a set of patterns (listed in \Cref{table:pattern-table} describing common sources of conflicts as a base. From this it generates a DSL file, highlighting which methods and classes should be put under test to identify the conflict.
-
-The second module is the test generator, a modified version of EvoSuite that takes the previously created artifact as an input to guide test generation.
-
-Of particular interest to us is Changes-Matcher, as this is also the starting point for our work, with the usage of a LLM over EvoSuite for test generation instead.
+  \item \textbf{Test generator module}, a modified version of EvoSuite that takes the previously created artifact as an input to guide test generation.
+\end{itemize}
+%
+Of particular interest to us is the Changes-Matcher module, as this is also the starting point for our work, with the usage of a LLM over EvoSuite for test generation instead.
 
 \begin{table}[t]
 \setlength\extrarowheight{2pt}
