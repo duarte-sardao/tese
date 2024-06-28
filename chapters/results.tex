@@ -24,24 +24,28 @@ Retrofit (PM/CM) & 1.0 & 1.0 & 1.0 & 0.0 & 0.0 \\
 \textit{Average}  & 2.4 & 1.0 & 0.9 & 1.1 & 0.6 \\
 \bottomrule
 \end{tabular}
-\caption{Average values (with corresponding ranges) per subject and metric.\label{tab:results:rq1}}
+\caption{Average values (with corresponding ranges) per subject and metric.
+A refers to identifying the changes, B to conflict understanding (not confusing it with textual conflicts),
+C to whether a conflict was identified, D to whether the origin of the conflict was correctly described and
+E to whether the result of the conflict was correctly described.
+\label{tab:results:rq1}}
 \end{table}
 
 \Cref{tab:results:rq1} summarizes the metrics evaluated per subject. From these we can note that:
 
 \begin{itemize}
-  \item Overall, \textbf{ChatGPT identifies changes made between branches} ($A=2.4$).
+  \item Overall, \textbf{ChatGPT identifies changes made between branches} ($A=2.4/3.0$).
 
-  \item \textbf{In none of the trials did the tool attempt to describe a textual conflict} ($B=1.0$). \\
+  \item \textbf{In none of the trials did the tool attempt to describe a textual conflict} ($B=1.0/1.0$). \\
   This might be because the prompt did not assert the existence of a conflict, allowing negative responses, whereas other prompts, which asked to find a conflict that did exist, lead the model to find any explanation, which often consisted of describing a textual conflict.
 
-  \item \textbf{Conflict assertion remains uncertain} ($C=0.9$). \\
+  \item \textbf{Conflict assertion remains uncertain} ($C=0.9/2.0$). \\
   In 13 cases, particularly those of PF type, the response claimed no conflict existed. In five other cases, it was found but with uncertainty, e.g., with words such as ``possible'', and ``might''.
 
-  \item \textbf{On average, it can identify what originates conflicts} ($D=1.1$).  \\
-  Despite the range given, values given to the metric were either 0 or 3. This indicates to us in nearly half the cases, the model failed to produce any accurate description, but when it did, it was generally very accurate.
+  \item \textbf{In some cases, it can identify what originates conflicts} ($D=1.1/3.0$).  \\
+  Despite the range given, values given to the metric were either 0 or 3. This indicates to us that in over half the cases, the model failed to produce any accurate description, but when it did, it was generally very accurate.
 
-  \item \textbf{ChatGPT struggles with accurately describing the results of semantic conflicts} ($E=0.6$), i.e., how the behaviour is specifically altered and how the outputs change. \\
+  \item \textbf{ChatGPT struggles with accurately describing the results of semantic conflicts} ($E=0.6/3.0$), i.e., how the behaviour is specifically altered and how the outputs change. \\
   Indeed, even when the origin of the conflict is found, an accurate description of the results does not necessarily follow, with the topic being vague or not touched upon.
 \end{itemize}
 
