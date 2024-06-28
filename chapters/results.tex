@@ -2,7 +2,7 @@
 
 This chapters answers \textbf{RQ1 -- RQ3}, which aim to study ChatGPT's ability to identify, explain, and reveal semantic conflicts. % the latter with both our prompt, which provides an explanation, and state-of-the-art prompts, which do not.
 
-\section{RQ1: Can ChatGPT identify the presence of a semantic conflict, as well as explain it?}\label{sec:results:rq1}
+\section[Research Question 1: Conflict Explanation]{RQ1: Can ChatGPT identify the presence of a semantic conflict, as well as explain it?}\label{sec:results:rq1}
 
 \begin{table}[t]
 \centering
@@ -179,7 +179,7 @@ This is not the most pressing issue, as a tool that identifies conflicts and the
 However, it limits our ability to further work on fully automated solutions, as explanations of the conflict are likely invaluable for this.
 
 
-\section{RQ2: Given an explanation of a semantic conflict in a merge
+\section[Research Question 2: Test Generation]{RQ2: Given an explanation of a semantic conflict in a merge
 commit, can ChatGPT generate unit test cases that are able to identify it?}\label{sec:results:rq2}
 
 \Cref{tab:results:rq2} summarizes the results achieved, organized by subject and
@@ -525,7 +525,7 @@ private methods. But it has to be understood that these sort of issues are a pos
 
 
 
-\section{RQ3: Can state-of-the-art prompts lead ChatGPT to generate
+\section[Research Question 3: Existing prompts]{RQ3: Can state-of-the-art prompts lead ChatGPT to generate
 unit test cases that are able to identify semantic conflicts?  How do their
 results compare to the results of the prompt used in RQ2?}\label{sec:results:rq3}
 
