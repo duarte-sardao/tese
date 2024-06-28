@@ -217,7 +217,7 @@ From \Cref{tab:results:rq2tests} we can observe that:
     \midrule
     \end{tabular}
     \caption{Results by conflict and explanation type, including succesful conflict identification (after edits), the average edit distance to a compiling and passing test as well as the errors found.
-    OkHttp is omitted, as the LLM failed to generate any tests, only imports.
+    OkHttp is omitted, as the LLM failed to generate any tests.
     \label{tab:results:rq2}}
 \end{table}
 
@@ -256,25 +256,25 @@ Antlr (PF) Manual           & & F & F & F & P & & F & F & F & P & & F & F & F & 
     \end{tabular}
     \caption{Test compilation and running results in base (b), branch A,
     branch B, and merge (M).  C stands for compilation failures, R for runtime errors,
-    F for failing test, and P for passing tests. The cases in italic indicates tests that were generated with deprecated Junit features.
-    Most rows are found where multiple unit tests were generated.
+    F for failing test, and P for passing tests. The cases in italic are tests that were generated with deprecated Junit features.
+    Several rows are found where multiple unit tests were generated.
     \label{tab:results:rq2tests}}
 \end{table}
 
 
-Analysis of \Cref{tab:results:rq2tests} allows us to identify which cases identify the conflict, and which did not.
+Analysis of \Cref{tab:results:rq2tests} allows us to identify in which cases the conflict was identified, and which ones it was not.
 It is worth examining the results and what they mean, starting by the failing examples:
 %
 \begin{itemize}
   \item PPPP: The test always passes, due to the correct testing of a feature not affected by the merge.
 
   \item FFPP and CCPP: The test passes in branch B and in merge. This indicates a behaviour was introduced and remained unaltered in the merge, thus it is not a conflict in itself.
-  This was common for Point (CM) ChatGPT, as the prompt induced the generation of tests for \texttt{distance}, which correctly calculated and asserted the euclidean distance of a given point.  The test for the \texttt{move} method failed to the same, thus those required correction.
+  This was common for Point (CM) ChatGPT, as the prompt induced the generation of tests for \texttt{distance}, which correctly calculated and asserted the euclidean distance of a given point.  The test for the \texttt{move} method failed to do the same, its expected distances were always wrong, thus those required correction.
 
   \item CPCP: The same as the previous example, but the change introduced is in branch A.
 \end{itemize}
 %
-The examples that show a semantic conflict is present require failure in all brances except merge, or compilation failure in base and one of the branches and failure on the other.
+The cases that show that a semantic conflict is present require failure in all brances except merge, or compilation failure in base and one of the branches and failure on the other.
 These are:
 \begin{itemize}
   \item FFFP
@@ -282,24 +282,24 @@ These are:
   \item CFCP
 \end{itemize}
 %
-All these examples show that behaviour is emergent: something which was never true in any of the previous branches becomes true. The behaviour being asserted is thus the
+In all these cases there is emergent behaviour: something which was never true in any of the previous branches becomes true. The behaviour being asserted is thus the
 emergent behaviour that occurs in merge.
 
-If we observe the results, particularly the errors found, we can see that the main issue present
-is incorrect assertions. While in some cases these are understandable (such as the case of RO,
-where the values to verify are hash and thus hard to know without running the code), most of the time
+If we observe the results, particularly the errors found, we can see that the main issue is the presence
+of incorrect assertions. While in some cases these are understandable (such as the case of RO,
+where the values to verify are hash values and thus hard to know without running the code), most of the time
 they were the result of simple logical or mathematical errors, things that are trivial for a human to get right
 and thus also correct.
-It is hard to identify why exactly it finds it so hard to get the right asserts. If we observe the cart example,
+It is hard to identify why exactly ChatGPT finds it so hard to get the right asserts. If we observe the cart example,
 we find that tests generated for \texttt{distance} were always correct. These consisted of a simple \texttt{x + y} addition.
 However, tests generated for \texttt{move} always had incorrect assertion values; in turn these were just \texttt{x + distance} and \texttt{y + distance} additions.
 Given that it shows it can correctly calculate \texttt{distance} it is hard to fathom why it struggles
-to use it in addition: we can perhaps suggest there is making the association between the method call and the returned value it represents.
+to use it in addition. This might happen because it is making the association between the method call and the returned value it represents.
 
-Ocasional compilation errors occurred due to the generation of methods that are not present in the code, such as \texttt{getUser}.
-In one case, we find an interesting error: the codebase contains methods named ``setResgistration''.
-For the most part they are ignored, as they are not necessary to identify the conflict. In one trial, however,
-the method is called for Producer. However the `Resgistration'' typo is corrected: ``producer.setRegistrationNumber(123);''.
+Occasional compilation errors occurred due to the generation of methods that are not present in the code, such as \texttt{getUser}.
+In one case, we find an interesting error: the codebase contains a method named ``setResgistration'', with an obvious typo.
+For the most part it is ignored, as it is not necessary to identify the conflict. In one trial, however,
+the method is called for Producer, but correctly spelled: ``producer.setRegistrationNumber(123);''.
 Naturally, this stops code from compiling, but it is a noteworthy example of how LLMs, due to their nature as
 predictive models, can fail in outlier cases, such as an unexpected typo in method namings.
 
