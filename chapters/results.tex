@@ -345,14 +345,14 @@ public void testTotalCostWithoutCoupon() {
     assertEquals(-45, cart.getUser().getBalance(), 0.001);
 }
 \end{response}
-has an edit distance of 121, has correction requires extracting the user for access:
+has an edit distance of over 100, as correction requires extracting the user for access:
 \begin{response}
 @Test
 public void testSumItemsWithCoupon() {
     Cart cart = new Cart(new User());
     Item item = new Item(50, true); // Item with coupon
     cart.add_item(item);
-    assertEquals(0, cart.sum_items(), 0.001);
+    assertEquals(\textbf{0}, cart.sum_items(), 0.001);
 }
 
 @Test
@@ -360,7 +360,7 @@ public void testSumItemsWithoutCoupon() {
     Cart cart = new Cart(new User());
     Item item = new Item(50); // Item without coupon
     cart.add_item(item);
-    assertEquals(0, cart.sum_items(), 0.001);
+    assertEquals(\textbf{0}, cart.sum_items(), 0.001);
 }
 
 @Test
