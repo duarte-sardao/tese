@@ -390,7 +390,7 @@ ChatGPT explanation the conflict these asserts were more often correct. This is 
 which claims the error throwing behaviour in merge is not intended, leading for tests that assert that nothing is thrown.
 It is thus likely good practice to not make value judgements on the behaviour of the code in merge.
 
-On the topic of compilation errors, it is worth nothing often, for Cart (CM) these were related to constructors, as the constructors
+On the topic of compilation errors, it is worth noting that in the case of Cart (CM) these were often related to constructors, as the constructors
 for the other classes involved in the Cart conflicts (Item and User) were not included in the prompt. It is interesting
 to observe what the common error is: the introduction of extra parameters. For example, in the code of Cart only the fields
 value and amount of Item are accessed. However, Item was frequently iniatilized with a constructor with three parameters: Name,
@@ -405,8 +405,8 @@ providing extra information in the prompt which could cause confusion. A possibl
 as shown by ChatTester~\cite{kn:chattester}, possibly with the addition of corresponding headers. This corrective approach could also be utilized
 to fix assert errors. In effect, it would be an automated way to do the manual corrections we carried out.
 
-Some other issues with constructors we observed are not so obvious to solve: namely that despite knowing of available constructors, there is no guarantee
-the correct one for the situation will be used. We can see the case of Cart (PM): due to changes in the Item class, constructor information came included
+Some other issues with constructors we observed are not so obvious to solve, namely the fact that despite being informed of available constructors, there is no guarantee
+the correct one for the situation will be used. We can see this in the case of Cart (PM): due to changes in the Item class, constructor information came included
 in the diff section of the prompt. This led to the creation of tests using (Value, Coupon) and (Value) format.
 \begin{response}
     @Test
@@ -443,8 +443,8 @@ in the diff section of the prompt. This led to the creation of tests using (Valu
         assertEquals(-45, cart.getUser().getBalance(), 0.001);
     }
 \end{response}
-Notably these constructors don not set the amount field, which is thus 0, rendering the items useless for any value calculations.
-Rectification would require understanding this logic error and thus is liable to be more difficult to achieve. It is for these representations
+Notably these constructors do not set the amount field, which is thus 0, rendering the items useless for any value calculations.
+Rectification would require understanding this logic error and thus is liable to be more difficult to achieve. It is for this reason
 we have so few successes for Cart (PM): while we corrected the asserts to get passing tests in merge (in this case, setting them to 0, as no
 value is subtracted), these corrections do not aid in identifying the conflict.
 
@@ -459,9 +459,9 @@ public void testHashString() {
 Within the parameters of our work and a corrective system that works off compilation and test errors, this is the most problematic case: as the test works perfectly in merge,
 there is nothing prompting us for repair and repair would require more than simply changing a value, but to actually change the type of assert itself.
 
-Retrofit stands as an outlier and indeed we did correct the generated tests as they are so deviated from correctness, any edit would have to fundamentally alter the setup and structure of the test,
+Retrofit stands as an outlier and indeed we did correct the generated tests as they were so deviated from correctness, any edit would have to fundamentally alter the setup and structure of the test,
 to a point where if henceforth the test worked, we could not say it reflected anything on ChatGPT's capabilities.
-From observing, it is clear the LLM in a way does not have enough information to correctly generate tests and thus opts for generating non-existent mocks:
+Our experiments show that the LLM in a way does not have enough information to correctly generate tests and thus opts for generating non-existent mocks:
 \begin{response}
 @Test(expected = IllegalArgumentException.class)
 public void testBuildRelativeUrlWithNullPathParam() throws UnsupportedEncodingException {
@@ -510,10 +510,10 @@ public void testBuildBody_NullMultipartPart() {
            .build();
 }
 \end{response}
-It is worth noting none of the tests seem to attempt to test both modified behaviours at once (the addition of the character '?' to query parameters and null handlings). Thus even if correctly designed, they would not detect the conflict.
+It is worth noting none of the tests above seem to attempt to test both modified behaviours at once (the addition of the character '?' to query parameters and null handlings). Thus even if correctly designed, they would not detect the conflict.
 However this could always be a prompt issue.
 
-It is worth nothing Retrofit has a large existing test suite, including a Helper class which is very helpful for setting up the RequestBuilder with appropriate arguments.
+It is also worth noting that Retrofit has a large existing test suite, including a Helper class which is very helpful for setting up the RequestBuilder with appropriate arguments.
 Exploratory work had shown that feeding this test class and prompting for generation on its style could lead to the generation of working (but not detecting) tests. It is probable then,
 that for these complex real-world scenarions, aiding test generation by giving examples of existing test suites will be a necessary part of the prompt. Indeed, even if ChatGPT could generate
 working tests regardless, it would still be useful for developers to have them more closely conform the existing suite.
