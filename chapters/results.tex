@@ -307,8 +307,9 @@ predictive models, can fail in outlier cases, such as an unexpected typo in meth
 It is noticeable that for Cart (CM), the manual explanation test cases required slight more editing, while the reverse
 is observed for Cart (PM). An explanation might be that one type of prompt generates more complex and longer tests. However as can be seen in
 \cref{tab:results:rq2tests}, both examples have comparable amount of test cases and test length does not vary much.
-It is possible these are the results of outliers: that if we for example observe Cart (PM), ChatGPT explanation, the results are significantly weighed by
-trial 3, which requires significant correction due to the way it tries to access the user:
+It is possible these are the results of outliers. If we for example observe ChatGPT's explanations for Cart (PM), the results are significantly weighed by
+trial 3, which requires significant correction due to the way it tries to access the user. Recall that Cart offers no getter for User, but instead makes use
+of public fields.
 \begin{response}
 @Test
 public void testSumItemsWithCoupon() {
@@ -364,22 +365,22 @@ public void testSumItemsWithoutCoupon() {
 
 @Test
 public void testTotalCostWithCoupon() {
-    User user = new User();
-    Cart cart = new Cart(user);
+    \textbf{User user = new User();}
+    Cart cart = new Cart(\textbf{user});
     Item item = new Item(50, true); // Item with coupon
     cart.add_item(item);
     cart.checkout("loyal");
-    assertEquals(0, user.balance, 0.001);
+    assertEquals(0, \textbf{user.balance}, 0.001);
 }
 
 @Test
 public void testTotalCostWithoutCoupon() {
-    User user = new User();
-    Cart cart = new Cart(user);
+    \textbf{User user = new User();}
+    Cart cart = new Cart(\textbf{user});
     Item item = new Item(50); // Item without coupon
     cart.add_item(item);
     cart.checkout("loyal");
-    assertEquals(0, user.balance, 0.001);
+    assertEquals(0, \textbf{user.balance}, 0.001);
 }
 \end{response}
 This same error of trying to access user from cart can be found in other ChatGPT results in PM, but it is ambiguous
