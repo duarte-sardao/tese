@@ -609,20 +609,20 @@ results compare to the results of the prompt used in RQ2?}\label{sec:results:rq3
     Trials    & \multicolumn{2}{c}{3} & \multicolumn{2}{c}{1} & \multicolumn{2}{c}{3} & \multicolumn{2}{c}{1} \\
     \bottomrule
     \end{tabular}
-    \caption{Results for Prompt 1, 2, 3 and 4, listing how many tests compile (or run without errors) and from those, how many tests pass.\label{tab:results:rq3t1}}
+    \caption{Results for Prompt 1, 2, 3 and 4, listing how many tests compile (or run without errors) and from those, how many tests pass.. The trials row indicates how many times each prompt was run.\label{tab:results:rq3t1}}
 \end{table}
 
 %compilation/runtime
 
 \Cref{tab:results:rq3t1} allows us to observe that issues relating to compilation and correct assertions remain
-a problem for these prompts, confirming this is not necessarily just a issue with the prompt we developed.
+a problem for these prompts, confirming this is not necessarily just an issue with the prompt we developed.
 %
 Particular prominent issues like the issue of incorrect constructors %, such as in the case of Item,
 remained relevant
 and more prevalent as more test cases were generated for each prompt.
 
 Moreover, new issues with the usage of non-existent methods arose. Whereas before these largely happened with the classes that were not present
-in the prompt, we observed the adaptation of the \texttt{add\_item(Item)} method into one that took an list input, in Prompt 3:
+in the prompt, we observed the adaptation of the \texttt{add\_item(Item)} method into one that took a list input, in Prompt 3:
 \begin{response}
     @Before
     public void setup() {
@@ -640,8 +640,8 @@ which goes in line with our previous assessments that issues often arise when ou
 
 Of note is the case of Prompt 3: while it prompted the LLM to use mocks and reflection when possible, it used these features
 for all cases, even though these were unnecessary for the vast majority of cases. It did however generate one passing test for OkHttp,
-which so far we had failed to do and where other prompts failed too, as they all sought to access the private method copyWithDefaults().
-Of note, however, the two compilation failures for OkHttp in Prompt 3 also dealt with private access, but to a field rather than a method.
+which so far we had failed to get and where other prompts failed too, as they all sought to access the private method copyWithDefaults().
+However, the two compilation failures for OkHttp in Prompt 3 also failed due to private access, but to a field rather than a method.
 
 Prompt 4 suffered from limitations of generation and it would often stop generating midtest. For our purposes these were cropped and not counted for the analysis.
 This limitation makes sense, as Copilot is primarily targeted at helping developers complete code, as an auxiliary tool, not as a tool to generate very large
@@ -665,11 +665,12 @@ These were Cart (PF) for Prompt 1 as well as Cart (PM) for Prompt 3.
     Antlr (PF)       & 1 & 1 & 0 & 1 \\
     OkHttp (PM)      & 0 & 0 & 0 & 0 \\
     Retrofit (PM/CM) & 0 & 0 & 0 & 0 \\
+    \midrule
     Trials           & 3 & 1 & 3 & 1 \\
     %\midrule
     \bottomrule
     \end{tabular}
-    \caption{Number of tests that identify the conflict, if simple corrections are made such as in RQ2\label{tab:results:rq3t2}}
+    \caption{Number of tests that identify the conflict, if simple corrections are made such as in RQ2. The trials row indicates how many times each prompt was run.\label{tab:results:rq3t2}}
 \end{table}
 
 In \Cref{tab:results:rq3t2}, we can observe that by applying the same correction process we carried out in
@@ -907,13 +908,14 @@ test logic. For example, for the same subject:
         cart.add_item(item);
     }
 \end{response}
-It is worth nothing for this comparison we closely followed Prompt 2's format for 4, with the main variable being the usage of Copilot
+It is worth noting that for this comparison we closely followed Prompt 2's format for 4, with the main variable being the usage of Copilot
 instead of ChatGPT. While in this case the metrics between these two were comparable, we have to note that better results, particularly
-in regards to compilation, might have been achieved if we had some adopted some known good practices for Copilot generation, such as giving
+in regards to compilation, might have been achieved if we had adopted some known good practices for Copilot generation, such as giving
 context of existing tests~\cite{kn:githubcopilot}. But it is also true that test context might also be applicable to our ChatGPT prompts,
 after adaptation. The downside is this requires existing tests, which should usually be the case but not always.
 
-In general we verify then that yes, while existing prompts can produce similar results to the prompt developed for RQ2
-and can in some cases test the emergent behaviour, this comes with higher randomness and thus associated effort.
+\medskip
+Overall, the response to RQ3 is yes, existing prompts can produce similar results to the prompt developed for RQ2
+and can in some cases test the emergent behaviour. However, this comes with higher randomness and thus associated effort.
 By prompting with the explanation of the conflict provided, we can achieve positive results more reliably as the
 LLM is given the exact information required on what behaviour needs to be verified.
