@@ -7,7 +7,7 @@ In this thesis, we presented and explored the problem of software merges, more s
 We explored the related works that have provided avenues of study and structures to guide the development of our solution. Specifically, we explored previous work on test generation to identify semantic conflicts, the state of the art of automated test generation, and the usage of Large Language Models (LLMs), in particular ChatGPT, for test generation, with specific focus on the importance of appropriate prompting as well as output correction.
 
 % By establishing the three research question we established, we could investigate the viability of using LLMs in this way. From this we can say:
-Our empiricaly study revealed that:
+Our empirical study revealed that:
 %
 \begin{itemize}
   \item %\textbf{RQ1:} We established that
@@ -21,7 +21,7 @@ was the complexity of some subjects, particularly the real-world ones, where Cha
 
   \item %\textbf{RQ3:} By investigating state of the art prompts, we observed that
   While ChatGPT fed with state of the art prompts could still generate tests that adequately revealed the conflict (after correction),
-these came with downsides, due to the lack of focus provided by the detailed explanation: there was higher variability as it was not guaranteed the right setup would be attempted.
+this came with downsides, due to the lack of focus provided by the detailed explanation: there was higher variability as it was not guaranteed the right setup would be attempted.
 For example, in tests that required a User class to have the admin field set to true, nothing in the prompt indicated this and while generating many tests will increase the chances
 of this field being set, more tests necessarily imply more time and work.
 \end{itemize}

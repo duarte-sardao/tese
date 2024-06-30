@@ -58,7 +58,7 @@ the results are highly variable, which highlights the importance of running thre
 For example, the Point class had high variation: two of the results failed to identify any conflict at all (despite being so simple), but one of the three not only identified, but quite accurately describe its origin and results.
 This remained a general trend, resulting on the average value of 1.0 being predominant for metric C.
 
-It is however worth adressing the exceptions: Cart (CM), which always yields a positive response and Cart (PF) as well as Antlr (PF), which always yield negative responses.
+It is however worth addressing the exceptions: Cart (CM), which always yields a positive response and Cart (PF) as well as Antlr (PF), which always yield negative responses.
 Immediately we can observe that both purely negative examples are of type ``Parallel Field''. When we analyze their responses, we see a pattern: the changes made to the branches 
 are incorrectly described.
 
@@ -115,8 +115,8 @@ Our hypothesis is that the conflict is far too subtle to be detected: in both ca
 The merging of these alterations leads to emergent behaviour: the sets and lists returned are different, with different sizes, when compared to both branches.
 However while the behaviour is emergent, it is both expected and likely desirable, hence why it is probably not being seen as conflict.
 
-In contrast to these scenarios, which may be so subtle ChatGPT does not understand them as conflicts, we find subjects so complicated, the LLM struggles to responds.
-We can observe this with OkHttp, for which no conclusive answers were generated. In particular it tended to offer advice on how to identify and diagnose semantic conflicts and make good merges. This is a behaviour that was also observed with other complex, real-world conflicts, during the period of ad-hoc testing.
+In contrast to these scenarios, which may be so subtle ChatGPT does not understand them as conflicts, we find subjects so complicated, the LLM struggles to respond.
+We can observe this with OkHttp, for which no conclusive answers were generated. In particular, it tended to offer advice on how to identify and diagnose semantic conflicts and make good merges. This is a behaviour that was also observed with other complex, real-world conflicts, during the period of ad hoc testing.
 \begin{response}
 ### Potential Semantic Conflict:
 While there is no direct semantic conflict, there could be conflicts in the usage and interpretation of the `transports` field and its associated methods. For instance:
@@ -131,7 +131,7 @@ However, when merging both changes, we need to ensure that the introduced hostna
 \end{response}
 
 In a nutshell, the situations in which it identifies the conflicts are simple fabricated scenarios with significant alterations to behaviour. When the emergent behaviour is small and expected, such as those of PF, the LLM does not view it as a conflict, indicating a bias to clearly unexpected and unintended behaviour. On the other side, if the class is of significant complexity, it becomes harder for the LLM to extract valuable information.
-We see these issues combined in OkHttp as the conflict is straighforward: parallel changes result in an object that is different from both branches, thus there is emergent behaviour. Simultaneously, the class is significantly more complex than the other subjects. Thus while in the PF examples, the possibility of a conflict is flat out dismissed,
+We see these issues combined in OkHttp as the conflict is straightforward: parallel changes result in an object that is different from both branches, thus there is emergent behaviour. Simultaneously, the class is significantly more complex than the other subjects. Thus while in the PF examples, the possibility of a conflict is flat out dismissed,
 two of the answers for OkHttp accept the possibility, arguing that more study needs to be done on transports and the hostname verifier respectively.
 
 To improve identification, further work should, on one hand, explore how to provide a better understanding of semantic conflicts, specifically that emergent behaviour is the result of a semantic conflict.
@@ -151,7 +151,7 @@ If the intended behavior was to preserve the default `hostnameVerifier` as defin
 \end{response}
 In this case, the changes made in only one branch are described as a conflict.
 
-However, most cases were of imprecisions and omissions, not entirely wrong descriptions. In some cases, these were the result of limitations of our prompt.
+However, most cases were imprecisions and omissions, not entirely wrong descriptions. In some cases, these were the result of limitations of our prompt.
 Particularly, with the ``Remove Override'' and ``Overload by Access Change'' subjects, the LLM was limited because the prompt only included information for the target class.
 Thus, ChatGPT understand there would be a problem with simultaneously adding a dependency to a method and removing its override, but lacking access to the method being overriden,
 could not give an actual description of what the error would entail.
@@ -166,12 +166,12 @@ Now, in the merged version, both changes are included. So, when an admin user pr
 
 Therefore, the semantic conflict arises from the contradictory behaviors introduced by the changes in versions A and B, specifically regarding how the cost is handled for admin users and the checkout process.
 \end{response}
-It is possible this is due to the very straighforward logic of the CM example. In paritcular, it is hard to describe the conflict without mentioning the relation between admin and the method throwing.
+It is possible this is due to the very straightforward logic of the CM example. In paritcular, it is hard to describe the conflict without mentioning the relation between admin and the method throwing.
 What is surprising is that due to some minor changes in the Cart class, we re-ran these tests and originally this metric was much lower. Why there was such an improvement is unknown but it is evidence of the variability of Large Language Models.
 
 It is difficult to assess to what extent the type of conflict affects the correctness of explanations. If we observe PM and CM, Cart (PM) and Point (CM) are comparable. Cart (CM) has near perfect scores while OkHttp (PM) and Retrofit (PM/CM) fail completely.
 It seems by far that the complexity of the conflict is the determining factor and this complexity can be noted as the complexity of the whole class under test (with OkHttp and Retrofit being the clear outliers), but also in the intricacies of the conflict.
-We observe Cart (CM) is fairly straighforward: if the user is an admin, checkout throws and exception. Indeed, even without any of the merge info, it would be fairly trivial to identify this is unintended, whereas
+We observe Cart (CM) is fairly straightforward: if the user is an admin, checkout throws and exception. Indeed, even without any of the merge info, it would be fairly trivial to identify this is unintended, whereas
 Point and Cart (PM) require the identification of the original behaviour and how it has changed.
 
 We can conclude that identification does not necessarily lead to a proper explanation. 
@@ -193,7 +193,7 @@ From \Cref{tab:results:rq2tests} we can observe that:
 \begin{itemize}
   \item The main obstacle to the detection of the conflict was incorrect asserts, present in nearly every case.
   \item In non-compiling tests, those generated with explanations given by ChatGPT tend to require more correction.
-  \item Tests are generally compilable or very close to succesful compilation, with constructor and other errors, such as usage of non-existent getters as the main issues.
+  \item Tests are generally compilable or very close to successful compilation, with constructor and other errors, such as usage of non-existent getters as the main issues.
 \end{itemize}
 
 \begin{table}[t]
@@ -216,7 +216,7 @@ From \Cref{tab:results:rq2tests} we can observe that:
     Retrofit (PM/CM) Manual  & 0 & N/A & Other \\
     \midrule
     \end{tabular}
-    \caption{Results by conflict and explanation type, including succesful conflict identification (after edits), the average edit distance to a compiling and passing test as well as the errors found.
+    \caption{Results by conflict and explanation type, including successful conflict identification (after edits), the average edit distance to a compiling and passing test as well as the errors found.
     OkHttp is omitted, as the LLM failed to generate any tests.
     \label{tab:results:rq2}}
 \end{table}
@@ -257,7 +257,7 @@ Antlr (PF) Manual           & & \textbf{F} & \textbf{F} & \textbf{F} & \textbf{P
     \caption{Test compilation and running results in base (b), branch A,
     branch B, and merge (M).  C stands for compilation failures, R for runtime errors,
     F for failing test, and P for passing tests. The cases in italic are tests that were generated with deprecated Junit features.
-    The cases in bold indicate succesful tests.
+    The cases in bold indicate successful tests.
     Several rows are found where multiple unit tests were generated.
     \label{tab:results:rq2tests}}
 \end{table}
@@ -386,14 +386,14 @@ public void testTotalCostWithoutCoupon() {
 This same error of trying to access user from cart can be found in other ChatGPT results in PM, but it is ambiguous
 whether this is somehow the result of the prompt or coincidental generations. On the other side, Cart (CM) tended to generate
 asserts of type AssertThrow and AssertNotThrow, which often had to be reversed to be in line with merge, for manual, whereas for
-ChatGPT explanation the conflict these asserts were more often correct. This is clearly an issue with the manually written explanation,
+the ChatGPT explanation of the conflict these asserts were more often correct. This is clearly an issue with the manually written explanation,
 which claims the error throwing behaviour in merge is not intended, leading for tests that assert that nothing is thrown.
 It is thus likely good practice to not make value judgements on the behaviour of the code in merge.
 
 On the topic of compilation errors, it is worth noting that in the case of Cart (CM) these were often related to constructors, as the constructors
 for the other classes involved in the Cart conflicts (Item and User) were not included in the prompt. It is interesting
 to observe what the common error is: the introduction of extra parameters. For example, in the code of Cart only the fields
-value and amount of Item are accessed. However, Item was frequently iniatilized with a constructor with three parameters: Name,
+value and amount of Item are accessed. However, Item was frequently initialized with a constructor with three parameters: Name,
 Value and Amount. It is fair to assume the Item class would both have a name field and that it would come first in the constructor
 and it is likely the training data had many examples of this. Thus it is worth pointing out that testability of code by LLMs can be
 improved by closely following norms and rule of thumb expectations and corollarily LLMs will struggle to effectively construct tests
@@ -515,13 +515,13 @@ However this could always be a prompt issue.
 
 It is also worth noting that Retrofit has a large existing test suite, including a Helper class which is very helpful for setting up the RequestBuilder with appropriate arguments.
 Exploratory work had shown that feeding this test class and prompting for generation on its style could lead to the generation of working (but not detecting) tests. It is probable then,
-that for these complex real-world scenarions, aiding test generation by giving examples of existing test suites will be a necessary part of the prompt. Indeed, even if ChatGPT could generate
+that for these complex real-world scenarios, aiding test generation by giving examples of existing test suites will be a necessary part of the prompt. Indeed, even if ChatGPT could generate
 working tests regardless, it would still be useful for developers to have them more closely conform the existing suite.
 
 Despite all the problems mentioned previously, the results are generally quite good, as most errors are relatively small and easily fixable with further prompting or manual edits as we did.
 Thus we can say with some certainty that for these simple cases, most of which where ChatGPT can identify the conflict with some degree of confidence, it can also generate appropriate unit tests.
 It is unfortunate that test generation for OkHttp failed so badly was to not even generate tests, as that class was far more intricate and could give evidence to issues such as dealing with
-private methods. But it has to be understood that these sort of issues are a possibility given the volatility of LLMs.
+private methods. But it has to be understood that these sorts of issues are a possibility given the volatility of LLMs.
 
 
 
@@ -643,7 +643,7 @@ for all cases, even though these were unnecessary for the vast majority of cases
 which so far we had failed to get and where other prompts failed too, as they all sought to access the private method copyWithDefaults().
 However, the two compilation failures for OkHttp in Prompt 3 also failed due to private access, but to a field rather than a method.
 
-Prompt 4 suffered from limitations of generation and it would often stop generating midtest. For our purposes these were cropped and not counted for the analysis.
+Prompt 4 suffered from limitations of generation and it would often stop generating mid test. For our purposes these were cropped and not counted for the analysis.
 This limitation makes sense, as Copilot is primarily targeted at helping developers complete code, as an auxiliary tool, not as a tool to generate very large
 code blocks without developer interference.
 
@@ -719,8 +719,8 @@ obscured.
 Prompt 3 specifically suffer from this degree of excessive mocking when not necessary, either obscuring the behaviour of
 the actual code under test or generating tests that cannot be corrected easily, without reworking the test in general.
 
-The most significant difference, if we dismiss the specific case of Prompt 3, is that while we can achieve succesful results,
-there is much higher variability: in most cases for RQ2, if one trial could be ammended, all three could be, while here we observe much
+The most significant difference, if we dismiss the specific case of Prompt 3, is that while we can achieve successful results,
+there is much higher variability: in most cases for RQ2, if one trial could be amended, all three could be, while here we observe much
 higher variability. For example, Prompt 1, for Antlr, generates:
 \begin{response}
     @Test
@@ -741,7 +741,7 @@ higher variability. For example, Prompt 1, for Antlr, generates:
         assertEquals(badWords, badWordsSecondCall);
     }
 \end{response}
-This is a perfectly valid test and it verifies several importants features of the getBadWords method: it should
+This is a perfectly valid test and it verifies several important features of the getBadWords method: it should
 return a non-null, non-empty set, that contains some words we know and should be constant. However to identify the semantic
 conflict we need to check the size.
 
@@ -910,7 +910,7 @@ test logic. For example, for the same subject:
 \end{response}
 It is worth noting that for this comparison we closely followed Prompt 2's format for 4, with the main variable being the usage of Copilot
 instead of ChatGPT. While in this case the metrics between these two were comparable, we have to note that better results, particularly
-in regards to compilation, might have been achieved if we had adopted some known good practices for Copilot generation, such as giving
+in regard to compilation, might have been achieved if we had adopted some known good practices for Copilot generation, such as giving
 context of existing tests~\cite{kn:githubcopilot}. But it is also true that test context might also be applicable to our ChatGPT prompts,
 after adaptation. The downside is this requires existing tests, which should usually be the case but not always.
 
