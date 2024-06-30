@@ -1,6 +1,6 @@
 \chapter{Experimental results}\label{chap:results}
 
-This chapters answers \textbf{RQ1 -- RQ3}, which aim to study ChatGPT's ability to identify, explain, and reveal semantic conflicts. % the latter with both our prompt, which provides an explanation, and state-of-the-art prompts, which do not.
+This chapter answers \textbf{RQ1 -- RQ3}, which aim to study ChatGPT's ability to identify, explain, and reveal semantic conflicts. % the latter with both our prompt, which provides an explanation, and state-of-the-art prompts, which do not.
 
 \section[Research Question 1: Conflict Explanation]{RQ1: Can ChatGPT identify the presence of a semantic conflict, as well as explain it?}\label{sec:results:rq1}
 
@@ -59,7 +59,7 @@ For example, the Point class had high variation: two of the results failed to id
 This remained a general trend, resulting on the average value of 1.0 being predominant for metric C.
 
 It is however worth addressing the exceptions: Cart (CM), which always yields a positive response and Cart (PF) as well as Antlr (PF), which always yield negative responses.
-Immediately we can observe that both purely negative examples are of type ``Parallel Field''. When we analyze their responses, we see a pattern: the changes made to the branches 
+Immediately we can observe that both purely negative examples are of type ``Parallel Field''. When we analyse their responses, we see a pattern: the changes made to the branches 
 are incorrectly described.
 
 Cart(PF), incorrectly counts and describes the removal:
@@ -94,7 +94,7 @@ Further credence to this involves Cart (PM), where edits to the field of an auxi
 
 In contrast stands Retrofit: while ChatGPT reliably failed to correctly describe the changes, no edits were made to fields. From observation, we can say these errors may be due
 to the fact that the changes are similar and repeated across two complex methods, for branch B. We still see major misdescriptions for branch A, which is relatively simple, with a simple addition of an append to a string.
-We see examples of changes made in branch B being describe as changes made in A, such as null checks.
+We see examples of changes made in branch B being described as changes made in A, such as null checks.
 \begin{response}
     1. In `buildRelativeUrl()`:
     - Version A adds a null check for path parameters and throws an `IllegalArgumentException` if any of them are null. This ensures that path parameters are not null, which could lead to unexpected behavior or errors.
@@ -113,7 +113,7 @@ So, the merge is successful and preserves the intended changes from both version
 \end{response}
 Our hypothesis is that the conflict is far too subtle to be detected: in both cases some type of collection is altered, either with insertions or removals.
 The merging of these alterations leads to emergent behaviour: the sets and lists returned are different, with different sizes, when compared to both branches.
-However while the behaviour is emergent, it is both expected and likely desirable, hence why it is probably not being seen as conflict.
+However, while the behaviour is emergent, it is both expected and likely desirable, hence why it is probably not being seen as conflict.
 
 In contrast to these scenarios, which may be so subtle ChatGPT does not understand them as conflicts, we find subjects so complicated, the LLM struggles to respond.
 We can observe this with OkHttp, for which no conclusive answers were generated. In particular, it tended to offer advice on how to identify and diagnose semantic conflicts and make good merges. This is a behaviour that was also observed with other complex, real-world conflicts, during the period of ad hoc testing.
@@ -166,7 +166,7 @@ Now, in the merged version, both changes are included. So, when an admin user pr
 
 Therefore, the semantic conflict arises from the contradictory behaviors introduced by the changes in versions A and B, specifically regarding how the cost is handled for admin users and the checkout process.
 \end{response}
-It is possible this is due to the very straightforward logic of the CM example. In paritcular, it is hard to describe the conflict without mentioning the relation between admin and the method throwing.
+It is possible this is due to the very straightforward logic of the CM example. In particular, it is hard to describe the conflict without mentioning the relation between admin and the method throwing.
 What is surprising is that due to some minor changes in the Cart class, we re-ran these tests and originally this metric was much lower. Why there was such an improvement is unknown but it is evidence of the variability of Large Language Models.
 
 It is difficult to assess to what extent the type of conflict affects the correctness of explanations. If we observe PM and CM, Cart (PM) and Point (CM) are comparable. Cart (CM) has near perfect scores while OkHttp (PM) and Retrofit (PM/CM) fail completely.
@@ -275,7 +275,7 @@ It is worth examining the results and what they mean, starting by the failing ex
   \item CPCP: The same as the previous example, but the change introduced is in branch A.
 \end{itemize}
 %
-The cases that show that a semantic conflict is present require failure in all brances except merge, or compilation failure in base and one of the branches and failure on the other.
+The cases that show that a semantic conflict is present require failure in all branches except merge, or compilation failure in base and one of the branches and failure on the other.
 These are:
 \begin{itemize}
   \item FFFP
@@ -643,7 +643,7 @@ for all cases, even though these were unnecessary for the vast majority of cases
 which so far we had failed to get and where other prompts failed too, as they all sought to access the private method copyWithDefaults().
 However, the two compilation failures for OkHttp in Prompt 3 also failed due to private access, but to a field rather than a method.
 
-Prompt 4 suffered from limitations of generation and it would often stop generating mid test. For our purposes these were cropped and not counted for the analysis.
+Prompt 4 suffered from limitations of generation and it would often stop generating mid-test. For our purposes these were cropped and not counted for the analysis.
 This limitation makes sense, as Copilot is primarily targeted at helping developers complete code, as an auxiliary tool, not as a tool to generate very large
 code blocks without developer interference.
 
@@ -742,7 +742,7 @@ higher variability. For example, Prompt 1, for Antlr, generates:
     }
 \end{response}
 This is a perfectly valid test and it verifies several important features of the getBadWords method: it should
-return a non-null, non-empty set, that contains some words we know and should be constant. However to identify the semantic
+return a non-null, non-empty set, that contains some words we know and should be constant. However, to identify the semantic
 conflict we need to check the size.
 
 A way to offset this higher variability is simply to generate more tests. Indeed, Prompt 2 specifically indicates the number of
@@ -837,7 +837,7 @@ but these come at higher costs: more tokens need to be generated, more time is s
 correction is required. The monetary and time costs are thus much higher.
 
 Prompt 4 also indicated the generation of 10 tests, but Copilot showed to be limited in how much it would generate at once,
-leading to less tests per generation. Furthermore tests showed less variance, with variation being mostly on values, not the
+leading to fewer tests per generation. Furthermore, tests showed less variance, with variation being mostly on values, not the
 test logic. For example, for the same subject:
 \begin{response}
     @Test
