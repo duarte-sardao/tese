@@ -25,7 +25,7 @@ Among merge conflicts, semantic merges arise as particularly difficult to resolv
 An example of a semantic conflict can be seen in the integration of parallel changes in a class such as Point, containing a method to calculate the distance to another Point: one developer in branch A changes the distance calculation (from euclidean to manhattan, for example), while in B another introduces a move() method, which uses the distance calculation as the value to move by. We find that upon a merge, while no errors are raised, the code exhibits altered behaviour from the original branches: specifically, the movement will behave differently.
 
 We sought to explore how the emerging field of Large Language Models can provide a breakthrough in our ability to test for the altered, introduced and lost behaviours arising from semantic conflicts. 
-Specifically, we analysed the ability of ChatGPT to describe the conflict present in a merge, as well as it capabality to generate appropriate unit tests that highlight the presence of semantic conflicts, with the description provided.
+Specifically, we analysed the ability of ChatGPT to describe the conflict present in a merge, as well as its capability to generate appropriate unit tests that highlight the presence of semantic conflicts, with the description provided.
 We concluded that, in most cases, ChatGPT demonstrates capacity for both tasks when presented with low complexity code. Another notable obstacle is the association between ``conflict'' and active software fault, which leads to difficulty identifying simpler conflicts.
 
 \bigskip\noindent
