@@ -4,7 +4,7 @@ The following sections introduce the two main topics dealt with in this disserta
 
 \section{Semantic Conflict Detection}
 
-The study of merge techniques and conflicts has a long history, likely even predating the specific terminology itself. Thus there is a large corpus of work to explore
+The study of merge techniques and conflicts has a long history, likely even predating the specific terminology itself. Thus there is a large corpus of work to explore.
 
 Several related works exist which seeks to develop methods that can more systemically identify adulterated behaviour arising from semantic conflicts.
 
@@ -91,7 +91,7 @@ Object-inherited method and concurrently add a dependency to it (UO) \\
 \end{table}
 
 
-Ti Jao et al have proposed test oracles for program merges. Most significantly, not only do they support two and three-way merges but also octopus merges. The developed tool, TOM (testing on merges), generates tests to identify unexpected and lost behaviour. For this, they implement diff-line as a criterion, guiding the tests to cover lines that have been modified between the different program versions, generating different assertions for different versions. Stability checking is done: the test is rerun five times before being handed to the developers. The tool identifies 45 three-way and 87 octopus merges, from a universe of 389 of each~\cite{kn:ji2022}.
+Ti Jao et al have proposed test oracles for program merges. Most significantly, not only do they support two and three-way merges but also octopus merges (merge with any number of branches). The developed tool, TOM (testing on merges), generates tests to identify unexpected and lost behaviour. For this, they implement diff-line as a criterion, guiding the tests to cover lines that have been modified between the different program versions, generating different assertions for different versions. Stability checking is done: the test is rerun five times before being handed to the developers. The tool identifies 45 three-way and 87 octopus merges, from a universe of 389 of each~\cite{kn:ji2022}.
 
 \Cref{table:tool-comparison} shows a comparison between some key features of the presented solutions.
 
@@ -123,7 +123,7 @@ is introduced in the process of merging, despite not being present in either bra
 but is then lost in the merge. While several existing works have established formal definitions for these behaviours~\cite{kn:taoji,kn:leuson},
 we focus on the definition formulated by~\citet{kn:nuno}, as they broadened previous formulations to consider cases where the test does not apply,
 ie, cases where the test does not compile. This is common when a conflict includes a method that was introduced in one branch: a test generated including
-it will compile for that branch and merge, but not the other branch or base.
+it will compile for that branch and merge, but not the other branch or base. A case of this is the example presented in the introduction \Cref{fig:conflict}: to test the emergent behaviour we would need to test checkout, and this test is not applicable for base and branch A.
 
 Thus, the behaviours are defined as:
 
@@ -145,7 +145,7 @@ Traditional methods of automated test generation can be divided into random and 
 
 Randoop is one such example of random test generation. Some of the disadvantages of this technique can be mitigated with the employment of feedback-direction~\cite{kn:randoop}. Effectively, the search space of possible random tests is pruned, by guiding the test generator towards valid cases, avoiding expansion on invalid test cases~\cite{kn:randoop}.
 
-EvoSuite implements search-based automatic test generation for Java code, aiming for tests that achieve high coverage, while being as small as possible and providing assertions. To achieve this they implement both evolutionary search to evolve the suite with respect to a coverage criterion and mutation testing to generate assertions~\cite{kn:evosuite}.
+EvoSuite implements search-based automatic test generation for Java and Python code, aiming for tests that achieve high coverage, while being as small as possible and providing assertions. To achieve this they implement both evolutionary search to evolve the suite with respect to a coverage criterion and mutation testing to generate assertions~\cite{kn:evosuite}.
 
 EvoSuiteR extends EvoSuite, aiming to provide automated generation of regression tests. Thus it takes account two versions of the software and aside from coverage, it considers state distance (``how different is the state of
 all objects in the test suite across the two versions'') and control flow distance (``how
@@ -258,7 +258,7 @@ The training of LLMs in open source repositories gives cause to the fear that au
 
 \section{Summary}
 
-The related work aids our own work in several ways: the work explored as regards unit test generation can provide show us a baseline functioning of the idea we are trying to implement. Particularly, we can use their statistics regarding percentage of conflicts found to assess whether our own solution is an improvement with regard to previous work.
+The related work aids our own work in several ways: the work explored as regards unit test generation shows us a baseline functioning of the idea we are trying to implement. Particularly, we can use their statistics regarding percentage of conflicts found to assess whether our own solution is an improvement with regard to previous work.
 
 Crucially important too is the work of \citet{kn:nuno} and, as previously mentioned, the developed Changes-Matcher.
 
