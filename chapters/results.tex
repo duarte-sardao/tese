@@ -56,7 +56,7 @@ E to whether the result of the conflict was correctly described.
 Initially just evaluating if ChatGPT can recognize the presence of a semantic conflict, we note that
 the results are highly variable, which highlights the importance of running three trials for our evaluation.
 For example, the Point class had high variation: two of the results failed to identify any conflict at all (despite being so simple), but one of the three not only identified, but quite accurately describe its origin and results.
-This remained a general trend, resulting on the average value of 1.0 being predominant for metric C.
+This remained a general trend, resulting on the average value of 0.9 for metric C.
 
 It is however worth addressing the exceptions: Cart (CM), which always yields a positive response and Cart (PF) as well as Antlr (PF), which always yield negative responses.
 Immediately we can observe that both purely negative examples are of type ``Parallel Field''. When we analyse their responses, we see a pattern: the changes made to the branches 
