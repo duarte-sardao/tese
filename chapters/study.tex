@@ -43,31 +43,32 @@ Castanho's collection~\cite{kn:nuno} differed from others, by including 10 fabri
 
 \citet{kn:leuson2} collected 28 merge commits with conflicts, from a total of 85 changes' pairs from 51 merge scenarios from 31 Java porjects. 22 of the cases were new and 63 were found in previous work.
 
-For our study we selected the subjects used in Castanho's study~\cite{kn:nuno}.  It is
-publicly available, closely related to our own work, thus also allowing us to
-draw direct comparisons.  Most importantly, it aggregates merge instances from
-both \citet{kn:leuson} and \citet{kn:safemerge}, while also providing valuable
-information, due to the work developed, such as the specific type of conflict
-present and whether it was detected and correctly tested by UNSETTLE~\cite{kn:nuno}
-(providing us with a ``base truth'').  Furthermore, since it includes a set of
-fabricated conflicts, we have a basis of simpler isolated examples that can aid us as
-they should be easier to identify, explain, and reveal.
+For our study we selected the subjects used in Castanho's study~\cite{kn:nuno}, for several reasons:
+\begin{itemize}
+  \item It is publicly available.
+  \item It is closely related to our own work, thus also allowing us to draw direct comparisons.
+  \item Aggregates merge instances from both \citet{kn:leuson} and \citet{kn:safemerge}
+  \item Provides valuable information, due to the work developed, such as the specific type of conflict present and whether it was detected and correctly tested by UNSETTLE~\cite{kn:nuno} (providing us with a ``base truth'').
+  \item Since it includes a set of fabricated conflicts, we have a basis of simpler isolated examples that can aid us as they should be easier to identify, explain, and reveal.
+\end{itemize}
 
-While analyzing Castanho's set~\cite{kn:nuno}, we found the predominant types of semantic
+To explain a collection of subjects to answer and evaluate the research questions we defined, we analyzed Castanho's set~\cite{kn:nuno}, finding that the predominant types of semantic
 conflicts in real scenarios where ``Parallel Changes in Field'', ``Parallel Changes in Method'',
 and ``Change Method''.  Using a simple Cart class as a base, three examples were
 fabricated for these scenarios.  This way, we gained access to a set of simple fabricated conflicts of this type.
-These Cart examples were part of the group of subjects used to answer and evaluate the research questions we defined.  These were complemented by a simple Point class, two examples fabricated by Castanho of type ``Override by Access Change'' and ``Remove Override'', %which had achieved good results in exploratory testing\todo{not clear.  perhaps to early to say this}, 
+
+These were complemented by a simple Point class, two examples fabricated by Castanho of type ``Override by Access Change'' and ``Remove Override'', as well as %which had achieved good results in exploratory testing\todo{not clear.  perhaps to early to say this}, 
 Antlr4, OkHttp and Retrofit, respectively a simple and two hard to test real-world scenarios.
+
 These provide unique challenges and help us observe how the LLMs handle specific situations: Antlr4 is simple to test, but the variety of methods 
 and the constructor might be confusing; OkHttp's conflict occurs in a private method, whose return values are not made
-public elsewhere; Retrofit, aside from requiring a intricate setup, has a conflict that occurs in a long complex method,
+public elsewhere; Retrofit, aside from requiring an intricate setup, has a conflict that occurs in a long complex method,
 necessitating very specific parameters to test.
 The collection of subjects and corresponding type of conflict can be found in \Cref{tab:subjects}.
 
 % It is worth examining each subject and it's corresponding conflict, to make understanding the results easier.
 
-\subsection{Point}
+\subsection{Subject: Point}
 
 \subsubsection{Conflict Type: Change Method}
 
@@ -78,7 +79,7 @@ In branches A and B, \texttt{move} is modified to increment by \texttt{distance}
 the manhattan distance.  The conflict then arises when code is merged. The method \texttt{move} was modified with the expectation that it would move
 the point based on the euclidan distance, but with the merging of the other branch it will move differently.
 
-\subsection{Fabricated}
+\subsection{Subjects: Fabricated}
 
 The Fabricated subject revolves around events: ticketing, scheduling, installations, etc. The two
 conflicts that make the two subjects relate to different parts of the code.
@@ -102,7 +103,7 @@ to \texttt{Event}: it checks if the \texttt{Producer} is null and if not, calls 
 call the \texttt{int} version of the method, as it is still public, but after the merge, the \texttt{Integer} version will be used instead,
 hence the conflict.
 
-\subsection{Cart}
+\subsection{Subjects: Cart}
 
 Cart consists of a simple class representing a shopping cart, with auxiliary classes for users and items.
 Its fields correspond to a dictionary of discounts, with string associated to doubles, a list of items in the cart
@@ -136,7 +137,7 @@ The conflict arises due to the handling of checkout. In branch A, a check is add
 \texttt{total\_cost} method returns 0. In branch B, a check is added in the \texttt{checkout} method: if \texttt{total\_cost} is 0, a runtime exception is thrown.
 Naturally these changes conflict in the merge.
 
-\subsection{Antlr}
+\subsection{Subject: Antlr}
 
 \subsubsection{Conflict Type: Parallel Field}
 
@@ -145,7 +146,7 @@ In branch A, the string ``del'' is added and in branch B, the string ``return'' 
 Thus in the merged version we will have a emergent version of the \texttt{BadWords}
 set, with different length and contents compared to both previous versions.
 
-\subsection{OkHttp}
+\subsection{Subject: OkHttp}
 
 \subsubsection{Conflict Type: Parallel Method}
 
@@ -156,7 +157,7 @@ the default hostname verifier with a custom implementation, \texttt{OkHostnameVe
 be different from both branches, and this difference will trickle down into the initialization of \texttt{HttpURLConnectionImpl}, which
 as the copy as an argument.
 
-\subsection{Retrofit}
+\subsection{Subject: Retrofit}
 
 \subsubsection{Conflict Type: Parallel and Change Method}
 
@@ -175,23 +176,23 @@ The version of GitHub Copilot was version 1.5.6.5692.
 \section{Research questions}
 
 \begin{itemize}
-  \item[\textbf{RQ1:}] Can ChatGPT identify the presence of a semantic conflict, as well as explain it?
+  \item[\textbf{RQ1:}] Can ChatGPT identify the presence of a semantic conflict in a merge commit, as well as explain it?
 
   \item[\textbf{RQ2:}] Given an explanation of a semantic conflict in a merge
   commit, can ChatGPT generate unit test cases that are able to identify it?
   % the emergent behaviour of to a semantic conflict, if given an explanation of it?
 
-  \item[\textbf{RQ3:}] Can state-of-the-art prompts lead ChatGPT to generate
+  \item[\textbf{RQ3:}] Can state-of-the-art prompts (which do not explain the conflict) lead ChatGPT to generate
   unit test cases that are able to identify semantic conflicts?  How do their
   results compare to the results of the prompt used in RQ2?
 \end{itemize}
 
 \section{Experimental procedure and metrics}
 
-\subsection{RQ1}
+\subsection{Research Question 1}
 
 In our first research question we established sought to more systematically evaluate ChatGPT's capabilities to assess and describe semantic conflicts.
-We first settled on a prompt, based on the prompts that were iteratively developed on previously work.
+We first settled on a prompt, based on the prompts that were iteratively developed on through experimentation.
 
 \begin{prompt}
 You are a software developer that has to assess whether there is a semantic conflict in a merge commit.  Given the base version of the class, the diff from base to a version A, the diff from base to a version B and the merged version of the class, assess whether there is a semantic conflict and explain it.
@@ -214,8 +215,10 @@ Merge version:
 \end{prompt}
 
 % For each semantic conflict example, as listed previously,
-The prompt was submitted three times to account for the randomess nature of the
-LLM, which in turn allowed us to see a broader range of responses and avoiding
+The prompt was submitted three times (in different conversations, to reinitiate the context)
+This value was chosen to as it provided sufficient variation to account for the randomness inherent to the
+LLM, without being too laborious to work with.
+This allowed us to see a broader range of responses and avoid
 what might be one-time flukes.
 
 As an example how one would instantiate this prompt is listed below for the
@@ -353,7 +356,7 @@ public class Point {
 % - Resolving this conflict would require ensuring consistency in the distance calculation method used throughout the class, either sticking with Euclidean distance or Manhattan distance for both `move()` and `distance()` methods.
 % \end{response}
 
-To evaluate the answers generated by ChatGPT, we established five metrics (A--E), each with likert scales.
+To evaluate the answers generated by ChatGPT, we established five metrics (A--E), based on the responses seen on our exploratory work, each with likert scales.
 %
 \begin{itemize}
   \item[\textbf{A}:] Changes between branches correctly identified (Correct description of Version A and B).
@@ -398,19 +401,21 @@ To evaluate the answers generated by ChatGPT, we established five metrics (A--E)
 % In this case, given the correctness of the answer, all metrics have perfect scores,
 % except for metric D (Effect of conflict described), due to the reduced confidence.
 
-\subsection{RQ2}
+\subsection{Research Question 2}
 
 In this research question we sought to evaluate ChatGPT's test generation ability. Specifically, whether it could generate tests that would show evidence of the semantic conflict, given an explanation of the conflict.
 For instance, taking the Point as an example, if ChatGPT generates a unit test that exercises the \texttt{move} method, we would identify the conflict by generating a test that passes in the merge but fails in branch A and branch B, corresponding to the definition of emergent behaviour,
 as described \ref{chap:rw:behaviours}. In this study we focused on emergent behaviours only.
 In this case, the test run in the different versions would show us the altered behaviour of \texttt{move} due to the conflict.
 
-It is known that the generation of incorrect code, whether semantically or syntatically incorrect is a frequent issue: \Citet{kn:wheredofail} showed the extent to which this applies across a varied range of LLMs,
+It is known that the generation of incorrect code, whether semantically or syntactically incorrect is a frequent issue: \Citet{kn:wheredofail} showed the extent to which this applies across a varied range of LLMs,
 indicating this is a general issue and not specific to any individual model. As regards ChatGPT (and test generation) specifically, \Citet{kn:chattester} found that only 42.1\% of generated tests compiled and a further
-24.8\% passed. Of those that did not pass, they failed because of faulty generation, not due to any preexisting bug in the code.
+24.8\% passed. Of those that did not pass, they failed because of faulty generation, not due to any pre-existing bug in the code.
 \Citet{kn:chattester} found the most common errors to involve symbol resolution, due to the usage of undeclared classes (which far overshadowed any other error), methods or variables. Other less frequent errors were accesses on private classes and the usage
 of invalid types for operations, constructor or method parameters.
 Errors during execution mainly fell on assertion errors, with a minor amount of runtime exceptions.
+Later research confirmed this pattern: for class-based Python programs, assertion errors comprised 70.96\% of all errors and runtime exceptions 25.38\%~\cite{kn:gpt4}. More impressively, possibly due to the use of the newer GPT4 model,
+the error rate is much lower, at 27.67\%.
 
 Taking this into account, to evaluate the tests that were generated, corrections were made if necessary. We strived for the smallest possible corrections that make the code compile and pass in merge, by correcting syntatic errors and failing asserts.
 For example, given the following generated test:
@@ -490,7 +495,7 @@ This way it could be evaluated to what extent this influence test generation res
 
 
 
-\subsection{RQ3}
+\subsection{Research Question 3}
 
 In this research question we sought to assess the relevance of our developed work by assessing the generative abilities of previous state-of-the-art prompts, which just generate tests for methods, with no conflict information.
 We also used GitHub Copilot, which allowed us to consider to what extent the usage of another LLM affects test generation.
@@ -503,7 +508,7 @@ We selected four prompts:
   \item Prompt \#4: Second part of prompt 2, the test skeleton, but instead used GitHub Copilot for completion.
 \end{itemize}
 %
-We then ran three trials were run for Prompt \#1 and Prompt \#3, whereas Prompt \#2 and \#4 only had one as they showed no variation (due to no temperature).
+Three trials were run for Prompt \#1 and Prompt \#3, whereas Prompt \#2 and \#4 only had one as they showed no variation (due to no temperature).
 We evaluated the prompts in two steps: in a first step we observed if the generated tests compiled and in case they did, if the tests generated are passing.
 In a second step, we examined the test logic itself to see if the tests can potentially identify the semantic conflict, if the same type of simple corrections applied in RQ2 were applied.
 
