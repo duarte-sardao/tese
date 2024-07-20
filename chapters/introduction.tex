@@ -6,8 +6,9 @@ We define the goal of our study and explain what research questions were establi
 
 \section{Motivation} \label{sec:motivation}
 
-Collective software development requires the handling of merge conflicts, as conflicts between parallel work arise. Called merge conflicts, as they arise when this parallel work is merged, they vary in their difficulty of detection.
+Collaborative software development requires the handling of merge conflicts, as conflicts between parallel work arise. Called merge conflicts, as they arise when this parallel work is merged, they vary in their difficulty of detection.
 Common textual conflicts, where the same line is altered by multiple people, are automatically detected by version control systems, allowing amendments to be easily made. However not all conflicts are so easily detected and their occurrence can bring with it the addition of software bugs to the system. Semantic merge conflicts, in particular, are hard to detect, both by software and human review and remain a hard to solve situation. Given that around 30\% of developers do not even actively monitor for merge conflicts and of those who do, mostly do it with reactive strategies~\cite{kn:lifecycle}, the ability to automatically detect these would be a great boon for the field of software development, especially as by developers own admissions, the longer a merge conflict is left unsolved, the harder it becomes to resolve it: ``Untangling takes days instead of minutes when it gets too out of hand.''~\cite{kn:lifecycle}.
+We can relate this to technical debt: while the initial issue may be minor, the accumulated ``interest'' can be a significant problem over time.
 
 The recent revolution in the field of Large Language Models (LLMs) may prove to add a valuable tool in tackling this, given their ability to describe the functioning of code snippets as well as generate them. These capabilities may allow us, with the correct development and prompting, to not only describe the semantic conflict present in a specific merge commit, but also to generate the appropriate unit test that identifies the lost or emergent behaviour associated with it.
 
@@ -21,19 +22,19 @@ With ``pessimistic locking'' a lock-modify-unlock paradigm was adopted, where a 
 
 Merge conflicts arise when parallel work cannot be automatically merged. Of this, several different types exist, as summarized by \citet{kn:tmens}:
 
-Textual conflicts occur when the same textual elements of code are modified in both branches of a merge. For example, when the same line of code is modified by two people in their respective branches.
-
-Syntactic conflicts arise from parallel changes that when merged do not generate textual conflicts, but the resulting merge creates code that is invalid given the languages rules. For example, programmer A renames a variable, while programmer B uses the variable somewhere (with the original name). There is no textual conflict, but the code will not compile due to the usage of an uninitialized variable.
-
-Finally, semantic conflicts occur when parallel changes do not have any textual conflict and their merge is syntactically valid, but the resulting code does not behave as expected, or exhibits lost or new unexpected behaviour.
+\begin{itemize}
+  \item Textual conflicts occur when the same textual elements of code are modified in both branches of a merge. For example, when the same line of code is modified by two people in their respective branches.
+  \item Syntactic conflicts arise from parallel changes that when merged do not generate textual conflicts, but the resulting merge creates code that is invalid given the languages rules. For example, programmer A renames a variable, while programmer B uses the variable somewhere (with the original name). There is no textual conflict, but the code will not compile due to the usage of an uninitialized variable.
+  \item Semantic conflicts occur when parallel changes do not have any textual conflict and their merge is syntactically valid, but the resulting code does not behave as expected, or exhibits lost or new unexpected behaviour.
+\end{itemize}
 
 Most VCS's, such as Git, implement textual merge tools (ergo, they can only identify textual conflicts). However, there are specialized tools that handle other types of merges. For instance, Turbomixer is also able to handle syntactic merges~\cite{kn:tmens}. The focus on textual merging is unsurprising as around 90\% of conflicts are textual~\cite{kn:lcsd} and syntactic conflicts are easy to identify after merging, as errors will be clearly indicated and programs will not compile.
 Semantic conflicts remain as both undetected by VCS's and hard to detect after merges. Thus, finding methods to automatically identify and highlight semantic conflicts in merge commits has been a persistent problem and a source of study in the field~\cite{kn:nuno,kn:leuson,kn:leuson2}.
 
 As a simple example of a merge conflict, consider a class ``Cart'' of a shopping app, subject to concurrent changes in two branches, as shown in \Cref{fig:conflict}.
-Initially Cart just has a method total\_cost that calculates the total cost given a percentage of discount.
+Initially Cart just has a method \texttt{total\_cost} that calculates the total cost given a percentage of discount.
 In branch A, the existing method is modified to take both tax and discount as parameters and the method is overloaded by a new version that only takes the tax parameter.
-In branch B, a checkout method is added, which calls the original total\_cost method. After merging, no error appears, but the checkout function will be running the total\_cost tax method, expecting the calculation of a discount. The example is shown in \Cref{fig:conflict}.
+In branch B, a \texttt{checkout} method is added, which calls the original \texttt{total\_cost method}. After merging, no error appears, but \texttt{checkout} will be running the \texttt{total\_cost} tax method, expecting the calculation of a discount. The example is shown in \Cref{fig:conflict}.
 
 From here the conflict arises, as after merging the behaviour of the checkout function is not the intended one: instead of calculating the cost with a discount, it now uses the value given for discount as a tax.
 To identify this conflict, we would need to generate a test that would find evidence of this emergent behaviour: in this case with a test for checkout that calculates the expected cost with tax. This test would pass on the merge commit and fail in Branch B and not compile in A (as checkout is not introduced),

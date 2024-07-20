@@ -1,13 +1,13 @@
 \chapter*{Resumo}
 %\addcontentsline{toc}{chapter}{Resumo}
 
-Em desenvolvimento de software colaborativo, trabalho paralelo, desenvolvido em diferentes ramos, tem de ser frequentemente integrado. Devido às diferenças do trabalho efetuado nos diferentes ramos, conflitos surgem frequentemente. Alguns conflitos são simples de detetar e rectificar, como conflitos de integração textuais, que surgem quando diferentes desenvolvedores editam a mesma linha em ramos diferentes: a maior parte de sistemas de controlo de versões consegue automaticamente detetar que a mesma linha foi alterada e impele o integrador a decidir numa solução: que alteração manter e que discartar.
+Em desenvolvimento de software colaborativo, trabalho paralelo, desenvolvido em diferentes ramos, tem de ser frequentemente integrado. Devido às diferenças do trabalho efetuado nos diferentes ramos, conflitos surgem frequentemente. Alguns conflitos são simples de detetar e rectificar, como conflitos de integração textuais, que surgem quando edições são feitas na mesma linha em ramos diferentes: a maior parte de sistemas de controlo de versões consegue automaticamente detetar que a mesma linha foi alterada e impele o integrador a decidir numa solução: que alteração manter e que discartar.
 
 Entre conflitos de integração, os semânticos emergem com um tipo particularmente difícil de resolver, porque não são detetados por sistemas de controlo de versões e, não tendo erros sintáticos, compilam com sucesso. 
 Um exemplo de um conflito semântico pode ser visto na integração de mudanças paralelas de uma classe Point, que contêm um método para calcular a distância para outro Point: num cenário em que um desenvolvedor num ramo A muda o cálculo de distância (de euclideana para manhattan, por exemplo), enquanto que no B outro introduz uma função move(), que usa o cálculo da distância como o valor para o movimento. Percebemos que depois de a integração nenhum erro é levantado, mas o comportamento está desviado dos ramos originais: especificamente, o movimento comportar-se-á de maneira diferente.
 
 Exploramos como o emergente ramo de Grandes Modelos de Linguagem pode fornecer um enorme avanço na nossa abilidade de testar o comportamento alterado, introduzido ou perdido devido a conflitos semânticos.
-Especificamente, analisamos a abilidade de ChatGPT para descrever o conflito presente numa integração, bem como a capacidade de gerar testes unitários apropriados that evidenciam a presença de conflitos semânticos, com a descrição fornecida.
+Especificamente, analisamos a abilidade de ChatGPT para descrever o conflito presente numa integração, bem como a capacidade de gerar testes unitários apropriados que evidenciam a presença de conflitos semânticos, com a descrição fornecida.
 Concluímos que, geralmente, o ChatGPT demonstra capacidade para ambas as tarefas quando apresentado código de pouca complexidade. Outro obstáculo prominente é a associação entre ``conflito'' e falha de software ativa, que leva a 
 dificuldade a identificar conflitos mais simples.
 
