@@ -139,9 +139,9 @@ or \texttt{t} does not apply to \texttt{B} and \texttt{M}, then we say that the 
 
 \section{Test Generation}
 
-\subsection{Traditional Automatic Test Generation}
+\subsection{Traditional Automatic White-Box Test Generation}
 
-Traditional methods of automated test generation can be divided into random and search-based techniques. The former, being random, is simpler and faster, while the latter employs heuristics and search algorithms to fulfil some criteria, like maximizing code coverage.
+Traditional methods of automated white-box test generation (test generation with a known internal structure) can be divided into random and search-based techniques. The former, being random, is simpler and faster, while the latter employs heuristics and search algorithms to fulfil some criteria, like maximizing code coverage.
 
 Randoop is one such example of random test generation. Some of the disadvantages of this technique can be mitigated with the employment of feedback-direction~\cite{kn:randoop}. Effectively, the search space of possible random tests is pruned, by guiding the test generator towards valid cases, avoiding expansion on invalid test cases~\cite{kn:randoop}.
 
